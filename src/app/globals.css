@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #102a2e;
+  --ink-soft: #3a5559;
+  --paper: #f3f7f6;
+  --paper-2: #e7f0ee;
+  --foam: #ffffff;
+  --teal: #0f766e;
+  --teal-deep: #0b4f4a;
+  --copper: #c45c26;
+  --mint: #5eead4;
+  --line: rgba(16, 42, 46, 0.12);
+  --shadow: 0 24px 60px rgba(11, 79, 74, 0.12);
+
+  --accent-dsa: #0f766e;
+  --accent-concepts: #1d4e89;
+  --accent-internals: #365314;
+  --accent-lld: #c45c26;
+  --accent-hld: #0e7490;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-foam: var(--foam);
+  --color-teal: var(--teal);
+  --color-teal-deep: var(--teal-deep);
+  --color-copper: var(--copper);
+  --color-mint: var(--mint);
+  --color-line: var(--line);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(94, 234, 212, 0.28), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(196, 92, 38, 0.12), transparent 50%),
+    linear-gradient(180deg, #eef6f4 0%, var(--paper) 40%, #e8f1ef 100%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(15, 118, 110, 0.22);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(rgba(16, 42, 46, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 42, 46, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-mark {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.prose-block p {
+  margin: 0 0 1rem;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+
+.prose-block h3 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
+
+@keyframes pulse-line {
+  0%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dashoffset: 24;
+  }
+}
+
+.animate-rise {
+  animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-delay {
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
+}
+
+.animate-drift {
+  animation: drift 8s ease-in-out infinite;
+}
+
+.code-panel {
+  background: #0c2427;
+  color: #d7ece9;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.code-panel pre {
+  margin: 0;
+  padding: 1.25rem 1.35rem 1.5rem;
+  overflow-x: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.nav-blur {
+  backdrop-filter: blur(14px);
+  background: rgba(243, 247, 246, 0.78);
+  border-bottom: 1px solid var(--line);
+}
