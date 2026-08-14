@@ -11,6 +11,8 @@ import { LessonBlocks } from "@/components/LessonBlocks";
 import { LessonQuiz } from "@/components/LessonQuiz";
 import { CompleteButton } from "@/components/CompleteButton";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { LessonRoadmap } from "@/components/LessonRoadmap";
+import { LessonEtchPad } from "@/components/LessonEtchPad";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -85,6 +87,20 @@ export default async function LessonPage({ params }: Props) {
             </span>
           ))}
         </p>
+      )}
+
+      <div className="mt-8">
+        <LessonRoadmap blocks={lesson.blocks} />
+      </div>
+
+      {(lesson.track === "lld" || lesson.track === "hld") && (
+        <div className="mt-8">
+          <LessonEtchPad
+            lessonSlug={lesson.slug}
+            trackId={lesson.track}
+            title={lesson.title}
+          />
+        </div>
       )}
 
       <div className="mt-12">
