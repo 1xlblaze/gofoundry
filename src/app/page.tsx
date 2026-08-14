@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { tracks, allLessons } from "@/content";
 import { HeroVisual } from "@/components/HeroVisual";
+import { MotionRoot } from "@/components/MotionRoot";
 
 const heat = [
   { k: "H", name: "Hear", blurb: "Clarify constraints & Go costs" },
@@ -26,16 +27,23 @@ const audiences = [
 
 export default function HomePage() {
   return (
-    <div>
-      <section className="shell hero">
-        <div className="hero-copy reveal">
-          <p className="kicker">Foundry HEAT · Interview-ready Go</p>
-          <h1>GoFoundry</h1>
-          <p className="lede reveal-delay-1">
-            The Go portal that teaches how to think — not just what to paste.
-            Diagrams, A/B trade-offs, quizzes, and a progress ledger you can reset.
+    <MotionRoot>
+      <section className="hero-bleed">
+        <div className="hero-bleed-visual" aria-hidden>
+          <HeroVisual />
+        </div>
+        <div className="shell hero-bleed-copy">
+          <p className="brand-hero reveal" data-motion>
+            GoFoundry
           </p>
-          <div className="hero-actions reveal-delay-2">
+          <h1 className="hero-line reveal-delay-1" data-motion>
+            Think in Go. Diagram the trade-off. Ship the proof.
+          </h1>
+          <p className="lede reveal-delay-2" data-motion>
+            {allLessons.length} lessons across DSA, internals, LLD, and HLD — taught with the
+            Foundry HEAT method.
+          </p>
+          <div className="hero-actions reveal-delay-3" data-motion>
             <Link href="/learn" className="primary-btn">
               Start curriculum
             </Link>
@@ -44,30 +52,10 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-
-        <div className="panel hero-panel float-y reveal-delay-2">
-          <div style={{ height: "11rem", borderRadius: "12px", overflow: "hidden", opacity: 0.9 }}>
-            <HeroVisual />
-          </div>
-          <div className="stat-row">
-            <div className="stat">
-              <strong>{allLessons.length}</strong>
-              <span>Lessons</span>
-            </div>
-            <div className="stat">
-              <strong>8</strong>
-              <span>Tracks</span>
-            </div>
-            <div className="stat">
-              <strong>HEAT</strong>
-              <span>Method</span>
-            </div>
-          </div>
-        </div>
       </section>
 
       <section className="shell section">
-        <div className="usp-banner reveal">
+        <div className="usp-banner" data-motion>
           <div>
             <h2>Foundry HEAT — one operating system for Go</h2>
             <p>
@@ -75,9 +63,9 @@ export default function HomePage() {
               Experienced engineers use it to design systems with explicit trade-offs.
             </p>
           </div>
-          <div className="heat-grid stagger">
+          <div className="heat-grid">
             {heat.map((h) => (
-              <div key={h.k} className="heat-step">
+              <div key={h.k} className="heat-step" data-motion>
                 <strong>
                   {h.k} · {h.name}
                 </strong>
@@ -89,15 +77,15 @@ export default function HomePage() {
       </section>
 
       <section className="shell section">
-        <div className="section-head">
+        <div className="section-head" data-motion>
           <div>
             <h2>Built for both ends of the ladder</h2>
             <p>One product. Two journeys. Same rigor.</p>
           </div>
         </div>
-        <div className="grid-cards stagger">
+        <div className="grid-cards">
           {audiences.map((a) => (
-            <div key={a.title} className="card">
+            <div key={a.title} className="card" data-motion>
               <h3>{a.title}</h3>
               <p>{a.body}</p>
             </div>
@@ -106,7 +94,7 @@ export default function HomePage() {
       </section>
 
       <section className="shell section" style={{ paddingBottom: "4rem" }}>
-        <div className="section-head">
+        <div className="section-head" data-motion>
           <div>
             <h2>Eight forges. {allLessons.length} lessons.</h2>
             <p>DSA through HLD — pick a track and start forging.</p>
@@ -115,11 +103,14 @@ export default function HomePage() {
             Full curriculum →
           </Link>
         </div>
-        <div className="grid-tracks stagger">
+        <div className="grid-tracks">
           {tracks.map((t) => (
-            <Link key={t.id} href={`/track/${t.id}`} className="track-card">
+            <Link key={t.id} href={`/track/${t.id}`} className="track-card" data-motion>
               <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.55rem" }}>
-                <span className="chip chip-brand" style={{ color: t.accent, borderColor: `${t.accent}33` }}>
+                <span
+                  className="chip chip-brand"
+                  style={{ color: t.accent, borderColor: `${t.accent}33` }}
+                >
                   {t.short}
                 </span>
               </div>
@@ -129,6 +120,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-    </div>
+    </MotionRoot>
   );
 }
