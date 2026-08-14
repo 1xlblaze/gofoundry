@@ -18,7 +18,7 @@ Your project: `kqolyvmwcsqilnakuewt` (ap-south-1).
 Example format:
 
 ```
-postgresql://postgres.kqolyvmwcsqilnakuewt:[YOUR-PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+postgresql://postgres.kqolyvmwcsqilnakuewt:[YOUR-PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true
 ```
 
 Replace `[YOUR-PASSWORD]` with the database password from the same page (reset it if you do not have it).
