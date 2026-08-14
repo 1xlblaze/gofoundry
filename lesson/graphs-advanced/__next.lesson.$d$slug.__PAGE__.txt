@@ -1,0 +1,96 @@
+1:"$Sreact.fragment"
+2:I[22016,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js","/gofoundry/_next/static/chunks/07kv87lj18m6x.js"],""]
+3:I[61719,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js","/gofoundry/_next/static/chunks/07kv87lj18m6x.js"],"CompleteButton"]
+4:T413,type DSU struct {
+	parent, rank []int
+}
+
+func NewDSU(n int) *DSU {
+	p := make([]int, n)
+	for i := range p {
+		p[i] = i
+	}
+	return &DSU{parent: p, rank: make([]int, n)}
+}
+
+func (d *DSU) Find(x int) int {
+	if d.parent[x] != x {
+		d.parent[x] = d.Find(d.parent[x])
+	}
+	return d.parent[x]
+}
+
+func (d *DSU) Union(a, b int) bool {
+	ra, rb := d.Find(a), d.Find(b)
+	if ra == rb {
+		return false
+	}
+	if d.rank[ra] < d.rank[rb] {
+		ra, rb = rb, ra
+	}
+	d.parent[rb] = ra
+	if d.rank[ra] == d.rank[rb] {
+		d.rank[ra]++
+	}
+	return true
+}
+
+func canFinish(numCourses int, prerequisites [][]int) bool {
+	graph := make([][]int, numCourses)
+	indeg := make([]int, numCourses)
+	for _, e := range prerequisites {
+		a, b := e[0], e[1] // b -> a
+		graph[b] = append(graph[b], a)
+		indeg[a]++
+	}
+	q := []int{}
+	for i, d := range indeg {
+		if d == 0 {
+			q = append(q, i)
+		}
+	}
+	seen := 0
+	for len(q) > 0 {
+		u := q[0]
+		q = q[1:]
+		seen++
+		for _, v := range graph[u] {
+			indeg[v]--
+			if indeg[v] == 0 {
+				q = append(q, v)
+			}
+		}
+	}
+	return seen == numCourses
+}b:X
+10:X
+10:C
+0:{"buildId":"SC2nuJlShvTnFx3Ee6iMn","data":[{"rsc":["$","$1","c",{"children":[["$","article",null,{"className":"mx-auto max-w-3xl px-6 py-12","children":[["$","div",null,{"className":"flex flex-wrap items-center gap-3 text-sm text-ink-soft","children":[["$","$L2",null,{"href":"/learn","className":"hover:text-teal-deep","children":"Curriculum"}],["$","span",null,{"children":"/"}],["$","$L2",null,{"href":"/track/dsa","className":"hover:text-teal-deep","children":"DSA"}]]}],["$","h1",null,{"className":"mt-4 font-[family-name:var(--font-display)] text-4xl font-semibold tracking-tight","children":"Graphs — Dijkstra, Topo, Union-Find"}],["$","p",null,{"className":"mt-3 text-lg text-ink-soft","children":"Weighted shortest paths, dependency ordering, and disjoint sets."}],["$","div",null,{"className":"mt-6 flex flex-wrap items-center gap-3 text-xs font-medium uppercase tracking-wide text-ink-soft","children":[["$","span",null,{"children":[40," min"]}],["$","span",null,{"className":"capitalize","children":"advanced"}],[["$","span","dijkstra",{"children":["#","dijkstra"]}],["$","span","topo",{"children":["#","topo"]}],["$","span","union-find",{"children":["#","union-find"]}]],["$","div",null,{"className":"ml-auto","children":["$","$L3",null,{"slug":"graphs-advanced"}]}]]}],["$","p",null,{"className":"mt-6 text-sm text-ink-soft","children":["Prerequisites:"," ",[["$","span","graphs-bfs-dfs",{"children":[false,["$","$L2",null,{"href":"/lesson/graphs-bfs-dfs","className":"text-teal-deep underline","children":"Graphs — BFS & DFS"}]]}]]]}],["$","div",null,{"className":"mt-10","children":["$","div",null,{"className":"space-y-8","children":[["$","div","0",{"className":"prose-block","children":[["$","h3",null,{"children":"Pick the right hammer"}],[["$","p","0",{"children":"Dijkstra: non-negative weights, priority queue. Topological sort: DAGs / course schedule. Union-Find (DSU): connectivity, Kruskal MST, redundant connection — nearly O(1) per op with path compression + union by rank."}]]]}],["$","div","1",{"className":"code-panel","children":[["$","div",null,{"className":"flex items-center justify-between border-b border-white/10 px-4 py-2 text-xs uppercase tracking-wider text-mint/80","children":[["$","span",null,{"children":"Union-Find + Kahn topological sort"}],["$","span",null,{"children":"go"}]]}],["$","pre",null,{"children":["$","code",null,{"children":"$4"}]}]]}],["$","div","2",{"className":"grid gap-4 rounded-2xl border border-[var(--line)] bg-foam/70 p-5 sm:grid-cols-2","children":[["$","div",null,{"children":[["$","p",null,{"className":"text-xs uppercase tracking-wide text-ink-soft","children":"Time"}],["$","p",null,{"className":"mt-1 font-mono text-sm","children":"Topo O(V+E); DSU ~O(α(n)) per op; Dijkstra O((V+E) log V) with binary heap"}]]}],["$","div",null,{"children":[["$","p",null,{"className":"text-xs uppercase tracking-wide text-ink-soft","children":"Space"}],"$L5"]}],"$undefined"]}]]}]}],"$L6","$L7"]}],["$L8"],"$L9"]}],"isPartial":"$@a","staleTime":"$b","varyParams":null},{"rsc":"$Lc","isPartial":"$@d","staleTime":"$b","varyParams":null},{"rsc":"$Le","isPartial":"$@f","staleTime":"$b","varyParams":"$10"},{"rsc":"$L11","isPartial":"$@12","staleTime":"$b","varyParams":"$10"},{"rsc":"$L13","isPartial":"$@14","staleTime":"$b","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@15","rootVaryParams":null,"needsRuntimeRequest":"$@16"}
+17:I[44935,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js","/gofoundry/_next/static/chunks/07kv87lj18m6x.js"],"LessonQuiz"]
+18:I[97367,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js"],"OutletBoundary"]
+19:"$Sreact.suspense"
+1b:I[97367,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js"],"ViewportBoundary"]
+1c:I[97367,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js"],"MetadataBoundary"]
+1d:I[27201,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js"],"IconMark"]
+1e:I[39756,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js"],"default"]
+1f:I[37457,["/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js"],"default"]
+:HL["/gofoundry/_next/static/chunks/316qo7qinhvr4.css","style"]
+5:["$","p",null,{"className":"mt-1 font-mono text-sm","children":"O(V+E)"}]
+6:["$","$L17",null,{"slug":"graphs-advanced","questions":[{"id":"ga1","prompt":"Union-Find is a poor fit for…","options":["Detecting whether two nodes are connected","Building an MST with Kruskal","Finding shortest paths with weights","Checking redundant edges in an undirected graph"],"answerIndex":2,"explanation":"DSU tracks components, not distances. Use Dijkstra/Bellman-Ford for shortest paths."}]}]
+7:["$","nav",null,{"className":"mt-16 flex flex-col gap-4 border-t border-[var(--line)] pt-8 sm:flex-row sm:justify-between","children":[["$","$L2",null,{"href":"/lesson/graphs-bfs-dfs","className":"group max-w-xs","children":[["$","p",null,{"className":"text-xs uppercase tracking-wide text-ink-soft","children":"Previous"}],["$","p",null,{"className":"font-semibold group-hover:text-teal-deep","children":"Graphs — BFS & DFS"}]]}],["$","$L2",null,{"href":"/lesson/recursion-backtracking","className":"group max-w-xs sm:text-right","children":[["$","p",null,{"className":"text-xs uppercase tracking-wide text-ink-soft","children":"Next"}],["$","p",null,{"className":"font-semibold group-hover:text-teal-deep","children":"Recursion & Backtracking"}]]}]]}]
+8:["$","script","script-0",{"src":"/gofoundry/_next/static/chunks/07kv87lj18m6x.js","async":true}]
+9:["$","$L18",null,{"children":["$","$19",null,{"name":"Next.MetadataOutlet","children":"$@1a"}]}]
+c:["$","$1","h",{"children":[null,["$","$L1b",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L1c",null,{"children":["$","$19",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Graphs — Dijkstra, Topo, Union-Find · GoFoundry"}],["$","meta","1",{"name":"description","content":"Weighted shortest paths, dependency ordering, and disjoint sets."}],["$","link","2",{"rel":"icon","href":"/gofoundry/favicon.ico?favicon.2vob68tjqpejf.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L1d","3",{}]]}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]
+e:["$","$1","c",{"children":[null,["$","$L1e",null,{"parallelRouterKey":"children","template":["$","$L1f",null,{}]}]]}]
+11:["$","$1","c",{"children":[null,["$","$L1e",null,{"parallelRouterKey":"children","template":["$","$L1f",null,{}]}]]}]
+13:["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/gofoundry/_next/static/chunks/316qo7qinhvr4.css","precedence":"next"}],["$","script","script-0",{"src":"/gofoundry/_next/static/chunks/1mpnoxox0-4cg.js","async":true}]],["$","html",null,{"lang":"en","className":"bricolage_grotesque_b60f566f-module__aNCLiq__variable figtree_643513eb-module__2oWVWW__variable jetbrains_mono_9326615e-module__w9RNvG__variable h-full antialiased","children":["$","body",null,{"className":"min-h-full flex flex-col","children":[["$","div",null,{"className":"site-grid","aria-hidden":true}],["$","div",null,{"className":"grain","aria-hidden":true}],["$","div",null,{"className":"shell flex min-h-full flex-1 flex-col","children":[["$","header",null,{"className":"nav-blur sticky top-0 z-40","children":["$","div",null,{"className":"mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4","children":[["$","$L2",null,{"href":"/","className":"brand-mark text-xl font-semibold text-ink","children":"GoFoundry"}],["$","nav",null,{"className":"hidden items-center gap-6 text-sm font-medium text-ink-soft md:flex","children":[["$","$L2","/learn",{"href":"/learn","className":"transition-colors hover:text-teal-deep","children":"Curriculum"}],["$","$L2","/track/dsa",{"href":"/track/dsa","className":"transition-colors hover:text-teal-deep","children":"DSA"}],["$","$L2","/track/internals",{"href":"/track/internals","className":"transition-colors hover:text-teal-deep","children":"Internals"}],["$","$L2","/track/lld",{"href":"/track/lld","className":"transition-colors hover:text-teal-deep","children":"LLD"}],["$","$L2","/track/hld",{"href":"/track/hld","className":"transition-colors hover:text-teal-deep","children":"HLD"}],["$","$L2","/search",{"href":"/search","className":"transition-colors hover:text-teal-deep","children":"Search"}]]}],["$","$L2",null,{"href":"/learn","className":"rounded-full bg-teal-deep px-4 py-2 text-sm font-semibold text-foam transition hover:bg-teal","children":"Start learning"}]]}]}],["$","main",null,{"className":"flex-1","children":["$","$L1e",null,{"parallelRouterKey":"children","template":["$","$L1f",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}],["$","footer",null,{"className":"border-t border-[var(--line)] px-6 py-10 text-sm text-ink-soft","children":["$","div",null,{"className":"mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between","children":[["$","p",null,{"className":"brand-mark text-base text-ink","children":"GoFoundry"}],["$","p",null,{"children":"Forge interview-ready Go engineers — DSA to distributed design."}]]}]}]]}]]}]}]]}]
+1a:null
+16:true
+b:300
+b:C
+15:0
+d:"$undefined"
+f:"$undefined"
+12:"$undefined"
+14:"$undefined"
+a:"$undefined"
