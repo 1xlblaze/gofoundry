@@ -15,5 +15,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Lint: `npm run lint`
 - Production build: `npm run build`
 - Optional secrets (configure in the environment panel): `AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `KEYCLOAK_*`, `NEXT_PUBLIC_SUPABASE_*`
+- Supabase MCP: `.cursor/mcp.json` (read-only `database` + `docs`); authenticate in Cursor Settings → Tools & MCP. Waitlist schema: `supabase/migrations/`. See `supabase/README.md`.
 - Core flows work without auth or Supabase: lessons, curriculum, Go Lab (playground proxy), local progress
 - Google OAuth redirect URI for local dev: `http://localhost:3000/api/auth/callback/google`

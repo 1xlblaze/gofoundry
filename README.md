@@ -32,6 +32,17 @@ KEYCLOAK_ISSUER=https://your-keycloak/realms/your-realm
 
 Google redirect URI: `http://localhost:3000/api/auth/callback/google`
 
+## Supabase waitlist
+
+Optional. Powers waitlist forms on `/pricing`, `/diagnostic`, and `/sandbox`.
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+Schema and MCP setup: see [`supabase/README.md`](supabase/README.md).
+
 ## Deploy
 
 Vercel (Node runtime — not static export). Connect the GitHub repo and set the env vars above.
