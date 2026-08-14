@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { GoWorkbench } from "@/components/GoWorkbench";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
+import { EtchErrorBoundary } from "@/components/EtchErrorBoundary";
 import {
   emptyEtchScene,
   etchSceneToPayload,
@@ -366,18 +367,20 @@ export function HeatCanvas() {
             <p>Use boxes, arrows, indices, queues, or goroutines. Rough is useful.</p>
           </div>
         </div>
-        <EtchCanvas
-          storageKey="gofoundry-heat-canvas-etch"
-          preset="general"
-          onChange={(scene) => {
-            if (scene.elements.length === 0) return;
-            setDraft((current) => ({
-              ...current,
-              diagram: serializeEtchScene(scene),
-            }));
-          }}
-          height={420}
-        />
+        <EtchErrorBoundary label="HEAT drawing canvas failed to load">
+          <EtchCanvas
+            storageKey="gofoundry-heat-canvas-etch"
+            preset="general"
+            onChange={(scene) => {
+              if (scene.elements.length === 0) return;
+              setDraft((current) => ({
+                ...current,
+                diagram: serializeEtchScene(scene),
+              }));
+            }}
+            height={420}
+          />
+        </EtchErrorBoundary>
       </section>
 
       <section

@@ -54,6 +54,24 @@ test.describe("Track and lesson content", () => {
     await page.goto(`/lesson/${lesson!.slug}`);
     await expect(page.getByRole("button", { name: /Open sketch pad/i })).toBeVisible();
   });
+
+  test("HLD track cards are fully visible after motion reveal", async ({ page }) => {
+    await page.goto("/track/hld");
+    await page.waitForTimeout(2200);
+    const cards = page.locator(".lesson-card");
+    await expect(cards).not.toHaveCount(0);
+    const lastCard = cards.last();
+    await expect(lastCard).toBeVisible();
+    const opacity = await lastCard.evaluate((el) => getComputedStyle(el).opacity);
+    expect(Number(opacity)).toBeGreaterThan(0.95);
+  });
+
+  test("LRU lesson roadmap reports diagrams and sticky TOC", async ({ page }) => {
+    await page.goto("/lesson/lru-cache-lld");
+    await expect(page.getByLabel("Lesson roadmap")).toContainText(/2 diagrams/i);
+    await expect(page.getByLabel("Lesson sections")).toBeVisible();
+    await expect(page.locator("#lesson-section-1")).toBeAttached();
+  });
 });
 
 test.describe("Interactive workspaces", () => {

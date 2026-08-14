@@ -663,6 +663,123 @@ function FeedArch() {
   );
 }
 
+function LruCacheStructure() {
+  return (
+    <Frame
+      title="LRU cache structure"
+      caption="Map[key] → node pointer · list order = recency"
+      viewBox="0 0 720 340"
+    >
+      <rect width="720" height="340" fill="#ecf5f3" />
+      <text x="36" y="36" fill={signal} fontSize="11" fontWeight="700">
+        DOUBLY LINKED LIST (MRU → LRU)
+      </text>
+      <rect x="36" y="52" width="56" height="44" rx="8" fill="#e2e8f0" stroke={line} strokeWidth="2" />
+      <text x="64" y="79" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        root
+      </text>
+      {[
+        { x: 120, key: "A", mru: true },
+        { x: 220, key: "C", mru: false },
+        { x: 320, key: "B", mru: false },
+        { x: 420, key: "D", lru: true },
+      ].map((node, i, arr) => (
+        <g key={node.key}>
+          <rect
+            x={node.x}
+            y={52}
+            width="70"
+            height="44"
+            rx="8"
+            fill={node.mru ? "#ccfbf1" : node.lru ? "#ffedd5" : foam}
+            stroke={node.mru ? signal : node.lru ? ember : ink}
+            strokeWidth="2"
+          />
+          <text
+            x={node.x + 35}
+            y={79}
+            textAnchor="middle"
+            fill={ink}
+            fontSize="14"
+            fontFamily="var(--font-mono), monospace"
+            fontWeight="700"
+          >
+            {node.key}
+          </text>
+          {i < arr.length - 1 && (
+            <Arrow x1={node.x + 72} y1={74} x2={arr[i + 1].x - 4} y2={74} />
+          )}
+        </g>
+      ))}
+      <rect x="520" y="52" width="56" height="44" rx="8" fill="#e2e8f0" stroke={line} strokeWidth="2" />
+      <text x="548" y="79" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        root
+      </text>
+      <Arrow x1={492} y1={74} x2={516} y2={74} />
+      <text x="120" y="118" fill={signal} fontSize="11" fontWeight="700">
+        MRU
+      </text>
+      <text x="448" y="118" fill={ember} fontSize="11" fontWeight="700">
+        LRU
+      </text>
+      <text x="36" y="168" fill={signal} fontSize="11" fontWeight="700">
+        MAP (O(1) LOOKUP)
+      </text>
+      {[
+        { y: 188, key: "A", ptr: "→ node A" },
+        { y: 228, key: "B", ptr: "→ node B" },
+        { y: 268, key: "C", ptr: "→ node C" },
+        { y: 308, key: "D", ptr: "→ node D" },
+      ].map((row) => (
+        <g key={row.key}>
+          <rect x={36} y={row.y} width="90" height="34" rx="8" fill={foam} stroke={ink} strokeWidth="2" />
+          <text x={81} y={row.y + 22} textAnchor="middle" fill={ink} fontSize="13" fontFamily="var(--font-mono), monospace">
+            {row.key}
+          </text>
+          <text x={140} y={row.y + 22} fill={soft} fontSize="12" fontFamily="var(--font-mono), monospace">
+            {row.ptr}
+          </text>
+        </g>
+      ))}
+      <text x="360" y="320" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        Get hit: unlink node · pushFront · sizes must stay equal
+      </text>
+    </Frame>
+  );
+}
+
+function SingleflightTimeline() {
+  return (
+    <Frame
+      title="Singleflight on cache miss"
+      caption="One loader · many waiters · double-check after lock"
+      viewBox="0 0 720 320"
+    >
+      <rect width="720" height="320" fill="#ecf5f3" />
+      {["G1", "G2", "G3", "G4"].map((g, i) => (
+        <NodeBox key={g} x={36 + i * 110} y={36} w={80} h={40} label={g} sub="miss E" />
+      ))}
+      <Arrow x1={76} y1={76} x2={76} y2={108} />
+      <Arrow x1={186} y1={76} x2={186} y2={108} />
+      <Arrow x1={296} y1={76} x2={296} y2={108} />
+      <Arrow x1={406} y1={76} x2={406} y2={108} />
+      <NodeBox x={250} y={118} w={220} h={54} label="singleflight.Group" sub="Do(key)" fill="#ccfbf1" />
+      <text x="360" y="196" textAnchor="middle" fill={signal} fontSize="12" fontWeight="700">
+        G1 loads · G2–G4 await shared result
+      </text>
+      <NodeBox x={120} y={214} w={140} h={48} label="Loader" sub="fetch E" />
+      <NodeBox x={460} y={214} w={140} h={48} label="Cache.Put" sub="TTL + weight" fill="#ccfbf1" />
+      <Arrow x1={260} y1={238} x2={455} y2={238} />
+      <Arrow x1={186} y1={130} x2={248} y2={145} />
+      <Arrow x1={296} y1={130} x2={320} y2={145} />
+      <Arrow x1={406} y1={130} x2={420} y2={145} />
+      <text x="360" y="296" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        leader double-checks cache before load · peers receive immutable copy
+      </text>
+    </Frame>
+  );
+}
+
 export function Diagram({ kind, title, caption }: Props) {
   switch (kind) {
     case "heat-cycle":
@@ -699,6 +816,10 @@ export function Diagram({ kind, title, caption }: Props) {
       return <PaymentArch />;
     case "feed-arch":
       return <FeedArch />;
+    case "lru-cache-structure":
+      return <LruCacheStructure />;
+    case "singleflight-timeline":
+      return <SingleflightTimeline />;
     default:
       return null;
   }

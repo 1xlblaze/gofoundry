@@ -1,27 +1,9 @@
+import Link from "next/link";
 import type { ContentBlock } from "@/content/types";
-
-const BLOCK_META: Record<
-  ContentBlock["type"],
-  { label: string; tone: "neutral" | "visual" | "action" | "think" }
-> = {
-  prose: { label: "Concept", tone: "neutral" },
-  code: { label: "Code", tone: "action" },
-  callout: { label: "Note", tone: "neutral" },
-  complexity: { label: "Complexity", tone: "neutral" },
-  steps: { label: "Steps", tone: "action" },
-  tradeoff: { label: "Tradeoffs", tone: "think" },
-  capacity: { label: "Capacity", tone: "neutral" },
-  think: { label: "Think", tone: "think" },
-  answer: { label: "Answer script", tone: "action" },
-  diagram: { label: "Diagram", tone: "visual" },
-};
+import { lessonSectionId, sectionsFromBlocks } from "@/lib/lesson-sections";
 
 export function LessonRoadmap({ blocks }: { blocks: ContentBlock[] }) {
-  const segments = blocks.map((block, index) => ({
-    index,
-    ...BLOCK_META[block.type],
-  }));
-
+  const segments = sectionsFromBlocks(blocks);
   const diagramCount = segments.filter((s) => s.tone === "visual").length;
   const thinkCount = segments.filter((s) => s.tone === "think").length;
 
@@ -42,8 +24,12 @@ export function LessonRoadmap({ blocks }: { blocks: ContentBlock[] }) {
             key={`${segment.index}-${segment.label}`}
             className={`lesson-roadmap-step lesson-roadmap-${segment.tone}`}
           >
-            <span className="lesson-roadmap-index">{String(segment.index + 1).padStart(2, "0")}</span>
-            <span>{segment.label}</span>
+            <Link href={`#${segment.id}`} className="lesson-roadmap-link">
+              <span className="lesson-roadmap-index">
+                {String(segment.index + 1).padStart(2, "0")}
+              </span>
+              <span>{segment.label}</span>
+            </Link>
           </li>
         ))}
       </ol>
