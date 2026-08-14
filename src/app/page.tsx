@@ -1,28 +1,14 @@
 import Link from "next/link";
-import { tracks, allLessons } from "@/content";
+import { allLessons, getTrack, tracks } from "@/content";
 import { HeroVisual } from "@/components/HeroVisual";
 import { MotionRoot } from "@/components/MotionRoot";
+import { pillars } from "@/content/pillars";
 
 const heat = [
   { k: "H", name: "Hear", blurb: "Clarify constraints & Go costs" },
   { k: "E", name: "Etch", blurb: "Architecture / algorithm diagram" },
   { k: "A", name: "Anchor", blurb: "Pattern + complexity target" },
   { k: "T", name: "Temper", blurb: "Idiomatic Go + proof" },
-];
-
-const audiences = [
-  {
-    title: "Students & new grads",
-    body: "Learn patterns with diagrams, interview scripts, and a problem bank — not random LeetCode grinding.",
-  },
-  {
-    title: "Working engineers",
-    body: "Go beyond syntax: runtime internals, LLD, and HLD case studies with explicit A/B trade-offs.",
-  },
-  {
-    title: "Interviewers & mentors",
-    body: "A shared vocabulary (HEAT) so feedback is about thinking quality, not just “did it pass tests”.",
-  },
 ];
 
 export default function HomePage() {
@@ -33,35 +19,91 @@ export default function HomePage() {
           <HeroVisual />
         </div>
         <div className="shell hero-bleed-copy">
+          <p className="kicker reveal" data-motion>
+            Staff-Grade Go Mastery
+          </p>
           <p className="brand-hero reveal" data-motion>
             GoFoundry
           </p>
           <h1 className="hero-line reveal-delay-1" data-motion>
-            Think in Go. Diagram the trade-off. Ship the proof.
+            Master concurrency, runtime internals, zero-alloc thinking, and cloud-native design.
           </h1>
           <p className="lede reveal-delay-2" data-motion>
-            {allLessons.length} deep lessons — mental models, worked Go code, dry-runs, trade-offs,
-            and interview scripts — not thin topic summaries.
+            Use the HEAT method to reason clearly, prove it in the interactive Lab, and sharpen
+            recall with a focused practice sheet.
           </p>
           <div className="hero-actions reveal-delay-3" data-motion>
-            <Link href="/learn" className="primary-btn">
+            <Link href="/lab" className="primary-btn">
+              Enter the Lab
+            </Link>
+            <Link href="/learn" className="secondary-btn">
               Start curriculum
             </Link>
-            <Link href="/progress" className="secondary-btn">
-              View progress
+            <Link href="/pricing" className="ghost-btn">
+              View pricing
             </Link>
           </div>
         </div>
       </section>
 
       <section className="shell section">
+        <div className="section-head" data-motion>
+          <div>
+            <p className="kicker">The four pillars</p>
+            <h2>Go depth that compounds at staff level</h2>
+            <p>
+              Move from runtime mechanics to production architecture, with every trade-off grounded
+              in the way Go actually behaves.
+            </p>
+          </div>
+        </div>
+        <div className="grid-tracks">
+          {pillars.map((pillar) => (
+            <Link
+              key={pillar.id}
+              href={pillar.href}
+              className="track-card"
+              style={{ borderTopColor: pillar.accent }}
+              data-motion
+            >
+              <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.55rem" }}>
+                {pillar.trackIds.map((trackId) => (
+                  <span
+                    key={trackId}
+                    className="chip"
+                    style={{
+                      color: pillar.accent,
+                      borderColor: `${pillar.accent}33`,
+                      background: `${pillar.accent}10`,
+                    }}
+                  >
+                    {getTrack(trackId).short}
+                  </span>
+                ))}
+              </div>
+              <h3>{pillar.title}</h3>
+              <p>{pillar.tagline}</p>
+              <div className="meta-row">
+                {pillar.focusAreas.map((area) => (
+                  <span key={area} className="chip">
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="shell section">
         <div className="usp-banner" data-motion>
           <div>
-            <h2>Foundry HEAT — one operating system for Go</h2>
+            <p className="kicker">The interview operating system</p>
+            <h2>Foundry HEAT turns deep knowledge into a staff-level signal</h2>
             <p>
-              Hear → Etch → Anchor → Temper. Every lesson teaches why a solution works: invariants,
-              failure modes, complexity, and the script you say out loud in an interview — so the
-              material is worth studying end-to-end, not skimming.
+              Hear → Etch → Anchor → Temper. Clarify the system, diagram the pressure points, choose
+              an invariant, then implement and prove it with idiomatic Go. It is the repeatable
+              structure behind architecture rounds, concurrency deep dives, and performance reviews.
             </p>
           </div>
           <div className="heat-grid">
@@ -77,28 +119,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="shell section">
-        <div className="section-head" data-motion>
-          <div>
-            <h2>Built for both ends of the ladder</h2>
-            <p>One product. Two journeys. Same rigor.</p>
-          </div>
-        </div>
-        <div className="grid-cards">
-          {audiences.map((a) => (
-            <div key={a.title} className="card" data-motion>
-              <h3>{a.title}</h3>
-              <p>{a.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section className="shell section" style={{ paddingBottom: "4rem" }}>
         <div className="section-head" data-motion>
           <div>
-            <h2>Eight forges. {allLessons.length} lessons.</h2>
-            <p>DSA through HLD — pick a track and start forging.</p>
+            <p className="kicker">All forges</p>
+            <h2>Eight tracks. {allLessons.length} deep lessons.</h2>
+            <p>Build the foundations, then go deep on Go internals, component design, and HLD.</p>
           </div>
           <Link href="/learn" className="ghost-btn">
             Full curriculum →

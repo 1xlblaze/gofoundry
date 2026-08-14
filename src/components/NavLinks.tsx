@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/learn", label: "Curriculum" },
-  { href: "/progress", label: "Progress" },
-  { href: "/track/method", label: "HEAT" },
-  { href: "/track/dsa", label: "DSA" },
+  { href: "/lab", label: "Lab" },
   { href: "/problems", label: "Practice" },
-  { href: "/track/hld", label: "HLD" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/blog", label: "Blog" },
+  { href: "/cheatsheets", label: "Sheets" },
+  { href: "/progress", label: "Progress" },
   { href: "/search", label: "Search" },
 ];
 

@@ -24,11 +24,11 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "GoFoundry — Go DSA, Internals, LLD & HLD",
+    default: "GoFoundry — The Staff-Grade Go Mastery Platform",
     template: "%s · GoFoundry",
   },
   description:
-    "The modern Go learning portal: HEAT method, diagrams, A/B trade-offs, quizzes, and progress tracking — for students and experienced engineers.",
+    "Master Go concurrency, runtime internals, zero-allocation performance, and cloud-native design with the HEAT method, interactive Lab, and focused practice.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
