@@ -152,7 +152,7 @@ export default function ProblemsPage() {
         {groups.map((g) => (
           <section key={g.name} className="border-t border-[var(--line)] pt-8">
             <h2 className="type-title text-[1.4rem] text-ink">{g.name}</h2>
-            <p className="type-serif mt-2 max-w-2xl text-[1.02rem] text-ink-soft">
+            <p className="mt-2 max-w-2xl text-[1.02rem] text-ink-soft">
               {g.strategy}
             </p>
             <div className="mt-5 flex flex-wrap gap-2">

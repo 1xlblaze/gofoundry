@@ -32,40 +32,32 @@ export default async function LessonPage({ params }: Props) {
   const { prev, next } = adjacentLessons(slug);
 
   return (
-    <article className="reading-rail mx-auto px-6 py-14 sm:py-16">
-      <div className="flex flex-wrap items-center gap-2 text-[0.8rem] text-ink-faint">
-        <Link href="/learn" className="font-medium transition-colors hover:text-ink">
-          Curriculum
-        </Link>
+    <article className="shell" style={{ maxWidth: 820, padding: "2.25rem 0 3.5rem" }}>
+      <div className="reveal" style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", fontSize: "0.82rem", color: "var(--muted)" }}>
+        <Link href="/learn">Curriculum</Link>
         <span aria-hidden>/</span>
-        <Link
-          href={`/track/${track.id}`}
-          className="font-medium transition-colors hover:text-ink"
-        >
-          {track.short}
-        </Link>
+        <Link href={`/track/${track.id}`}>{track.short}</Link>
       </div>
 
-      <p className="type-label mt-8" style={{ color: track.accent }}>
-        {track.title}
-      </p>
-      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">{lesson.title}</h1>
-      <p className="mt-4 max-w-xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
-        {lesson.subtitle}
-      </p>
-
-      <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-[var(--line)] py-4">
-        <span className="font-mono text-xs text-ink-faint">{lesson.minutes} min</span>
-        <span className="type-label !normal-case !tracking-normal capitalize">
-          {lesson.difficulty}
-        </span>
-        {lesson.tags.map((t) => (
-          <span key={t} className="font-mono text-xs text-ink-faint">
-            #{t}
+      <div className="lesson-header panel reveal-delay-1" style={{ marginTop: "1.1rem" }}>
+        <p className="type-label" style={{ color: track.accent, margin: 0 }}>
+          {track.title}
+        </p>
+        <h1>{lesson.title}</h1>
+        <p>{lesson.subtitle}</p>
+        <div className="meta-row">
+          <span className="chip">{lesson.minutes} min</span>
+          <span className="chip chip-brand" style={{ textTransform: "capitalize" }}>
+            {lesson.difficulty}
           </span>
-        ))}
-        <div className="ml-auto">
-          <CompleteButton slug={lesson.slug} />
+          {lesson.tags.map((t) => (
+            <span key={t} className="chip">
+              #{t}
+            </span>
+          ))}
+          <div style={{ marginLeft: "auto" }}>
+            <CompleteButton slug={lesson.slug} />
+          </div>
         </div>
       </div>
 

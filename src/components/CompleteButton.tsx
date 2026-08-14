@@ -14,18 +14,15 @@ export function CompleteButton({ slug }: { slug: string }) {
   }, [slug]);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
       <button
         type="button"
         onClick={() => {
           markComplete(slug);
           setDone(true);
         }}
-        className={`px-4 py-2 text-[0.8rem] font-semibold tracking-tight transition ${
-          done
-            ? "bg-mint/35 text-teal-deep"
-            : "border border-[var(--line-strong)] bg-foam/70 text-ink hover:border-teal"
-        }`}
+        className={done ? "primary-btn" : "secondary-btn"}
+        style={{ padding: "0.45rem 0.9rem", fontSize: "0.8rem" }}
       >
         {done ? "Completed" : "Mark complete"}
       </button>
@@ -38,9 +35,10 @@ export function CompleteButton({ slug }: { slug: string }) {
               setDone(false);
             }
           }}
-          className="px-3 py-2 text-[0.75rem] font-semibold text-copper underline underline-offset-2"
+          className="ghost-btn danger-btn"
+          style={{ padding: "0.4rem 0.75rem", fontSize: "0.75rem" }}
         >
-          Reset lesson
+          Reset
         </button>
       )}
     </div>

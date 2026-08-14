@@ -24,51 +24,29 @@ export default async function TrackPage({ params }: Props) {
   const lessons = lessonsForTrack(track.id);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
-      <p className="type-label" style={{ color: track.accent }}>
-        {track.short}
-      </p>
-      <h1 className="type-title mt-3 max-w-3xl text-[var(--text-h1)] text-ink">
-        {track.title}
-      </h1>
-      <p className="mt-4 max-w-2xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
-        {track.description}
-      </p>
+    <div className="shell" style={{ padding: "2.5rem 0 3.5rem" }}>
+      <div className="page-hero reveal">
+        <p className="kicker" style={{ color: track.accent }}>
+          {track.short}
+        </p>
+        <h1>{track.title}</h1>
+        <p>{track.description}</p>
+      </div>
 
-      <div className="mt-14 border-t border-[var(--line)]">
+      <div className="grid-lessons stagger">
         {lessons.map((lesson, i) => (
-          <Link
-            key={lesson.slug}
-            href={`/lesson/${lesson.slug}`}
-            className="group flex flex-col gap-3 border-b border-[var(--line)] py-6 transition sm:flex-row sm:items-baseline sm:justify-between sm:gap-10"
-          >
-            <div className="flex gap-5">
-              <span
-                className="font-mono text-sm"
-                style={{ color: track.accent }}
-              >
+          <Link key={lesson.slug} href={`/lesson/${lesson.slug}`} className="lesson-card">
+            <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.45rem" }}>
+              <span className="chip" style={{ color: track.accent, fontFamily: "var(--font-mono)" }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <div>
-                <h2 className="type-title text-[1.25rem] text-ink transition-colors group-hover:text-teal-deep">
-                  {lesson.title}
-                </h2>
-                <p className="mt-2 max-w-2xl text-[0.95rem] leading-relaxed text-ink-soft">
-                  {lesson.subtitle}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
-                  {lesson.tags.map((tag) => (
-                    <span key={tag} className="font-mono text-[0.7rem] text-ink-faint">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <span className="chip">{lesson.minutes} min</span>
+              <span className="chip chip-brand" style={{ textTransform: "capitalize" }}>
+                {lesson.difficulty}
+              </span>
             </div>
-            <div className="pl-10 font-mono text-xs tracking-wide text-ink-faint uppercase sm:pl-0 sm:text-right">
-              <p>{lesson.minutes} min</p>
-              <p className="mt-1 capitalize">{lesson.difficulty}</p>
-            </div>
+            <h3>{lesson.title}</h3>
+            <p>{lesson.subtitle}</p>
           </Link>
         ))}
       </div>

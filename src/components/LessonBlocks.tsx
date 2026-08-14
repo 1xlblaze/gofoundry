@@ -1,14 +1,15 @@
 import type { ContentBlock } from "@/content/types";
 import { Diagram } from "@/components/Diagram";
+import { CodeBlock } from "@/components/CodeBlock";
 
 export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
   return (
-    <div className="space-y-10">
+    <div className="content-stack" style={{ gap: "1.35rem" }}>
       {blocks.map((block, i) => {
         switch (block.type) {
           case "prose":
             return (
-              <div key={i} className="prose-block">
+              <div key={i} className="panel prose-block reveal">
                 {block.title && <h3>{block.title}</h3>}
                 {block.body.split("\n\n").map((p, j) => (
                   <p key={j}>{p}</p>
@@ -17,57 +18,35 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "code":
             return (
-              <div key={i} className="code-panel">
-                <div className="flex items-center justify-between border-b border-white/8 px-4 py-2.5">
-                  <span className="text-[0.7rem] font-medium tracking-[0.12em] text-[#99f6e4]/80 uppercase">
-                    {block.title ?? "Example"}
-                  </span>
-                  <span className="font-mono text-[0.65rem] tracking-wide text-white/35">
-                    {block.language}
-                  </span>
-                </div>
-                <pre>
-                  <code>{block.code}</code>
-                </pre>
-              </div>
+              <CodeBlock
+                key={i}
+                title={block.title}
+                language={block.language}
+                code={block.code}
+              />
             );
           case "callout": {
-            const styles =
-              block.tone === "warn"
-                ? "border-copper/35 bg-copper/8"
-                : block.tone === "tip"
-                  ? "border-teal/25 bg-mint/15"
-                  : "border-[var(--line)] bg-paper-2/70";
+            const tone = block.tone === "warn" ? "warn" : block.tone === "tip" ? "tip" : "info";
             return (
-              <aside
-                key={i}
-                className={`border-l-[3px] px-5 py-4 text-[0.95rem] leading-relaxed text-ink ${styles}`}
-              >
-                <p className="type-label mb-2">{block.tone}</p>
-                <p className="type-serif text-[1.02rem] text-ink-soft">{block.body}</p>
+              <aside key={i} className={`callout ${tone}`}>
+                <div className="callout-title">{block.tone}</div>
+                <p style={{ margin: 0 }}>{block.body}</p>
               </aside>
             );
           }
           case "complexity":
             return (
-              <div
-                key={i}
-                className="grid gap-6 border border-[var(--line)] bg-foam/60 px-5 py-5 sm:grid-cols-2"
-              >
-                <div>
-                  <p className="type-label">Time</p>
-                  <p className="mt-2 font-mono text-sm leading-relaxed text-ink">
-                    {block.time}
-                  </p>
+              <div key={i} className="complexity-grid">
+                <div className="complexity-item">
+                  <span>Time</span>
+                  <strong>{block.time}</strong>
                 </div>
-                <div>
-                  <p className="type-label">Space</p>
-                  <p className="mt-2 font-mono text-sm leading-relaxed text-ink">
-                    {block.space}
-                  </p>
+                <div className="complexity-item">
+                  <span>Space</span>
+                  <strong>{block.space}</strong>
                 </div>
                 {block.notes && (
-                  <p className="type-serif text-sm text-ink-soft sm:col-span-2">
+                  <p style={{ gridColumn: "1 / -1", margin: 0, color: "var(--ink-soft)" }}>
                     {block.notes}
                   </p>
                 )}
@@ -75,140 +54,124 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "steps":
             return (
-              <div key={i} className="step-list">
+              <div key={i} className="panel prose-block">
                 {block.title && (
-                  <h3 className="type-title mb-4 text-[1.35rem] text-ink">{block.title}</h3>
+                  <h3 style={{ marginTop: 0 }}>{block.title}</h3>
                 )}
-                <ol className="space-y-3">
-                  {block.items.map((item, j) => (
-                    <li key={j} className="step-card flex gap-4">
-                      <span className="step-num">{String(j + 1).padStart(2, "0")}</span>
-                      <span className="step-text">{item}</span>
-                    </li>
+                <ol className="steps">
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ol>
               </div>
             );
           case "tradeoff":
             return (
-              <section key={i} className="tradeoff-section">
-                <h3 className="type-title text-[1.25rem] text-ink">{block.title}</h3>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  {block.choices.map((c) => (
-                    <div key={c.label} className="tradeoff-card">
-                      <p className="tradeoff-label">{c.label}</p>
-                      <div className="mt-3 space-y-3">
-                        <div>
-                          <p className="type-label mb-1.5 text-teal">Pros</p>
-                          <ul className="tradeoff-list">
-                            {c.pros.map((p) => (
-                              <li key={p}>{p}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <p className="type-label mb-1.5 text-copper">Cons</p>
-                          <ul className="tradeoff-list">
-                            {c.cons.map((p) => (
-                              <li key={p}>{p}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        <p className="tradeoff-when">
-                          <span className="font-semibold text-ink">Pick when: </span>
-                          {c.when}
-                        </p>
+              <section key={i} className="tradeoff-grid">
+                <h3 className="type-title" style={{ margin: 0, gridColumn: "1 / -1" }}>
+                  {block.title}
+                </h3>
+                {block.choices.map((c) => (
+                  <div key={c.label} className="tradeoff-card">
+                    <h3>{c.label}</h3>
+                    <div className="tradeoff-cols">
+                      <div className="tradeoff-col pros">
+                        <h4>Pros</h4>
+                        <ul>
+                          {c.pros.map((p) => (
+                            <li key={p}>{p}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="tradeoff-col cons">
+                        <h4>Cons</h4>
+                        <ul>
+                          {c.cons.map((p) => (
+                            <li key={p}>{p}</li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <p className="tradeoff-when">
+                      <strong>Pick when: </strong>
+                      {c.when}
+                    </p>
+                  </div>
+                ))}
               </section>
             );
           case "capacity":
             return (
-              <div key={i} className="capacity-table">
+              <div key={i}>
                 {block.title && (
-                  <h3 className="type-title mb-4 text-[1.2rem] text-ink">{block.title}</h3>
+                  <h3 className="type-title" style={{ marginBottom: "0.75rem" }}>
+                    {block.title}
+                  </h3>
                 )}
-                <table>
-                  <tbody>
-                    {block.rows.map((row) => (
-                      <tr key={row.label}>
-                        <th>{row.label}</th>
-                        <td>{row.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="capacity-grid">
+                  {block.rows.map((row) => (
+                    <div key={row.label} className="capacity-item">
+                      <span>{row.label}</span>
+                      <strong>{row.value}</strong>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           case "think":
             return (
-              <section key={i} className="heat-panel heat-think">
-                <p className="type-label text-[var(--signal)]">How to think</p>
-                <h3 className="type-title mt-2 text-[1.35rem] text-ink">
-                  {block.title ?? "Hear the problem"}
-                </h3>
-                <div className="mt-5 grid gap-6 sm:grid-cols-2">
+              <section key={i} className="think-panel">
+                <h3>{block.title ?? "How to think"}</h3>
+                <div style={{ display: "grid", gap: "1rem" }}>
                   <div>
-                    <p className="type-label mb-3">Clarify</p>
-                    <ul className="space-y-2">
+                    <p className="type-label" style={{ marginBottom: "0.45rem" }}>
+                      Clarify
+                    </p>
+                    <ul>
                       {block.clarify.map((item) => (
-                        <li key={item} className="type-serif text-[1.02rem] text-ink-soft">
-                          <span className="mr-2 text-teal">▹</span>
-                          {item}
-                        </li>
+                        <li key={item}>{item}</li>
                       ))}
                     </ul>
                   </div>
                   <div>
-                    <p className="type-label mb-3">Model</p>
-                    <ul className="space-y-2">
+                    <p className="type-label" style={{ marginBottom: "0.45rem" }}>
+                      Model
+                    </p>
+                    <ul>
                       {block.model.map((item) => (
-                        <li key={item} className="type-serif text-[1.02rem] text-ink-soft">
-                          <span className="mr-2 text-teal">▹</span>
-                          {item}
-                        </li>
+                        <li key={item}>{item}</li>
                       ))}
                     </ul>
                   </div>
+                  {block.pitfalls && block.pitfalls.length > 0 && (
+                    <div>
+                      <p className="type-label" style={{ marginBottom: "0.45rem", color: "var(--accent)" }}>
+                        Pitfalls
+                      </p>
+                      <ul>
+                        {block.pitfalls.map((p) => (
+                          <li key={p}>{p}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-                {block.pitfalls && block.pitfalls.length > 0 && (
-                  <div className="mt-5 border-t border-[var(--line)] pt-4">
-                    <p className="type-label mb-2 text-copper">Pitfalls</p>
-                    <ul className="space-y-1.5">
-                      {block.pitfalls.map((p) => (
-                        <li key={p} className="text-sm text-ink-soft">
-                          {p}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </section>
             );
           case "answer":
             return (
-              <section key={i} className="heat-panel heat-answer">
-                <p className="type-label">How to answer</p>
-                <h3 className="type-title mt-2 text-[1.35rem] text-ink">
-                  {block.title ?? "Interview script"}
-                </h3>
-                <p className="type-serif mt-4 text-[1.08rem] text-ink">
+              <section key={i} className="answer-panel">
+                <h3>{block.title ?? "How to answer"}</h3>
+                <p style={{ margin: "0 0 0.75rem", fontWeight: 600 }}>
                   “{block.opening}”
                 </p>
-                <ol className="mt-5 space-y-3">
-                  {block.beats.map((beat, j) => (
-                    <li key={beat} className="flex gap-3">
-                      <span className="font-mono text-sm text-teal">
-                        {String(j + 1).padStart(2, "0")}
-                      </span>
-                      <span className="type-serif text-[1.02rem] text-ink-soft">{beat}</span>
-                    </li>
+                <ol>
+                  {block.beats.map((beat) => (
+                    <li key={beat}>{beat}</li>
                   ))}
                 </ol>
                 {block.closing && (
-                  <p className="type-serif mt-5 border-t border-[var(--line)] pt-4 text-sm text-ink-soft">
+                  <p style={{ margin: "0.85rem 0 0", color: "var(--ink-soft)" }}>
                     {block.closing}
                   </p>
                 )}
@@ -216,9 +179,12 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "diagram":
             return (
-              <div key={i} className="lesson-diagram-wrap">
-                <Diagram kind={block.kind} title={block.title} caption={block.caption} />
-              </div>
+              <Diagram
+                key={i}
+                kind={block.kind}
+                title={block.title}
+                caption={block.caption}
+              />
             );
           default:
             return null;

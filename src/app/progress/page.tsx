@@ -70,90 +70,104 @@ export default function ProgressPage() {
   const total = allLessons.length;
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
 
+  function onResetLesson(slug: string, title: string) {
+    if (confirm(`Reset “${title}”? Completion and quiz score will be cleared.`)) {
+      setProgress(resetLesson(slug));
+    }
+  }
+
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
-      <p className="type-label">Your forge ledger</p>
-      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">Progress</h1>
-      <p className="mt-4 max-w-2xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
-        Track every lesson in one table. Reset a single lesson to practice fresh, or
-        wipe the board and start the forge again.
-      </p>
+    <div className="shell" style={{ padding: "2.5rem 0 3.5rem" }}>
+      <div className="page-hero reveal">
+        <h1>Progress</h1>
+        <p>
+          Track every lesson in one ledger. Reset a single lesson to practice fresh,
+          or wipe the board and start the forge again.
+        </p>
+      </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-3">
-        <div className="border border-[var(--line)] bg-foam/80 px-5 py-5">
-          <p className="type-label">Completed</p>
-          <p className="brand-mark mt-2 text-3xl text-ink">
+      <div className="stat-row reveal-delay-1" style={{ marginBottom: "1rem" }}>
+        <div className="stat">
+          <strong>
             {doneCount}
-            <span className="text-lg text-ink-faint"> / {total}</span>
-          </p>
+            <span style={{ fontSize: "1rem", color: "var(--muted)" }}> / {total}</span>
+          </strong>
+          <span>Completed</span>
         </div>
-        <div className="border border-[var(--line)] bg-foam/80 px-5 py-5">
-          <p className="type-label">Completion</p>
-          <p className="brand-mark mt-2 text-3xl text-teal-deep">{pct}%</p>
+        <div className="stat">
+          <strong>{pct}%</strong>
+          <span>Completion</span>
         </div>
-        <div className="border border-[var(--line)] bg-foam/80 px-5 py-5">
-          <p className="type-label">Quizzes scored</p>
-          <p className="brand-mark mt-2 text-3xl text-ink">
-            {Object.keys(progress.quizScores).length}
-          </p>
+        <div className="stat">
+          <strong>{Object.keys(progress.quizScores).length}</strong>
+          <span>Quizzes scored</span>
         </div>
       </div>
 
-      <div className="mt-6 h-1.5 overflow-hidden bg-paper-2">
-        <div className="h-full bg-teal transition-all" style={{ width: `${pct}%` }} />
+      <div className="progress-bar" style={{ marginBottom: "1.5rem" }}>
+        <span style={{ width: `${pct}%` }} />
       </div>
 
-      <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-wrap gap-3">
-          <label className="flex flex-col gap-1.5 text-xs font-semibold tracking-wide text-ink-faint uppercase">
-            Track
-            <select
-              value={trackFilter}
-              onChange={(e) => setTrackFilter(e.target.value as TrackId | "all")}
-              className="min-w-[10rem] border border-[var(--line-strong)] bg-foam px-3 py-2 text-sm font-medium text-ink normal-case tracking-normal"
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.85rem",
+          justifyContent: "space-between",
+          alignItems: "end",
+          marginBottom: "1.25rem",
+        }}
+      >
+        <div className="filters" style={{ marginBottom: 0 }}>
+          <button
+            type="button"
+            className={`filter-btn ${trackFilter === "all" ? "active" : ""}`}
+            onClick={() => setTrackFilter("all")}
+          >
+            All tracks
+          </button>
+          {tracks.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`filter-btn ${trackFilter === t.id ? "active" : ""}`}
+              onClick={() => setTrackFilter(t.id)}
             >
-              <option value="all">All tracks</option>
-              {tracks.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.short}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-1.5 text-xs font-semibold tracking-wide text-ink-faint uppercase">
-            Status
-            <select
-              value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as "all" | "done" | "todo")
+              {t.short}
+            </button>
+          ))}
+        </div>
+        <div className="filters" style={{ marginBottom: 0 }}>
+          {(["all", "done", "todo"] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`filter-btn ${statusFilter === s ? "active" : ""}`}
+              onClick={() => setStatusFilter(s)}
+            >
+              {s === "all" ? "All" : s === "done" ? "Done" : "Todo"}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="ghost-btn danger-btn"
+            onClick={() => {
+              if (
+                confirm(
+                  "Reset ALL progress? Every lesson and quiz score will be cleared.",
+                )
+              ) {
+                setProgress(resetAllProgress());
               }
-              className="min-w-[10rem] border border-[var(--line-strong)] bg-foam px-3 py-2 text-sm font-medium text-ink normal-case tracking-normal"
-            >
-              <option value="all">All</option>
-              <option value="done">Completed</option>
-              <option value="todo">Not started</option>
-            </select>
-          </label>
+            }}
+          >
+            Reset all
+          </button>
         </div>
-        <button
-          type="button"
-          className="btn-ghost !border-copper/40 !text-copper"
-          onClick={() => {
-            if (
-              confirm(
-                "Reset ALL progress? Every lesson and quiz score will be cleared.",
-              )
-            ) {
-              setProgress(resetAllProgress());
-            }
-          }}
-        >
-          Reset all progress
-        </button>
       </div>
 
-      <div className="mt-8 overflow-x-auto border border-[var(--line)]">
-        <table className="progress-table w-full min-w-[720px] border-collapse text-left text-sm">
+      <div className="table-wrap progress-desktop">
+        <table className="progress-table">
           <thead>
             <tr>
               <th>Lesson</th>
@@ -169,61 +183,39 @@ export default function ProgressPage() {
             {rows.map((row) => (
               <tr key={row.slug}>
                 <td>
-                  <Link
-                    href={`/lesson/${row.slug}`}
-                    className="font-semibold text-ink hover:text-teal-deep"
-                  >
-                    {row.title}
-                  </Link>
-                  <p className="mt-0.5 text-xs text-ink-faint line-clamp-1">
+                  <Link href={`/lesson/${row.slug}`}>{row.title}</Link>
+                  <div style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 2 }}>
                     {row.subtitle}
-                  </p>
+                  </div>
                 </td>
                 <td>
-                  <span
-                    className="text-xs font-semibold tracking-wide uppercase"
-                    style={{ color: row.trackMeta.accent }}
-                  >
+                  <span className="chip chip-brand" style={{ color: row.trackMeta.accent }}>
                     {row.trackMeta.short}
                   </span>
                 </td>
-                <td className="capitalize text-ink-soft">{row.difficulty}</td>
+                <td style={{ textTransform: "capitalize" }}>{row.difficulty}</td>
                 <td>
-                  {row.done ? (
-                    <span className="bg-mint/35 px-2 py-1 text-xs font-semibold text-teal-deep">
-                      Done
-                    </span>
+                  <span className={`status-pill ${row.done ? "done" : "open"}`}>
+                    {row.done ? "Done" : "Todo"}
+                  </span>
+                </td>
+                <td>
+                  {row.score === undefined ? (
+                    "—"
                   ) : (
-                    <span className="text-xs text-ink-faint">Todo</span>
+                    <span className="status-pill quiz">{Math.round(row.score * 100)}%</span>
                   )}
                 </td>
-                <td className="font-mono text-xs text-ink-soft">
-                  {row.score === undefined
-                    ? "—"
-                    : `${Math.round(row.score * 100)}%`}
-                </td>
-                <td className="text-xs text-ink-faint">{formatDate(row.completedAt)}</td>
+                <td>{formatDate(row.completedAt)}</td>
                 <td>
-                  <div className="flex flex-wrap gap-2">
-                    <Link
-                      href={`/lesson/${row.slug}`}
-                      className="text-xs font-semibold text-teal-deep underline underline-offset-2"
-                    >
-                      Open
-                    </Link>
+                  <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
+                    <Link href={`/lesson/${row.slug}`}>Open</Link>
                     {(row.done || row.score !== undefined) && (
                       <button
                         type="button"
-                        className="text-xs font-semibold text-copper underline underline-offset-2"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Reset “${row.title}”? Completion and quiz score will be cleared.`,
-                            )
-                          ) {
-                            setProgress(resetLesson(row.slug));
-                          }
-                        }}
+                        className="ghost-btn danger-btn"
+                        style={{ padding: "0.25rem 0.65rem", fontSize: "0.75rem" }}
+                        onClick={() => onResetLesson(row.slug, row.title)}
                       >
                         Reset
                       </button>
@@ -234,13 +226,55 @@ export default function ProgressPage() {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-ink-soft">
+                <td colSpan={7} className="empty">
                   No lessons match these filters.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="progress-mobile">
+        {rows.map((row) => (
+          <div key={row.slug} className="progress-mobile-card">
+            <div className="row">
+              <Link href={`/lesson/${row.slug}`} style={{ fontWeight: 700 }}>
+                {row.title}
+              </Link>
+              <span className={`status-pill ${row.done ? "done" : "open"}`}>
+                {row.done ? "Done" : "Todo"}
+              </span>
+            </div>
+            <div className="row" style={{ color: "var(--muted)", fontSize: "0.82rem" }}>
+              <span>{row.trackMeta.short} · {row.difficulty}</span>
+              <span>
+                {row.score === undefined ? "No quiz" : `${Math.round(row.score * 100)}% quiz`}
+              </span>
+            </div>
+            <div className="row">
+              <span style={{ fontSize: "0.78rem", color: "var(--muted)" }}>
+                {formatDate(row.completedAt)}
+              </span>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <Link href={`/lesson/${row.slug}`} className="ghost-btn" style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}>
+                  Open
+                </Link>
+                {(row.done || row.score !== undefined) && (
+                  <button
+                    type="button"
+                    className="ghost-btn danger-btn"
+                    style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}
+                    onClick={() => onResetLesson(row.slug, row.title)}
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+        {rows.length === 0 && <div className="empty">No lessons match these filters.</div>}
       </div>
     </div>
   );

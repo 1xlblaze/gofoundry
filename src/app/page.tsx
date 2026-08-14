@@ -27,117 +27,106 @@ const audiences = [
 export default function HomePage() {
   return (
     <div>
-      <section className="relative min-h-[calc(100vh-3.75rem)] overflow-hidden">
-        <div className="hero-plane" aria-hidden>
-          <HeroVisual />
+      <section className="shell hero">
+        <div className="hero-copy reveal">
+          <p className="kicker">Foundry HEAT · Interview-ready Go</p>
+          <h1>GoFoundry</h1>
+          <p className="lede reveal-delay-1">
+            The Go portal that teaches how to think — not just what to paste.
+            Diagrams, A/B trade-offs, quizzes, and a progress ledger you can reset.
+          </p>
+          <div className="hero-actions reveal-delay-2">
+            <Link href="/learn" className="primary-btn">
+              Start curriculum
+            </Link>
+            <Link href="/progress" className="secondary-btn">
+              View progress
+            </Link>
+          </div>
         </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3.75rem)] max-w-6xl items-end px-6 pb-16 pt-20 sm:items-center sm:pb-20 sm:pt-10">
-          <div className="max-w-2xl">
-            <p
-              className="brand-mark animate-rise text-[var(--text-display)]"
-              style={{
-                background:
-                  "linear-gradient(105deg, #07151a 15%, #0b7a6e 50%, #07151a 85%)",
-                backgroundSize: "200% auto",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-                animation:
-                  "rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both, sheen 8s ease infinite alternate",
-              }}
-            >
-              GoFoundry
-            </p>
-            <h1 className="type-title animate-rise-delay mt-6 max-w-xl text-[clamp(1.55rem,3vw,2.2rem)] text-ink">
-              The Go portal that teaches how to think — not just what to paste.
-            </h1>
-            <p className="animate-rise-delay-2 mt-5 max-w-md text-[var(--text-lead)] leading-relaxed text-ink-soft">
-              {allLessons.length} lessons · HEAT method · diagrams · A/B trade-offs ·
-              quizzes · progress you can reset and redo.
-            </p>
-            <div className="animate-rise-delay-2 mt-9 flex flex-wrap gap-3">
-              <Link href="/learn" className="btn-primary">
-                Start curriculum
-              </Link>
-              <Link href="/progress" className="btn-ghost">
-                View progress
-              </Link>
+        <div className="panel hero-panel float-y reveal-delay-2">
+          <div style={{ height: "11rem", borderRadius: "12px", overflow: "hidden", opacity: 0.9 }}>
+            <HeroVisual />
+          </div>
+          <div className="stat-row">
+            <div className="stat">
+              <strong>{allLessons.length}</strong>
+              <span>Lessons</span>
+            </div>
+            <div className="stat">
+              <strong>8</strong>
+              <span>Tracks</span>
+            </div>
+            <div className="stat">
+              <strong>HEAT</strong>
+              <span>Method</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="relative border-t border-[var(--line)] bg-foam/55 py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="type-label">USP</p>
-          <h2 className="type-title mt-3 text-[var(--text-h2)] text-ink">
-            Foundry HEAT — one operating system for Go
-          </h2>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-soft">
-            Hear → Etch → Anchor → Temper. Students use it to pass interviews.
-            Experienced engineers use it to design systems with explicit trade-offs.
-          </p>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="shell section">
+        <div className="usp-banner reveal">
+          <div>
+            <h2>Foundry HEAT — one operating system for Go</h2>
+            <p>
+              Hear → Etch → Anchor → Temper. Students use it to pass interviews.
+              Experienced engineers use it to design systems with explicit trade-offs.
+            </p>
+          </div>
+          <div className="heat-grid stagger">
             {heat.map((h) => (
-              <div key={h.k} className="border border-[var(--line)] bg-foam/80 px-5 py-6">
-                <p className="brand-mark text-4xl text-teal-deep">{h.k}</p>
-                <p className="type-title mt-3 text-lg">{h.name}</p>
-                <p className="mt-2 text-sm text-ink-soft">{h.blurb}</p>
+              <div key={h.k} className="heat-step">
+                <strong>
+                  {h.k} · {h.name}
+                </strong>
+                <span>{h.blurb}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative border-t border-[var(--line)] py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="type-label">Built for both ends of the ladder</p>
-          <h2 className="type-title mt-3 text-[var(--text-h2)] text-ink">
-            One product. Two journeys.
-          </h2>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {audiences.map((a) => (
-              <div key={a.title} className="border-t border-[var(--line-strong)] pt-5">
-                <h3 className="type-title text-lg text-ink">{a.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink-soft">{a.body}</p>
-              </div>
-            ))}
+      <section className="shell section">
+        <div className="section-head">
+          <div>
+            <h2>Built for both ends of the ladder</h2>
+            <p>One product. Two journeys. Same rigor.</p>
           </div>
+        </div>
+        <div className="grid-cards stagger">
+          {audiences.map((a) => (
+            <div key={a.title} className="card">
+              <h3>{a.title}</h3>
+              <p>{a.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="relative border-t border-[var(--line)] bg-foam/40 py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="type-label">Tracks</p>
-          <h2 className="type-title mt-3 text-[var(--text-h2)] text-ink">
-            Eight forges. {allLessons.length} lessons.
-          </h2>
-          <div className="mt-14 grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
-            {tracks.map((t, i) => (
-              <Link
-                key={t.id}
-                href={`/track/${t.id}`}
-                className="group block border-t pt-6 transition"
-                style={{ borderTopColor: t.accent }}
-              >
-                <div className="flex items-baseline justify-between gap-3">
-                  <p className="type-label" style={{ color: t.accent }}>
-                    {t.short}
-                  </p>
-                  <span className="font-mono text-xs text-ink-faint">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="type-title mt-3 text-[1.35rem] text-ink transition-colors group-hover:text-teal-deep">
-                  {t.title}
-                </h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-soft">
-                  {t.description}
-                </p>
-              </Link>
-            ))}
+      <section className="shell section" style={{ paddingBottom: "4rem" }}>
+        <div className="section-head">
+          <div>
+            <h2>Eight forges. {allLessons.length} lessons.</h2>
+            <p>DSA through HLD — pick a track and start forging.</p>
           </div>
+          <Link href="/learn" className="ghost-btn">
+            Full curriculum →
+          </Link>
+        </div>
+        <div className="grid-tracks stagger">
+          {tracks.map((t) => (
+            <Link key={t.id} href={`/track/${t.id}`} className="track-card">
+              <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.55rem" }}>
+                <span className="chip chip-brand" style={{ color: t.accent, borderColor: `${t.accent}33` }}>
+                  {t.short}
+                </span>
+              </div>
+              <h3>{t.title}</h3>
+              <p>{t.description}</p>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

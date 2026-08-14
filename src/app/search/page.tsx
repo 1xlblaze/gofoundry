@@ -9,40 +9,37 @@ export default function SearchPage() {
   const results = useMemo(() => searchLessons(q), [q]);
 
   return (
-    <div className="reading-rail mx-auto px-6 py-14 sm:py-16">
-      <p className="type-label">Find lessons</p>
-      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">Search</h1>
-      <p className="mt-4 text-[var(--text-lead)] leading-relaxed text-ink-soft">
-        DSA, concepts, internals, LLD, and HLD — one index.
-      </p>
+    <div className="shell" style={{ maxWidth: 760, padding: "2.5rem 0 3.5rem" }}>
+      <div className="page-hero reveal">
+        <h1>Search</h1>
+        <p>DSA, concepts, internals, LLD, and HLD — one index.</p>
+      </div>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="dijkstra, garbage collector, rate limiter…"
-        className="mt-10 w-full border-b border-[var(--line-strong)] bg-transparent py-4 text-lg outline-none placeholder:text-ink-faint focus:border-teal"
+        className="search-box reveal-delay-1"
         autoFocus
       />
-      <ul className="mt-6">
+      <ul style={{ listStyle: "none", padding: 0, margin: "1.25rem 0 0" }} className="stagger">
         {results.map((lesson) => {
           const track = getTrack(lesson.track);
           return (
-            <li key={lesson.slug} className="border-b border-[var(--line)]">
-              <Link href={`/lesson/${lesson.slug}`} className="group block py-5">
-                <p className="type-label" style={{ color: track.accent }}>
-                  {track.short}
-                </p>
-                <p className="type-title mt-2 text-[1.15rem] text-ink transition-colors group-hover:text-teal-deep">
-                  {lesson.title}
-                </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-                  {lesson.subtitle}
-                </p>
+            <li key={lesson.slug}>
+              <Link href={`/lesson/${lesson.slug}`} className="lesson-card" style={{ marginBottom: "0.75rem" }}>
+                <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.35rem" }}>
+                  <span className="chip chip-brand" style={{ color: track.accent }}>
+                    {track.short}
+                  </span>
+                </div>
+                <h3>{lesson.title}</h3>
+                <p>{lesson.subtitle}</p>
               </Link>
             </li>
           );
         })}
         {q.trim() && results.length === 0 && (
-          <li className="py-10 text-ink-soft">No lessons matched “{q}”.</li>
+          <li className="empty">No lessons matched “{q}”.</li>
         )}
       </ul>
     </div>

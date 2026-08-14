@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
-import { Syne, Literata, JetBrains_Mono, Manrope } from "next/font/google";
+import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
-const display = Syne({
+const display = Outfit({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700", "800"],
 });
 
-const body = Manrope({
+const body = DM_Sans({
   variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const serif = Literata({
-  variable: "--font-serif",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -24,7 +18,7 @@ const serif = Literata({
 const mono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -33,30 +27,50 @@ export const metadata: Metadata = {
     template: "%s · GoFoundry",
   },
   description:
-    "Complete Golang curriculum: data structures & algorithms, language concepts, runtime internals, low-level design, and high-level system design — with quizzes and progress tracking.",
+    "The modern Go learning portal: HEAT method, diagrams, A/B trade-offs, quizzes, and progress tracking — for students and experienced engineers.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${display.variable} ${body.variable} ${serif.variable} ${mono.variable} h-full antialiased`}
+      className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <div className="site-grid" aria-hidden />
-        <div className="grain" aria-hidden />
-        <div className="shell flex min-h-full flex-1 flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-[var(--line)] px-6 py-12">
-            <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <p className="brand-mark text-2xl text-ink">GoFoundry</p>
-              <p className="max-w-sm text-sm leading-relaxed text-ink-soft">
-                Interview-ready Go — algorithms through distributed design.
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
+        <footer className="footer">
+          <div
+            className="shell"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "1rem",
+              justifyContent: "space-between",
+              alignItems: "end",
+            }}
+          >
+            <div>
+              <p className="type-display" style={{ fontSize: "1.35rem", margin: 0 }}>
+                GoFoundry
+              </p>
+              <p style={{ margin: "0.4rem 0 0", maxWidth: "22rem" }}>
+                Think · diagram · trade off · ship — interview-ready Go.
               </p>
             </div>
-          </footer>
-        </div>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              HEAT method · 8 tracks
+            </p>
+          </div>
+        </footer>
       </body>
     </html>
   );

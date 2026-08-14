@@ -83,7 +83,7 @@ export function LessonQuiz({
               })}
             </div>
             {submitted && (
-              <p className="type-serif mt-3 text-sm text-ink-soft">{q.explanation}</p>
+              <p className="mt-3 text-sm text-ink-soft">{q.explanation}</p>
             )}
           </fieldset>
         ))}
@@ -93,7 +93,7 @@ export function LessonQuiz({
           type="button"
           onClick={onSubmit}
           disabled={Object.keys(answers).length < questions.length}
-          className="btn-primary mt-10 disabled:cursor-not-allowed disabled:opacity-40"
+          className="primary-btn mt-10 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Submit quiz
         </button>

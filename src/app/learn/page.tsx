@@ -24,25 +24,21 @@ export default function LearnPage() {
   const pct = total ? Math.round((done / total) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
-      <p className="type-label">All tracks</p>
-      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">Curriculum</h1>
-      <p className="mt-4 max-w-xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
-        Work the tracks in any order. Progress stays in this browser.
-      </p>
+    <div className="shell" style={{ padding: "2.5rem 0 3.5rem" }}>
+      <div className="page-hero reveal">
+        <h1>Curriculum</h1>
+        <p>Work the tracks in any order. Progress stays in this browser.</p>
+      </div>
 
-      <div className="mt-10 max-w-xl">
-        <div className="mb-2.5 flex items-end justify-between text-sm">
-          <span className="font-semibold tracking-tight text-ink">
+      <div className="reveal-delay-1" style={{ maxWidth: "28rem", marginBottom: "2rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.45rem", fontSize: "0.9rem" }}>
+          <span style={{ fontWeight: 650 }}>
             {done} / {total} complete
           </span>
-          <span className="font-mono text-ink-faint">{pct}%</span>
+          <span style={{ color: "var(--muted)", fontFamily: "var(--font-mono)" }}>{pct}%</span>
         </div>
-        <div className="h-1.5 overflow-hidden bg-paper-2">
-          <div
-            className="h-full bg-teal transition-all duration-500"
-            style={{ width: `${pct}%` }}
-          />
+        <div className="progress-bar">
+          <span style={{ width: `${pct}%` }} />
         </div>
       </div>
 
