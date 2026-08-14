@@ -56,18 +56,21 @@ export async function POST(request: Request) {
       body: JSON.stringify(payload),
     });
 
-    if (response.ok) {
+    if (response.ok || response.status === 201) {
       return NextResponse.json({ ok: true });
     }
 
     const errorBody = await response.text();
     const isDuplicate =
-      response.status === 409 || errorBody.includes("23505") || /duplicate key/i.test(errorBody);
+      response.status === 409 ||
+      errorBody.includes("23505") ||
+      /duplicate key|unique constraint/i.test(errorBody);
 
     if (isDuplicate) {
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, alreadyJoined: true });
     }
 
+    console.error("waitlist insert failed", response.status, errorBody.slice(0, 500));
     return NextResponse.json(
       { ok: false, error: "We could not join the waitlist. Please try again." },
       { status: 502 },
