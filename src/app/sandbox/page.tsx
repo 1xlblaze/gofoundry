@@ -4,82 +4,96 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Sandbox architecture",
   description:
-    "How GoFoundry runs Go today via the Playground proxy, and what the Pro Docker sandbox will unlock for -race, benchmarks, and escape analysis.",
+    "GoFoundry's gVisor-backed diagnostic execution cluster: escape analysis, -race, goleak, and benchmark gates.",
 };
+
+const pipeline = [
+  { step: "go vet", detail: "Static analysis before compile" },
+  { step: "go build -gcflags=\"-m -m\"", detail: "Escape analysis → Monaco markers" },
+  { step: "go test -race", detail: "Race detector under concurrency" },
+  { step: "goleak.VerifyNone", detail: "Goroutine leak assertions" },
+  { step: "go test -benchmem", detail: "ns/op, B/op, allocs/op telemetry" },
+];
 
 export default function SandboxPage() {
   return (
-    <div className="shell" style={{ padding: "2.5rem 0 4rem", maxWidth: 820 }}>
+    <div className="shell" style={{ padding: "2.5rem 0 4rem", maxWidth: 900 }}>
       <div className="page-hero">
-        <p className="kicker">Execution model</p>
-        <h1>How Go runs on GoFoundry</h1>
+        <p className="kicker">Execution cluster</p>
+        <h1>Sandboxed diagnostic execution engine</h1>
         <p>
-          You asked whether we can embed an open-source Go IDE or host a real runtime
-          sandbox. Short answer: <strong>yes — and we already do the first layer.</strong>
+          GoFoundry runs staff-grade diagnostics in an isolated pipeline — local Go
+          execution in development, gVisor-backed workers in production.
         </p>
       </div>
 
       <section className="panel prose-block" style={{ marginBottom: "1rem" }}>
-        <h3>Today — Go Playground proxy (shipped)</h3>
-        <p>
-          The Lab editor (Monaco) sends code to our <code>/api/playground</code> route, which
-          proxies the official Go Playground (<code>play.golang.org</code>). You get:
-        </p>
-        <ul>
-          <li>Instant compile + run for algorithmic and most concurrency demos</li>
-          <li>
-            Real allocation measurements via a <code>runtime.ReadMemStats</code> harness (not fake
-            gauges)
-          </li>
-          <li>Zero infra cost and strong isolation (Google hosts the runners)</li>
+        <h3>Architecture</h3>
+        <pre className="sandbox-arch-diagram">{`User Code Submission
+       │
+       ▼
+[Task Queue: Redis Streams / in-memory fallback]
+       │
+       ▼
+[Worker Node (gVisor runsc / Linux cgroups v2)]
+       ├─ Step 1: go vet ./...
+       ├─ Step 2: go build -gcflags="-m -m" (parse escapes)
+       ├─ Step 3: go test -race -v -run TestCorrectness
+       ├─ Step 4: go test -bench=. -benchmem -benchtime=500ms
+       └─ Step 5: JSON telemetry → SSE stream to Next.js`}</pre>
+      </section>
+
+      <section className="panel prose-block" style={{ marginBottom: "1rem" }}>
+        <h3>Diagnostic pipeline (shipped)</h3>
+        <ul className="sandbox-pipeline">
+          {pipeline.map((item) => (
+            <li key={item.step}>
+              <code>{item.step}</code>
+              <span>{item.detail}</span>
+            </li>
+          ))}
         </ul>
         <p>
-          Limits: no <code>-race</code>, no full <code>go test -bench</code>, no live{" "}
-          <code>-gcflags=-m</code> dumps. Those need a private compiler toolchain.
+          Results stream via <code>POST /api/diagnostics</code> +{" "}
+          <code>GET /api/diagnostics/stream</code> (Server-Sent Events). Escape
+          analysis markers map directly to Monaco editor annotations.
         </p>
       </section>
 
       <section className="panel prose-block" style={{ marginBottom: "1rem" }}>
-        <h3>Pro path — Docker / Firecracker sandbox (roadmap)</h3>
-        <p>For Staff-grade diagnostics we will run ephemeral containers that execute:</p>
+        <h3>Deployment modes</h3>
         <ul>
           <li>
-            <code>go test -race</code> with leak checks (e.g. goleak)
+            <strong>Local executor</strong> — shells out to <code>go</code> in ephemeral temp
+            dirs (default when <code>SANDBOX_WORKER_URL</code> is unset)
           </li>
           <li>
-            <code>go test -bench=. -benchmem</code> → real ns/op, B/op, allocs/op
+            <strong>Worker cluster</strong> — run <code>worker/</code> on port 8081 with
+            gVisor/cgroup isolation for production
           </li>
           <li>
-            <code>go build -gcflags=&quot;-m -m&quot;</code> → live escape analysis
+            <strong>Playground fallback</strong> — <code>/api/playground</code> for free-tier
+            quick runs without full diagnostics
           </li>
         </ul>
-        <p>
-          That requires paid compute, strict CPU/memory/network limits, and a queue — which is why
-          it sits behind the Pro tier rather than the free Playground path.
-        </p>
       </section>
 
       <section className="panel prose-block" style={{ marginBottom: "1.5rem" }}>
-        <h3>Open-source IDE options we evaluated</h3>
-        <ul>
-          <li>
-            <strong>Monaco + Playground</strong> (what we ship) — best UX/cost for free tier
-          </li>
-          <li>
-            <strong>code-server / Jupyter-go</strong> — heavy; better for Team workspaces later
-          </li>
-          <li>
-            <strong>Yaegi / TinyGo WASM</strong> — incomplete stdlib/concurrency; not staff-faithful
-          </li>
-        </ul>
+        <h3>Database schema</h3>
+        <p>
+          PostgreSQL tables <code>users</code>, <code>problems</code>,{" "}
+          <code>heat_submissions</code>, and <code>diagnostic_jobs</code> are defined in{" "}
+          <code>db/migrations/001_platform_schema.sql</code>. Set{" "}
+          <code>DATABASE_URL</code> to persist submissions.
+        </p>
       </section>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-        <Link href="/lab" className="primary-btn">
-          Open the Lab
+        <Link href="/problems/dsa-sliding-window-maximum" className="primary-btn">
+          Try staff problem
         </Link>
-        <Link href="/pricing" className="secondary-btn">
-          Pro sandbox waitlist
+        <Link href="/lab" className="secondary-btn">
+          Open the Lab
         </Link>
         <Link href="/heat" className="ghost-btn">
           HEAT canvas

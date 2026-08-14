@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { allLessons, freeLessons, getTrack, tracks } from "@/content";
 import { HeroSnippet } from "@/components/HeroSnippet";
+import { BenchmarkHero } from "@/components/BenchmarkHero";
 import { HeroVisual } from "@/components/HeroVisual";
 import { MotionRoot } from "@/components/MotionRoot";
 import { pillars } from "@/content/pillars";
@@ -45,6 +46,7 @@ export default function HomePage() {
             </Link>
           </div>
           <HeroSnippet />
+          <BenchmarkHero />
         </div>
       </section>
 
