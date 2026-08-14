@@ -535,6 +535,134 @@ function UrlShortenerArch() {
   );
 }
 
+function ChatArch() {
+  return (
+    <Frame title="Chat / messaging — HLD" caption="Gateway holds sockets · pub/sub bridges servers" viewBox="0 0 800 380">
+      <rect width="800" height="380" fill="#ecf5f3" />
+      <NodeBox x={30} y={40} w={100} h={44} label="Client A" />
+      <NodeBox x={30} y={120} w={100} h={44} label="Client B" />
+      <NodeBox x={180} y={70} w={120} h={60} label="WS Gateway" sub="sticky / registry" fill="#ccfbf1" />
+      <NodeBox x={360} y={40} w={120} h={50} label="Pub/Sub" sub="Redis/NATS" />
+      <NodeBox x={360} y={120} w={120} h={50} label="Msg svc" sub="persist" fill="#ccfbf1" />
+      <NodeBox x={540} y={80} w={120} h={50} label="Store" sub="messages" />
+      <NodeBox x={540} y={180} w={120} h={50} label="Push" sub="offline" />
+      <NodeBox x={180} y={220} w={120} h={50} label="Presence" sub="online set" />
+      <Arrow x1={130} y1={62} x2={175} y2={90} />
+      <Arrow x1={130} y1={142} x2={175} y2={110} />
+      <Arrow x1={300} y1={100} x2={355} y2={65} />
+      <Arrow x1={300} y1={110} x2={355} y2={145} />
+      <Arrow x1={480} y1={145} x2={535} y2={105} />
+      <Arrow x1={480} y1={155} x2={535} y2={200} />
+      <text x="400" y="330" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        fan-out online via pub/sub · push for offline devices
+      </text>
+    </Frame>
+  );
+}
+
+function VideoArch() {
+  return (
+    <Frame title="Video streaming — HLD" caption="Upload → transcode → CDN · watch path is edge-heavy" viewBox="0 0 800 400">
+      <rect width="800" height="400" fill="#ecf5f3" />
+      <text x="40" y="32" fill={ember} fontSize="11" fontWeight="700">UPLOAD</text>
+      <text x="40" y="210" fill={signal} fontSize="11" fontWeight="700">WATCH</text>
+      <NodeBox x={30} y={48} w={90} h={40} label="Creator" />
+      <NodeBox x={140} y={48} w={100} h={40} label="Upload" />
+      <NodeBox x={270} y={48} w={110} h={40} label="Object store" sub="raw" fill="#ccfbf1" />
+      <NodeBox x={410} y={48} w={110} h={40} label="Queue" />
+      <NodeBox x={550} y={48} w={120} h={40} label="Transcoder" sub="ABR ladder" />
+      <NodeBox x={690} y={48} w={90} h={40} label="Origin" sub="HLS" fill="#ccfbf1" />
+      <NodeBox x={30} y={230} w={90} h={40} label="Viewer" />
+      <NodeBox x={150} y={230} w={120} h={40} label="CDN edge" fill="#ccfbf1" />
+      <NodeBox x={310} y={230} w={120} h={40} label="Player" sub="ABR switch" />
+      <Arrow x1={120} y1={68} x2={135} y2={68} color={ember} />
+      <Arrow x1={240} y1={68} x2={265} y2={68} color={ember} />
+      <Arrow x1={380} y1={68} x2={405} y2={68} color={ember} />
+      <Arrow x1={520} y1={68} x2={545} y2={68} color={ember} />
+      <Arrow x1={670} y1={68} x2={685} y2={68} color={ember} />
+      <Arrow x1={120} y1={250} x2={145} y2={250} />
+      <Arrow x1={270} y1={250} x2={305} y2={250} />
+      <path d="M735 88 L735 200 L210 200 L210 230" fill="none" stroke={signal} strokeWidth="2" strokeDasharray="6 5" />
+      <text x="400" y="360" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        origin shielded · edges serve segments after first miss
+      </text>
+    </Frame>
+  );
+}
+
+function RideArch() {
+  return (
+    <Frame title="Ride-sharing dispatch — HLD" caption="Location stream → geo index → atomic match" viewBox="0 0 800 380">
+      <rect width="800" height="380" fill="#ecf5f3" />
+      <NodeBox x={30} y={60} w={100} h={44} label="Driver" sub="GPS stream" />
+      <NodeBox x={30} y={160} w={100} h={44} label="Rider" />
+      <NodeBox x={180} y={100} w={120} h={50} label="Location" sub="ingest" fill="#ccfbf1" />
+      <NodeBox x={350} y={60} w={130} h={50} label="Geo index" sub="Redis GEO" />
+      <NodeBox x={350} y={160} w={130} h={50} label="Matcher" sub="atomic claim" fill="#ccfbf1" />
+      <NodeBox x={540} y={110} w={120} h={50} label="Trip svc" sub="state machine" />
+      <NodeBox x={690} y={110} w={90} h={50} label="Pricing" sub="surge" />
+      <Arrow x1={130} y1={82} x2={175} y2={115} />
+      <Arrow x1={130} y1={182} x2={175} y2={140} />
+      <Arrow x1={300} y1={120} x2={345} y2={90} />
+      <Arrow x1={300} y1={135} x2={345} y2={175} />
+      <Arrow x1={480} y1={100} x2={535} y2={125} />
+      <Arrow x1={480} y1={185} x2={535} y2={145} />
+      <Arrow x1={660} y1={135} x2={685} y2={135} />
+      <text x="400" y="300" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        claim driver with conditional write · avoid double-booking
+      </text>
+    </Frame>
+  );
+}
+
+function PaymentArch() {
+  return (
+    <Frame title="Payments — HLD" caption="Idempotency key · ledger txn · async settlement" viewBox="0 0 800 380">
+      <rect width="800" height="380" fill="#ecf5f3" />
+      <NodeBox x={30} y={100} w={100} h={50} label="Client" sub="Idem-Key" />
+      <NodeBox x={160} y={100} w={110} h={50} label="API" />
+      <NodeBox x={300} y={70} w={150} h={110} label="DB txn" sub="ledger + outbox" fill="#ccfbf1" />
+      <NodeBox x={500} y={40} w={130} h={50} label="Worker" />
+      <NodeBox x={500} y={140} w={130} h={50} label="Processor" sub="Stripe/etc" />
+      <NodeBox x={670} y={90} w={100} h={50} label="Webhook" />
+      <NodeBox x={300} y={240} w={150} h={50} label="Reconcile" sub="nightly" />
+      <Arrow x1={130} y1={125} x2={155} y2={125} />
+      <Arrow x1={270} y1={125} x2={295} y2={125} />
+      <Arrow x1={450} y1={100} x2={495} y2={70} />
+      <Arrow x1={565} y1={90} x2={565} y2={135} />
+      <Arrow x1={630} y1={165} x2={665} y2={125} />
+      <text x="400" y="340" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        never trust sync HTTP alone · webhook + reconciliation = truth
+      </text>
+    </Frame>
+  );
+}
+
+function FeedArch() {
+  return (
+    <Frame title="News feed — HLD" caption="Hybrid fan-out: push for normals · pull for celebrities" viewBox="0 0 800 380">
+      <rect width="800" height="380" fill="#ecf5f3" />
+      <NodeBox x={30} y={120} w={100} h={50} label="Poster" />
+      <NodeBox x={160} y={120} w={110} h={50} label="Post svc" />
+      <NodeBox x={310} y={40} w={140} h={50} label="Fan-out worker" sub="small graphs" fill="#ccfbf1" />
+      <NodeBox x={310} y={200} w={140} h={50} label="Pull path" sub="celebrity" fill="#ccfbf1" />
+      <NodeBox x={500} y={40} w={130} h={50} label="Feed store" sub="timelines" />
+      <NodeBox x={500} y={200} w={130} h={50} label="Content" sub="posts" />
+      <NodeBox x={670} y={120} w={100} h={50} label="Reader" />
+      <Arrow x1={130} y1={145} x2={155} y2={145} />
+      <Arrow x1={270} y1={130} x2={305} y2={75} color={ember} />
+      <Arrow x1={270} y1={160} x2={305} y2={215} />
+      <Arrow x1={450} y1={65} x2={495} y2={65} color={ember} />
+      <Arrow x1={450} y1={225} x2={495} y2={225} />
+      <Arrow x1={630} y1={65} x2={700} y2={120} color={ember} />
+      <Arrow x1={630} y1={225} x2={700} y2={155} />
+      <text x="400" y="320" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        ranking blends recency + affinity offline · serve cached top of feed
+      </text>
+    </Frame>
+  );
+}
+
 export function Diagram({ kind, title, caption }: Props) {
   switch (kind) {
     case "heat-cycle":
@@ -561,6 +689,16 @@ export function Diagram({ kind, title, caption }: Props) {
       return <HashMapBuckets />;
     case "url-shortener-arch":
       return <UrlShortenerArch />;
+    case "chat-arch":
+      return <ChatArch />;
+    case "video-arch":
+      return <VideoArch />;
+    case "ride-arch":
+      return <RideArch />;
+    case "payment-arch":
+      return <PaymentArch />;
+    case "feed-arch":
+      return <FeedArch />;
     default:
       return null;
   }

@@ -22,7 +22,12 @@ export type DiagramKind =
   | "gpm-scheduler"
   | "hash-map-buckets"
   | "heat-cycle"
-  | "url-shortener-arch";
+  | "url-shortener-arch"
+  | "chat-arch"
+  | "video-arch"
+  | "ride-arch"
+  | "payment-arch"
+  | "feed-arch";
 
 export type ContentBlock =
   | { type: "prose"; title?: string; body: string }

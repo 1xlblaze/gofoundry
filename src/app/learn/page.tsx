@@ -9,10 +9,14 @@ export default function LearnPage() {
   const [progress, setProgress] = useState<ProgressState>({
     completed: [],
     quizScores: {},
+    completedAt: {},
   });
 
   useEffect(() => {
-    setProgress(loadProgress());
+    const refresh = () => setProgress(loadProgress());
+    refresh();
+    window.addEventListener("gofoundry-progress", refresh);
+    return () => window.removeEventListener("gofoundry-progress", refresh);
   }, []);
 
   const done = progress.completed.length;

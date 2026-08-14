@@ -4,11 +4,10 @@ import { AuthButtons } from "@/components/AuthButtons";
 
 const links = [
   { href: "/learn", label: "Curriculum" },
+  { href: "/progress", label: "Progress" },
   { href: "/track/method", label: "HEAT" },
   { href: "/track/dsa", label: "DSA" },
   { href: "/problems", label: "Problems" },
-  { href: "/track/web", label: "Web" },
-  { href: "/track/lld", label: "LLD" },
   { href: "/track/hld", label: "HLD" },
   { href: "/search", label: "Search" },
 ];
