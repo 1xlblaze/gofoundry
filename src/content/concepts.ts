@@ -1559,6 +1559,7 @@ func Squares(ctx context.Context, in <-chan int) <-chan int {
         code: `package account
 
 import (
+	"context"
 	"errors"
 	"fmt"
 )
@@ -1605,7 +1606,7 @@ func HTTPStatus(err error) int {
       {
         type: "callout",
         tone: "warn",
-        body: "The sample's HTTPStatus needs context imported when placed in a standalone file. More importantly, never compare wrapped errors with == or parse Error() text. Use errors.Is for semantic identity and errors.As for typed details.",
+        body: "Never compare wrapped errors with == or parse Error() text. Use errors.Is for semantic identity and errors.As for typed details; reserve message text for human diagnostics.",
       },
       {
         type: "steps",
