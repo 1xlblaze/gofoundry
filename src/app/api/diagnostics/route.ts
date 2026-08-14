@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { saveHeatSubmission } from "@/lib/db";
+import { saveHeatSubmission, saveDiagnosticJob, updateDiagnosticJob } from "@/lib/db";
 import {
   createDiagnosticJob,
   deriveSubmissionStatus,
+  executeDiagnosticJob,
 } from "@/lib/platform/diagnostics";
+import { enqueueDiagnosticJob } from "@/lib/platform/queue";
 import type { DiagnosticMode } from "@/lib/platform/types";
 
 const VALID_MODES: DiagnosticMode[] = [
@@ -57,47 +59,73 @@ export async function POST(request: Request) {
       ? (body.anchorInvariants as Record<string, unknown>)
       : {};
 
-  const waitForComplete = new Promise<void>((resolve) => {
-    const check = () => {
-      if (job.status === "completed" || job.status === "failed") {
-        resolve();
-        return;
-      }
-      setTimeout(check, 100);
-    };
-    check();
+  await saveDiagnosticJob({
+    id: job.id,
+    userId: session?.user?.id,
+    problemId,
+    code,
+    modes,
   });
 
-  void waitForComplete.then(async () => {
-    const status = deriveSubmissionStatus(job.events);
-    const benchEvent = job.events.find((e) => e.event === "BENCHMARK_COMPLETE");
+  void enqueueDiagnosticJob({
+    jobId: job.id,
+    problemId,
+    code,
+    modes,
+  }).then(() => executeDiagnosticJob(job));
 
-    await saveHeatSubmission({
-      userId: session?.user?.id,
-      problemId,
-      hearNotes,
-      etchDiagram,
-      anchorInvariants,
-      temperCode: code,
-      status,
-      benchNsPerOp:
-        benchEvent?.event === "BENCHMARK_COMPLETE"
-          ? Math.round(benchEvent.nsPerOp)
-          : undefined,
-      benchAllocsPerOp:
-        benchEvent?.event === "BENCHMARK_COMPLETE"
-          ? Math.round(benchEvent.allocsPerOp)
-          : undefined,
-      benchBytesPerOp:
-        benchEvent?.event === "BENCHMARK_COMPLETE"
-          ? Math.round(benchEvent.bytesPerOp)
-          : undefined,
-      diagnosticEvents: job.events,
-    });
+  void jobCompletionWatcher(job, {
+    userId: session?.user?.id,
+    problemId,
+    hearNotes,
+    etchDiagram,
+    anchorInvariants,
+    temperCode: code,
   });
 
   return NextResponse.json({
     jobId: job.id,
     streamUrl: `/api/diagnostics/stream?jobId=${job.id}`,
   });
+}
+
+function jobCompletionWatcher(
+  job: ReturnType<typeof createDiagnosticJob>,
+  submission: {
+    userId?: string;
+    problemId: string;
+    hearNotes: Record<string, unknown>;
+    etchDiagram: Record<string, unknown>;
+    anchorInvariants: Record<string, unknown>;
+    temperCode: string;
+  },
+) {
+  const check = async () => {
+    if (job.status === "completed" || job.status === "failed") {
+      const status = deriveSubmissionStatus(job.events);
+      const benchEvent = job.events.find((e) => e.event === "BENCHMARK_COMPLETE");
+
+      await updateDiagnosticJob(job.id, job.status, job.events);
+      await saveHeatSubmission({
+        ...submission,
+        status,
+        benchNsPerOp:
+          benchEvent?.event === "BENCHMARK_COMPLETE"
+            ? Math.round(benchEvent.nsPerOp)
+            : undefined,
+        benchAllocsPerOp:
+          benchEvent?.event === "BENCHMARK_COMPLETE"
+            ? Math.round(benchEvent.allocsPerOp)
+            : undefined,
+        benchBytesPerOp:
+          benchEvent?.event === "BENCHMARK_COMPLETE"
+            ? Math.round(benchEvent.bytesPerOp)
+            : undefined,
+        diagnosticEvents: job.events,
+      });
+      return;
+    }
+    setTimeout(check, 200);
+  };
+  check();
 }

@@ -99,3 +99,48 @@ export async function saveHeatSubmission(input: {
     createdAt: row.created_at,
   };
 }
+
+export async function saveDiagnosticJob(input: {
+  id: string;
+  userId?: string;
+  problemId: string;
+  code: string;
+  modes: string[];
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.query(
+    `INSERT INTO diagnostic_jobs (id, user_id, problem_id, code, modes, status)
+     VALUES ($1, $2, $3, $4, $5, 'queued')`,
+    [input.id, input.userId ?? null, input.problemId, input.code, input.modes],
+  );
+}
+
+export async function updateDiagnosticJob(
+  id: string,
+  status: string,
+  events: DiagnosticStreamEvent[],
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.query(
+    `UPDATE diagnostic_jobs
+     SET status = $2, events = $3, completed_at = NOW()
+     WHERE id = $1`,
+    [id, status, JSON.stringify(events)],
+  );
+}
+
+export async function getUserTierByEmail(email: string): Promise<string> {
+  const db = await getDb();
+  if (!db) return "free";
+
+  const { rows } = await db.query<{ tier: string }>(
+    `SELECT tier FROM users WHERE email = $1`,
+    [email],
+  );
+  return rows[0]?.tier ?? "free";
+}
+

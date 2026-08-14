@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPlatformProblem } from "@/content/platform-problems";
+import { getPlatformProblem } from "@/content/platform-problems/index";
 
 type RouteContext = {
   params: Promise<{ id: string }>;

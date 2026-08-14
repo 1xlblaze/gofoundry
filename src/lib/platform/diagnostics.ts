@@ -56,8 +56,11 @@ export function createDiagnosticJob(input: {
     listeners: new Set(),
   };
   jobs.set(id, job);
-  void runJob(job);
   return job;
+}
+
+export async function executeDiagnosticJob(job: DiagnosticJob) {
+  await runJob(job);
 }
 
 export function getDiagnosticJob(id: string): DiagnosticJob | undefined {
@@ -197,7 +200,7 @@ require go.uber.org/goleak v1.3.0
 }
 
 async function runLocally(job: DiagnosticJob) {
-  const { getPlatformProblem } = await import("@/content/platform-problems");
+  const { getPlatformProblem } = await import("@/content/platform-problems/index");
   const problem = getPlatformProblem(job.problemId);
   if (!problem) {
     throw new Error(`Unknown problem: ${job.problemId}`);

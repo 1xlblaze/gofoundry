@@ -3695,6 +3695,23 @@ a.brand-mark {
   margin-top: auto;
 }
 
+.price-checkout-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.price-active-tier {
+  margin-top: 0.75rem;
+  color: var(--brand-deep);
+  font-weight: 650;
+}
+
+.checkout-error {
+  margin: 0.35rem 0 0;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
 .price-full-button {
   width: 100%;
 }

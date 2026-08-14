@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listPlatformProblems } from "@/content/platform-problems";
+import { listPlatformProblems } from "@/content/platform-problems/index";
 
 export async function GET() {
   const problems = listPlatformProblems().map((p) => ({

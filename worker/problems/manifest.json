@@ -1,0 +1,202 @@
+[
+  {
+    "id": "dsa-01-slice-headers",
+    "title": "Slice Headers, 3-Index Slicing, and Buffer Retention Prevention",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestCompactUnique_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tnums := []int{1, 1, 2, 2, 3, 3, 4}\n\tgot := CompactUnique(nums)\n\tif len(got) != 4 { t.Fatalf(\"expected 4 unique, got %d\", len(got)) }\n}\n\nfunc BenchmarkCompactUnique_Staff(b *testing.B) {\n\tnums := make([]int, 10000)\n\tfor i := range nums { nums[i] = i % 100 }\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = CompactUnique(nums)\n\t}\n}\n\nfunc TestCompactUnique_AllocBudget(t *testing.T) {\n\tnums := make([]int, 10000)\n\tfor i := range nums { nums[i] = i % 100 }\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = CompactUnique(nums)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-02-ring-buffer",
+    "title": "High-Performance Ring Buffer Using Contiguous Arrays",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestRingBufferPush_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tbuf := make([]int, 4)\n\thead, tail := RingBufferPush(buf, 0, 0, 4, 42)\n\tif buf[0] != 42 || tail != 1 { t.Fatal(\"push failed\") }\n\t_ = head\n}\n\nfunc BenchmarkRingBufferPush_Staff(b *testing.B) {\n\tbuf := make([]int, 1024)\n\thead, tail := 0, 0\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\thead, tail = RingBufferPush(buf, head, tail, 1024, i%256)\n\t}\n}\n\nfunc TestRingBufferPush_AllocBudget(t *testing.T) {\n\tbuf := make([]int, 1024)\n\thead, tail := 0, 0\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\thead, tail = RingBufferPush(buf, head, tail, 1024, i%256)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-03-map-internals",
+    "title": "map Internals: Zero-Alloc Iteration Pattern",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestCountFreq_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tm := CountFreq([]string{\"go\", \"go\", \"rust\"})\n\tif m[\"go\"] != 2 { t.Fatalf(\"expected 2, got %d\", m[\"go\"]) }\n}\n\nfunc BenchmarkCountFreq_Staff(b *testing.B) {\n\twords := make([]string, 1000)\n\tfor i := range words { words[i] = \"token\" }\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = CountFreq(words)\n\t}\n}\n\nfunc TestCountFreq_AllocBudget(t *testing.T) {\n\twords := make([]string, 1000)\n\tfor i := range words { words[i] = \"token\" }\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = CountFreq(words)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-04-string-internals",
+    "title": "String Internals: UTF-8 Byte Processing Without Allocations",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestCountRunes_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tif CountRunes(\"hello\") != 5 { t.Fatal(\"rune count\") }\n\tif CountRunes(\"🧿\") != 1 { t.Fatal(\"emoji rune\") }\n}\n\nfunc BenchmarkCountRunes_Staff(b *testing.B) {\n\ts := \"the quick brown fox jumps over the lazy dog\"\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = CountRunes(s)\n\t}\n}\n\nfunc TestCountRunes_AllocBudget(t *testing.T) {\n\ts := \"the quick brown fox jumps over the lazy dog\"\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = CountRunes(s)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-05-cache-locality",
+    "title": "Cache-Locality: Contiguous Flat Arrays vs Pointer Chasing",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestFlatSum_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tflat := []int{1, 2, 3, 4}\n\tif FlatSum(flat, 2) != 10 { t.Fatalf(\"sum mismatch\") }\n}\n\nfunc BenchmarkFlatSum_Staff(b *testing.B) {\n\tflat := make([]int, 10000)\n\tfor i := range flat { flat[i] = i }\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = FlatSum(flat, 1)\n\t}\n}\n\nfunc TestFlatSum_AllocBudget(t *testing.T) {\n\tflat := make([]int, 10000)\n\tfor i := range flat { flat[i] = i }\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = FlatSum(flat, 1)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-06-generic-heap",
+    "title": "Generic Heaps: Type-Safe Priority Queue Without any Boxing",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestHeapPush_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\th := HeapPush(nil, 3)\n\th = HeapPush(h, 1)\n\tif h[0] != 1 { t.Fatalf(\"min heap violated: %v\", h) }\n}\n\nfunc BenchmarkHeapPush_Staff(b *testing.B) {\n\th := make([]int, 0, 256)\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\th = HeapPush(h, i%1000)\n\t}\n}\n\nfunc TestHeapPush_AllocBudget(t *testing.T) {\n\th := make([]int, 0, 256)\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\th = HeapPush(h, i%1000)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-07-bitset-bloom",
+    "title": "Bitsets and Bloom Filters for Ultra-Low Memory Membership",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestBloomMaybeContains_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tbits := make([]uint64, 1)\n\tif BloomMaybeContains(bits, 42) { t.Fatal(\"empty bloom should miss\") }\n}\n\nfunc BenchmarkBloomMaybeContains_Staff(b *testing.B) {\n\tbits := make([]uint64, 16)\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = BloomMaybeContains(bits, uint64(i))\n\t}\n}\n\nfunc TestBloomMaybeContains_AllocBudget(t *testing.T) {\n\tbits := make([]uint64, 16)\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = BloomMaybeContains(bits, uint64(i))\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-08-monotonic-deque",
+    "title": "Monotonic Deque for Sliding Window Extremes",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestMonotonicDequeMax_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tgot := MonotonicDequeMax([]int{1,3,-1,-3,5,3,6,7}, 3)\n\tif len(got) != 5 { t.Fatalf(\"expected 5 windows, got %d\", len(got)) }\n}\n\nfunc BenchmarkMonotonicDequeMax_Staff(b *testing.B) {\n\tnums := make([]int, 100000)\n\tfor i := range nums { nums[i] = i % 1000 }\n\tk := 50\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = MonotonicDequeMax(nums, k)\n\t}\n}\n\nfunc TestMonotonicDequeMax_AllocBudget(t *testing.T) {\n\tnums := make([]int, 100000)\n\tfor i := range nums { nums[i] = i % 1000 }\n\tk := 50\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = MonotonicDequeMax(nums, k)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-09-treap",
+    "title": "Treap: Randomized BST with O(log N) Expected Operations",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestTreapInsert_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\troot := TreapInsert(nil, 5)\n\troot = TreapInsert(root, 3)\n\tif root == nil { t.Fatal(\"nil root\") }\n}\n\nfunc BenchmarkTreapInsert_Staff(b *testing.B) {\n\tvar root *TreapNode\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\troot = TreapInsert(root, i%10000)\n\t}\n}\n\nfunc TestTreapInsert_AllocBudget(t *testing.T) {\n\tvar root *TreapNode\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\troot = TreapInsert(root, i%10000)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-10-radix-tree",
+    "title": "Radix Tree for Prefix Compression",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestRadixInsert_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\troot := RadixInsert(nil, \"go\")\n\troot = RadixInsert(root, \"gopher\")\n\tif root == nil { t.Fatal(\"nil root\") }\n}\n\nfunc BenchmarkRadixInsert_Staff(b *testing.B) {\n\tvar root *RadixNode\n\tkeys := []string{\"api\", \"app\", \"apple\", \"apt\"}\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\troot = RadixInsert(root, keys[i%4])\n\t}\n}\n\nfunc TestRadixInsert_AllocBudget(t *testing.T) {\n\tvar root *RadixNode\n\tkeys := []string{\"api\", \"app\", \"apple\", \"apt\"}\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\troot = RadixInsert(root, keys[i%4])\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-11-skip-list",
+    "title": "Skip List: Probabilistic Ordered Structure",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestSkipListSearch_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tif SkipListSearch(nil, 1) { t.Fatal(\"empty list\") }\n}\n\nfunc BenchmarkSkipListSearch_Staff(b *testing.B) {\n\tvar head *SkipNode\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = SkipListSearch(head, i%1000)\n\t}\n}\n\nfunc TestSkipListSearch_AllocBudget(t *testing.T) {\n\tvar head *SkipNode\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = SkipListSearch(head, i%1000)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-12-graph-bfs",
+    "title": "Graph BFS with Pre-Allocated Queue Slice",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 2,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestBFSLevels_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tadj := [][]int{{1,2},{2},{}}\n\tlevels := BFSLevels(adj, 0)\n\tif len(levels) != 2 { t.Fatalf(\"expected 2 levels, got %d\", len(levels)) }\n}\n\nfunc BenchmarkBFSLevels_Staff(b *testing.B) {\n\tadj := [][]int{{1},{2},{3},{4},{}}\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = BFSLevels(adj, 0)\n\t}\n}\n\nfunc TestBFSLevels_AllocBudget(t *testing.T) {\n\tadj := [][]int{{1},{2},{3},{4},{}}\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = BFSLevels(adj, 0)\n\t})\n\tif allocs > 2 {\n\t\tt.Errorf(\"Staff violation: expected <= 2 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-13-graph-dfs",
+    "title": "Graph DFS with Iterative Stack Reuse",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestDFSOrder_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tadj := [][]int{{1},{2},{}}\n\torder := DFSOrder(adj, 0)\n\tif len(order) != 3 { t.Fatalf(\"expected 3 nodes, got %d\", len(order)) }\n}\n\nfunc BenchmarkDFSOrder_Staff(b *testing.B) {\n\tadj := [][]int{{1},{2},{3},{4},{}}\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = DFSOrder(adj, 0)\n\t}\n}\n\nfunc TestDFSOrder_AllocBudget(t *testing.T) {\n\tadj := [][]int{{1},{2},{3},{4},{}}\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = DFSOrder(adj, 0)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-14-union-find",
+    "title": "Union-Find with Path Compression and Union by Rank",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestUnionFindConnected_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tparent := []int{0,1,2}\n\trank := []int{0,0,0}\n\tif UnionFindConnected(parent, rank, 0, 1) { t.Fatal(\"not connected yet\") }\n\t_ = parent\n}\n\nfunc BenchmarkUnionFindConnected_Staff(b *testing.B) {\n\tparent := make([]int, 1000)\n\trank := make([]int, 1000)\n\tfor i := range parent { parent[i] = i }\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = UnionFindConnected(parent, rank, i%999, (i+1)%999)\n\t}\n}\n\nfunc TestUnionFindConnected_AllocBudget(t *testing.T) {\n\tparent := make([]int, 1000)\n\trank := make([]int, 1000)\n\tfor i := range parent { parent[i] = i }\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = UnionFindConnected(parent, rank, i%999, (i+1)%999)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-15-topological-sort",
+    "title": "Topological Sort with Kahn's Algorithm",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 2,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestTopoSort_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\torder, ok := TopoSort(3, [][2]int{{0,1},{1,2}})\n\tif !ok || len(order) != 3 { t.Fatalf(\"topo failed: %v %v\", order, ok) }\n}\n\nfunc BenchmarkTopoSort_Staff(b *testing.B) {\n\tedges := [][2]int{{0,1},{1,2},{2,3},{3,4}}\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_, _ = TopoSort(5, edges)\n\t}\n}\n\nfunc TestTopoSort_AllocBudget(t *testing.T) {\n\tedges := [][2]int{{0,1},{1,2},{2,3},{3,4}}\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_, _ = TopoSort(5, edges)\n\t})\n\tif allocs > 2 {\n\t\tt.Errorf(\"Staff violation: expected <= 2 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-16-dijkstra",
+    "title": "Dijkstra with Binary Heap and Slice Pool",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 2,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestDijkstra_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tdist := Dijkstra([][] [2]int{{{1,1}},{}}, 0)\n\tif len(dist) != 2 { t.Fatalf(\"expected 2 distances\") }\n}\n\nfunc BenchmarkDijkstra_Staff(b *testing.B) {\n\tadj := [][] [2]int{{{1,1},{2,4}},{{2,2}},{{3,1}},{}}\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = Dijkstra(adj, 0)\n\t}\n}\n\nfunc TestDijkstra_AllocBudget(t *testing.T) {\n\tadj := [][] [2]int{{{1,1},{2,4}},{{2,2}},{{3,1}},{}}\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = Dijkstra(adj, 0)\n\t})\n\tif allocs > 2 {\n\t\tt.Errorf(\"Staff violation: expected <= 2 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-17-lru-cache",
+    "title": "In-Memory LRU with O(1) Get/Put",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestLRUGet_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tc := NewLRU(2)\n\tc.Put(1, 10)\n\tv, ok := LRUGet(c, 1)\n\tif !ok || v != 10 { t.Fatal(\"lru get\") }\n}\n\nfunc BenchmarkLRUGet_Staff(b *testing.B) {\n\tc := NewLRU(128)\n\tfor j := 0; j < 128; j++ { c.Put(j, j) }\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_, _ = LRUGet(c, i%128)\n\t}\n}\n\nfunc TestLRUGet_AllocBudget(t *testing.T) {\n\tc := NewLRU(128)\n\tfor j := 0; j < 128; j++ { c.Put(j, j) }\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_, _ = LRUGet(c, i%128)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-18-rate-limiter",
+    "title": "Token Bucket Rate Limiter",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestTokenBucketAllow_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tb := NewTokenBucket(10, 10)\n\tif !TokenBucketAllow(b) { t.Fatal(\"should allow first\") }\n}\n\nfunc BenchmarkTokenBucketAllow_Staff(b *testing.B) {\n\tb := NewTokenBucket(1000, 1000)\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = TokenBucketAllow(b)\n\t}\n}\n\nfunc TestTokenBucketAllow_AllocBudget(t *testing.T) {\n\tb := NewTokenBucket(1000, 1000)\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = TokenBucketAllow(b)\n\t})\n\tif allocs > 0 {\n\t\tt.Errorf(\"Staff violation: expected <= 0 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-19-work-queue",
+    "title": "Bounded Worker Pool with Graceful Drain",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestProcessBatch_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tjobs := []int{1,2,3,4}\n\tif ProcessBatch(jobs, 2) != 10 { t.Fatal(\"sum mismatch\") }\n}\n\nfunc BenchmarkProcessBatch_Staff(b *testing.B) {\n\tjobs := make([]int, 1000)\n\tfor j := range jobs { jobs[j] = 1 }\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = ProcessBatch(jobs, 4)\n\t}\n}\n\nfunc TestProcessBatch_AllocBudget(t *testing.T) {\n\tjobs := make([]int, 1000)\n\tfor j := range jobs { jobs[j] = 1 }\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = ProcessBatch(jobs, 4)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "dsa-sliding-window-maximum",
+    "title": "Monotonic Queue Maximum with Zero-Allocation Slice Reuse",
+    "trackId": "dsa",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package dsa\n\nimport (\n\t\"testing\"\n\t\"go.uber.org/goleak\"\n)\n\nfunc TestSlidingWindowMax_Correctness(t *testing.T) {\n\tdefer goleak.VerifyNone(t)\n\tgot := SlidingWindowMax([]int{1,3,-1,-3,5,3,6,7}, 3)\n\tif len(got) != 5 { t.Fatalf(\"expected 5, got %d\", len(got)) }\n}\n\nfunc BenchmarkSlidingWindowMax_Staff(b *testing.B) {\n\tnums := make([]int, 100000)\n\tfor j := range nums { nums[j] = j % 1000 }\n\tk := 50\n\tb.ReportAllocs()\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = SlidingWindowMax(nums, k)\n\t}\n}\n\nfunc TestSlidingWindowMax_AllocBudget(t *testing.T) {\n\tnums := make([]int, 100000)\n\tfor j := range nums { nums[j] = j % 1000 }\n\tk := 50\n\tallocs := testing.AllocsPerRun(100, func() {\n\t\t_ = SlidingWindowMax(nums, k)\n\t})\n\tif allocs > 1 {\n\t\tt.Errorf(\"Staff violation: expected <= 1 allocs/run, got %.2f\", allocs)\n\t}\n}\n"
+  },
+  {
+    "id": "lld-01-lru-cache",
+    "title": "Zero-Alloc In-Memory LRU Cache with Sharded Buckets",
+    "trackId": "lld",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package lld\n\nimport \"testing\"\n\nfunc TestShardedLRU_Basic(t *testing.T) {\n\tc := NewShardedLRU(4, 64)\n\tc.Put(\"a\", 1)\n\tif v, ok := c.Get(\"a\"); !ok || v != 1 { t.Fatal(\"get failed\") }\n}"
+  },
+  {
+    "id": "lld-02-rate-limiter",
+    "title": "Distributed-Ready Sliding Window Rate Limiter",
+    "trackId": "lld",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package lld\n\nimport \"testing\"\n\nfunc TestSlidingWindowLimiter(t *testing.T) {\n\tl := NewSlidingWindowLimiter(10, 1000)\n\tif !l.Allow(\"user\", 0) { t.Fatal(\"first should pass\") }\n}"
+  },
+  {
+    "id": "lld-03-connection-pool",
+    "title": "Resilient Database Connection Pool with Health Checking",
+    "trackId": "lld",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package lld\n\nimport \"testing\"\n\nfunc TestConnPool(t *testing.T) {\n\tp := NewConnPool(4)\n\tid, err := p.Acquire()\n\tif err != nil || id < 0 { t.Fatal(\"acquire\") }\n\tp.Release(id)\n}"
+  },
+  {
+    "id": "lld-04-singleflight",
+    "title": "SingleFlight: Deduplicating Concurrent Expensive Queries",
+    "trackId": "lld",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 1,
+    "testSuite": "package lld\n\nimport \"testing\"\n\nfunc TestSingleFlight(t *testing.T) {\n\tvar g Group\n\tv, err := g.Do(\"k\", func() (any, error) { return 42, nil })\n\tif err != nil || v.(int) != 42 { t.Fatal(\"do\") }\n}"
+  },
+  {
+    "id": "lld-05-ring-logger",
+    "title": "Lock-Free Ring Buffer Logger with Batching Disk Flushers",
+    "trackId": "lld",
+    "difficulty": "Staff / Hard",
+    "maxHeapAllocs": 0,
+    "testSuite": "package lld\n\nimport \"testing\"\n\nfunc TestRingLogger(t *testing.T) {\n\tl := NewRingLogger(1024)\n\tif !l.Log(\"hello\") { t.Fatal(\"log\") }\n}"
+  }
+]

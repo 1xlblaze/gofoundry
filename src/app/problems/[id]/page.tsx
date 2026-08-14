@@ -1,7 +1,8 @@
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { ProblemWorkspace } from "@/components/ProblemWorkspace";
-import { getPlatformProblem } from "@/content/platform-problems";
+import { getPlatformProblem, isProProblem } from "@/content/platform-problems/index";
+import { requirePro } from "@/lib/tier";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -24,6 +25,13 @@ export default async function PlatformProblemPage({ params }: PageProps) {
 
   if (!problem) {
     notFound();
+  }
+
+  if (isProProblem(id)) {
+    const access = await requirePro();
+    if (!access.ok) {
+      redirect(`/pricing?upgrade=pro&problem=${id}`);
+    }
   }
 
   return (

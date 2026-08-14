@@ -46,7 +46,14 @@ func (e *Executor) Run(ctx context.Context, req Request, emit Emitter) error {
 	}
 	defer os.RemoveAll(dir)
 
-	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte(problem.GoMod), 0o644); err != nil {
+	goMod := fmt.Sprintf(`module gofoundry/%s
+
+go 1.22
+
+require go.uber.org/goleak v1.3.0
+`, req.ProblemID)
+
+	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte(goMod), 0o644); err != nil {
 		return err
 	}
 	if err := os.WriteFile(filepath.Join(dir, "solution.go"), []byte(req.Code), 0o644); err != nil {

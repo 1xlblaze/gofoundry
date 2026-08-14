@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getLesson } from "@/content";
-import { listPlatformProblems } from "@/content/platform-problems";
+import { listPlatformProblems } from "@/content/platform-problems/index";
 import {
   patternTopics,
   totalProblemCount,
@@ -106,10 +106,10 @@ export default function ProblemsPage() {
 
       <section className="panel platform-problems-banner">
         <p className="kicker">Staff-grade in-app problems</p>
-        <h2>Go-centric DSA with runtime invariants</h2>
+        <h2>20 DSA + 5 LLD modules with runtime invariants</h2>
         <p>
           Solve inside GoFoundry with dual algorithmic + zero-allocation evaluation.
-          Each problem runs the 4-gate diagnostic pipeline.
+          First problem is free; Pro unlocks the full set.
         </p>
         <div className="platform-problem-cards">
           {platformProblems.map((problem) => (
@@ -119,6 +119,9 @@ export default function ProblemsPage() {
               className="platform-problem-card"
             >
               <span className="teaser-chip">{problem.trackId.toUpperCase()}</span>
+              {problem.id === "dsa-sliding-window-maximum" && (
+                <span className="teaser-chip teaser-chip-free">Free</span>
+              )}
               <h3>{problem.title}</h3>
               <p>
                 {problem.algorithmicSpecs.timeComplexity} · max{" "}
