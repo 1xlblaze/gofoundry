@@ -8,7 +8,7 @@ const links = [
   { href: "/progress", label: "Progress" },
   { href: "/track/method", label: "HEAT" },
   { href: "/track/dsa", label: "DSA" },
-  { href: "/problems", label: "Problems" },
+  { href: "/problems", label: "Practice" },
   { href: "/track/hld", label: "HLD" },
   { href: "/search", label: "Search" },
 ];

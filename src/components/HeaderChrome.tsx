@@ -1,17 +1,38 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { NavLinks } from "@/components/NavLinks";
+import { loadProgress } from "@/lib/progress";
 
 export function HeaderChrome({
   brand,
   auth,
+  totalLessons,
 }: {
   brand: ReactNode;
   auth: ReactNode;
+  totalLessons: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
+
+  useEffect(() => {
+    const refresh = () => {
+      const completed = new Set(loadProgress().completed).size;
+      setProgressPercent(
+        totalLessons ? Math.min(100, Math.round((completed / totalLessons) * 100)) : 0,
+      );
+    };
+
+    refresh();
+    window.addEventListener("gofoundry-progress", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("gofoundry-progress", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, [totalLessons]);
 
   return (
     <header className="site-header">
@@ -30,6 +51,19 @@ export function HeaderChrome({
             {open ? "✕" : "☰"}
           </button>
         </div>
+      </div>
+      <div
+        className="motion2-header-progress"
+        role="progressbar"
+        aria-label="Overall course progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progressPercent}
+      >
+        <span
+          className="motion2-header-progress-fill"
+          style={{ width: `${progressPercent}%` }}
+        />
       </div>
 
       {open ? (

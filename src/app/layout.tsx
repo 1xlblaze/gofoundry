@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { AmbientBackground } from "@/components/AmbientBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
@@ -36,7 +37,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="ambient-host flex min-h-full flex-col">
+        <AmbientBackground />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <footer className="footer">

@@ -2,12 +2,14 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { AuthButtons } from "@/components/AuthButtons";
 import { HeaderChrome } from "@/components/HeaderChrome";
+import { allLessons } from "@/content";
 
 export async function SiteHeader() {
   const session = await auth();
 
   return (
     <HeaderChrome
+      totalLessons={allLessons.length}
       brand={
         <Link href="/" className="brand">
           <span className="brand-mark">GF</span>

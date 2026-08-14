@@ -1,193 +1,370 @@
+"use client";
+
 import Link from "next/link";
-import type { Metadata } from "next";
+import { useEffect, useMemo, useState } from "react";
 import { getLesson } from "@/content";
+import {
+  patternTopics,
+  totalProblemCount,
+  type ProblemDifficulty,
+} from "@/content/problems";
+import {
+  loadProblemProgress,
+  resetAllProblems,
+  toggleDone,
+  toggleStar,
+  type ProblemProgressState,
+} from "@/lib/problemProgress";
 
-export const metadata: Metadata = {
-  title: "Problem Bank",
-  description:
-    "Patterns-first index of classic interview problems, mapped to GoFoundry lessons with Go solutions.",
+type DifficultyFilter = "All" | ProblemDifficulty;
+type StatusFilter = "All" | "Done" | "Todo" | "Starred";
+
+const emptyProgress: ProblemProgressState = {
+  done: [],
+  starred: [],
+  notes: {},
 };
 
-type PatternGroup = {
-  name: string;
-  strategy: string;
-  lessons: string[];
-  extra?: string[];
-};
-
-const groups: PatternGroup[] = [
-  {
-    name: "Two Pointers & Sliding Window",
-    strategy: "Shrink the search space with converging or expanding indices instead of nested loops.",
-    lessons: ["arrays-and-slices", "strings-and-runes", "sliding-window-two-pointers"],
-    extra: [
-      "3Sum / 4Sum (sorted + two pointers)",
-      "Container With Most Water",
-      "Longest Repeating Character Replacement",
-      "Minimum Size Subarray Sum",
-    ],
-  },
-  {
-    name: "Linked Lists",
-    strategy: "Dummy heads, fast/slow pointers, and careful pointer rewiring.",
-    lessons: ["linked-lists"],
-    extra: [
-      "Merge K Sorted Lists (heap + linked list)",
-      "Reorder List",
-      "Copy List with Random Pointer",
-      "LRU Cache (see LLD track)",
-    ],
-  },
-  {
-    name: "Stacks, Queues & Monotonic Structures",
-    strategy: "Use a stack to defer decisions until you see the element that resolves them.",
-    lessons: ["stacks-and-queues", "monotonic-stack-queue"],
-    extra: [
-      "Daily Temperatures",
-      "Largest Rectangle in Histogram",
-      "Sliding Window Maximum (monotonic deque)",
-      "Implement Queue using Stacks",
-    ],
-  },
-  {
-    name: "Hashing",
-    strategy: "Trade O(n) space for O(1) average lookups to collapse O(n²) scans.",
-    lessons: ["hash-maps-and-sets"],
-    extra: [
-      "Longest Consecutive Sequence",
-      "Subarray Sum Equals K (prefix sum + map)",
-      "Isomorphic Strings",
-    ],
-  },
-  {
-    name: "Trees",
-    strategy: "Recursion mirrors tree structure; know pre/in/post/level order cold.",
-    lessons: ["binary-trees", "bst-and-heaps"],
-    extra: [
-      "Lowest Common Ancestor",
-      "Validate BST",
-      "Serialize / Deserialize Binary Tree",
-      "Kth Smallest Element in a BST",
-    ],
-  },
-  {
-    name: "Graphs",
-    strategy: "Adjacency list + BFS/DFS/Union-Find/topological sort, chosen by what the question asks for.",
-    lessons: [
-      "graphs-bfs-dfs",
-      "graphs-advanced",
-      "shortest-paths-dijkstra",
-      "union-find-dsu",
-      "topological-sort-patterns",
-    ],
-    extra: [
-      "Clone Graph",
-      "Word Ladder (BFS shortest transformation)",
-      "Alien Dictionary (topological sort)",
-      "Network Delay Time (Dijkstra)",
-      "Number of Connected Components (Union-Find)",
-    ],
-  },
-  {
-    name: "Backtracking",
-    strategy: "Choose → explore → unchoose; prune branches that can't reach a valid solution.",
-    lessons: ["recursion-backtracking", "backtracking-templates"],
-    extra: ["Permutations II (with duplicates)", "N-Queens", "Word Search", "Palindrome Partitioning"],
-  },
-  {
-    name: "Dynamic Programming",
-    strategy: "Define state precisely, write the recurrence, then decide top-down memo vs bottom-up table.",
-    lessons: ["dynamic-programming"],
-    extra: [
-      "Longest Common Subsequence",
-      "Edit Distance",
-      "House Robber II (circular)",
-      "Longest Increasing Subsequence (O(n log n))",
-      "Partition Equal Subset Sum",
-    ],
-  },
-  {
-    name: "Greedy",
-    strategy: "Prove (or find a counterexample for) the local-choice-is-global-optimum claim before coding.",
-    lessons: ["greedy-algorithms"],
-    extra: ["Gas Station", "Task Scheduler", "Non-overlapping Intervals"],
-  },
-  {
-    name: "Intervals & Sweep Line",
-    strategy: "Sort by start or end; sweep with running counters for overlap/room-counting problems.",
-    lessons: ["intervals-and-math"],
-    extra: ["Insert Interval", "Employee Free Time", "Car Pooling"],
-  },
-  {
-    name: "Binary Search",
-    strategy: "Search on the answer space when the predicate is monotonic, not just on sorted arrays.",
-    lessons: ["sorting-searching", "binary-search-patterns"],
-    extra: [
-      "Search in Rotated Sorted Array",
-      "Median of Two Sorted Arrays",
-      "Koko Eating Bananas (search on answer)",
-    ],
-  },
-  {
-    name: "Tries & Bit Manipulation",
-    strategy: "Prefix trees for string sets; bit tricks for subsets and XOR properties.",
-    lessons: ["tries-and-bitmask", "bit-manipulation-go"],
-    extra: ["Word Search II (Trie + DFS)", "Design Add and Search Words", "Counting Bits"],
-  },
-  {
-    name: "String Algorithms",
-    strategy: "Linear-time pattern matching beats the naive O(nm) scan at scale.",
-    lessons: ["string-algorithms"],
-    extra: ["Shortest Palindrome", "Repeated String Match", "Longest Happy Prefix"],
-  },
-];
+const knownProblemIds = new Set(
+  patternTopics.flatMap((topic) => topic.problems.map((problem) => problem.id)),
+);
 
 export default function ProblemsPage() {
-  return (
-    <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
-      <p className="type-label">Practice, organized by pattern</p>
-      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">Problem Bank</h1>
-      <p className="mt-4 max-w-2xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
-        Interview prep fails when you memorize solutions instead of patterns. Every
-        pattern below links to a GoFoundry lesson with the HEAT think/diagram/answer
-        breakdown, plus a curated set of named problems to drill once the pattern
-        clicks.
-      </p>
+  const [progress, setProgress] = useState<ProblemProgressState>(emptyProgress);
+  const [difficulty, setDifficulty] = useState<DifficultyFilter>("All");
+  const [status, setStatus] = useState<StatusFilter>("All");
+  const [query, setQuery] = useState("");
 
-      <div className="mt-14 space-y-12">
-        {groups.map((g) => (
-          <section key={g.name} className="border-t border-[var(--line)] pt-8">
-            <h2 className="type-title text-[1.4rem] text-ink">{g.name}</h2>
-            <p className="mt-2 max-w-2xl text-[1.02rem] text-ink-soft">
-              {g.strategy}
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {g.lessons.map((slug) => {
-                const lesson = getLesson(slug);
-                if (!lesson) return null;
-                return (
-                  <Link
-                    key={slug}
-                    href={`/lesson/${slug}`}
-                    className="border border-[var(--line-strong)] bg-foam/70 px-3.5 py-2 text-sm font-semibold text-ink transition hover:border-teal hover:text-teal-deep"
-                  >
-                    {lesson.title} →
-                  </Link>
-                );
-              })}
+  useEffect(() => {
+    const refresh = () => setProgress(loadProblemProgress());
+    refresh();
+    window.addEventListener("gofoundry-problem-progress", refresh);
+    window.addEventListener("storage", refresh);
+
+    return () => {
+      window.removeEventListener("gofoundry-problem-progress", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  const doneIds = useMemo(() => new Set(progress.done), [progress.done]);
+  const starredIds = useMemo(() => new Set(progress.starred), [progress.starred]);
+
+  const doneCount = progress.done.filter((id) => knownProblemIds.has(id)).length;
+  const starredCount = progress.starred.filter((id) => knownProblemIds.has(id)).length;
+  const completion = totalProblemCount
+    ? Math.round((doneCount / totalProblemCount) * 100)
+    : 0;
+
+  const visibleTopics = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return patternTopics
+      .map((topic) => {
+        const topicMatches = topic.name.toLowerCase().includes(normalizedQuery);
+        const problems = topic.problems.filter((problem) => {
+          const isDone = doneIds.has(problem.id);
+          const isStarred = starredIds.has(problem.id);
+          const matchesDifficulty =
+            difficulty === "All" || problem.difficulty === difficulty;
+          const matchesStatus =
+            status === "All" ||
+            (status === "Done" && isDone) ||
+            (status === "Todo" && !isDone) ||
+            (status === "Starred" && isStarred);
+          const matchesQuery =
+            !normalizedQuery ||
+            topicMatches ||
+            problem.title.toLowerCase().includes(normalizedQuery);
+
+          return matchesDifficulty && matchesStatus && matchesQuery;
+        });
+
+        return { ...topic, problems };
+      })
+      .filter((topic) => topic.problems.length > 0);
+  }, [difficulty, doneIds, query, starredIds, status]);
+
+  return (
+    <div className="shell sheet-page">
+      <header className="page-hero sheet-hero">
+        <span className="kicker">Pattern-first interview practice</span>
+        <h1>Practice Sheet</h1>
+        <p>
+          A curated, pattern-first path of {totalProblemCount} classic problems that
+          complements the GoFoundry lesson tracks. The full sheet is free within
+          GoFoundry; solve on LeetCode and track your progress here.
+        </p>
+      </header>
+
+      <div className="stat-row sheet-stats">
+        <div className="stat">
+          <strong>
+            {doneCount}
+            <span className="sheet-stat-total"> / {totalProblemCount}</span>
+          </strong>
+          <span>Solved / Total</span>
+        </div>
+        <div className="stat">
+          <strong>{completion}%</strong>
+          <span>Completion</span>
+        </div>
+        <div className="stat">
+          <strong>{starredCount}</strong>
+          <span>Starred</span>
+        </div>
+      </div>
+
+      <div
+        className="progress-bar sheet-overall-progress"
+        role="progressbar"
+        aria-label="Overall practice sheet completion"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={completion}
+      >
+        <span style={{ width: `${completion}%` }} />
+      </div>
+
+      <section className="panel sheet-filters" aria-label="Problem filters">
+        <div className="sheet-search-row">
+          <input
+            type="search"
+            className="search-box sheet-search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search a problem or topic…"
+            aria-label="Search problems by title or topic"
+          />
+          <button
+            type="button"
+            className="ghost-btn danger-btn sheet-reset"
+            onClick={() => {
+              if (confirm("Reset ALL practice-sheet progress and stars?")) {
+                setProgress(resetAllProblems());
+              }
+            }}
+          >
+            Reset all
+          </button>
+        </div>
+
+        <div className="sheet-filter-groups">
+          <div className="sheet-filter-group">
+            <span className="sheet-filter-label">Difficulty</span>
+            <div className="filters sheet-filter-buttons">
+              {(["All", "Easy", "Medium", "Hard"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`filter-btn ${difficulty === option ? "active" : ""}`}
+                  onClick={() => setDifficulty(option)}
+                  aria-pressed={difficulty === option}
+                >
+                  {option}
+                </button>
+              ))}
             </div>
-            {g.extra && g.extra.length > 0 && (
-              <ul className="mt-5 grid gap-x-8 gap-y-2 sm:grid-cols-2">
-                {g.extra.map((item) => (
-                  <li key={item} className="flex gap-2 text-sm text-ink-soft">
-                    <span className="text-teal">·</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
+          </div>
+
+          <div className="sheet-filter-group">
+            <span className="sheet-filter-label">Status</span>
+            <div className="filters sheet-filter-buttons">
+              {(["All", "Done", "Todo", "Starred"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`filter-btn ${status === option ? "active" : ""}`}
+                  onClick={() => setStatus(option)}
+                  aria-pressed={status === option}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="sheet-layout">
+        <aside className="panel sheet-toc" aria-label="Practice sheet topics">
+          <h2>Topics</h2>
+          <nav className="sheet-toc-list">
+            {patternTopics.map((topic) => {
+              const solved = topic.problems.filter((problem) =>
+                doneIds.has(problem.id),
+              ).length;
+
+              return (
+                <a key={topic.id} href={`#${topic.id}`} className="sheet-toc-link">
+                  <span>{topic.name}</span>
+                  <small>
+                    {solved}/{topic.problems.length}
+                  </small>
+                </a>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <main className="sheet-topics">
+          {visibleTopics.map((topic) => {
+            const originalTopic = patternTopics.find(
+              (candidate) => candidate.id === topic.id,
+            )!;
+            const solved = originalTopic.problems.filter((problem) =>
+              doneIds.has(problem.id),
+            ).length;
+
+            return (
+              <section
+                key={topic.id}
+                id={topic.id}
+                className="panel sheet-topic"
+              >
+                <div className="sheet-topic-head">
+                  <div>
+                    <h2>{topic.name}</h2>
+                    <p>{topic.strategy}</p>
+                  </div>
+                  <span className="chip sheet-topic-progress">
+                    {solved} / {originalTopic.problems.length}
+                  </span>
+                </div>
+
+                <div className="sheet-lesson-links">
+                  {topic.lessonSlugs.map((slug) => {
+                    const lesson = getLesson(slug);
+                    if (!lesson) return null;
+
+                    return (
+                      <Link
+                        key={slug}
+                        href={`/lesson/${slug}`}
+                        className="chip chip-brand sheet-lesson-link"
+                      >
+                        {lesson.title} →
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="table-wrap sheet-table-wrap">
+                  <table className="progress-table sheet-table">
+                    <thead>
+                      <tr>
+                        <th className="sheet-check-column">
+                          <span className="sheet-visually-hidden">Done</span>
+                        </th>
+                        <th>Problem</th>
+                        <th>Difficulty</th>
+                        <th className="sheet-star-column">Save</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topic.problems.map((problem) => {
+                        const isDone = doneIds.has(problem.id);
+                        const isStarred = starredIds.has(problem.id);
+
+                        return (
+                          <tr
+                            key={problem.id}
+                            className={`sheet-problem-row ${
+                              isDone ? "sheet-problem-done" : ""
+                            }`}
+                          >
+                            <td className="sheet-check-column">
+                              <input
+                                type="checkbox"
+                                className="sheet-checkbox"
+                                checked={isDone}
+                                onChange={() =>
+                                  setProgress(toggleDone(problem.id))
+                                }
+                                aria-label={`Mark ${problem.title} ${
+                                  isDone ? "not done" : "done"
+                                }`}
+                              />
+                            </td>
+                            <td>
+                              {problem.leetcodeUrl ? (
+                                <a
+                                  href={problem.leetcodeUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`sheet-problem-link ${
+                                    isDone ? "sheet-problem-title-done" : ""
+                                  }`}
+                                >
+                                  {problem.title}
+                                  <svg
+                                    className="sheet-external-icon"
+                                    viewBox="0 0 16 16"
+                                    aria-hidden="true"
+                                  >
+                                    <path
+                                      d="M6 3h7v7M13 3 5 11M11 8v5H3V5h5"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                </a>
+                              ) : (
+                                <span
+                                  className={
+                                    isDone ? "sheet-problem-title-done" : undefined
+                                  }
+                                >
+                                  {problem.title}
+                                </span>
+                              )}
+                            </td>
+                            <td>
+                              <span
+                                className={`chip sheet-difficulty sheet-diff-${problem.difficulty.toLowerCase()}`}
+                              >
+                                {problem.difficulty}
+                              </span>
+                            </td>
+                            <td className="sheet-star-column">
+                              <button
+                                type="button"
+                                className={`sheet-star ${
+                                  isStarred ? "sheet-star-active" : ""
+                                }`}
+                                onClick={() =>
+                                  setProgress(toggleStar(problem.id))
+                                }
+                                aria-label={`${
+                                  isStarred ? "Unstar" : "Star"
+                                } ${problem.title}`}
+                                aria-pressed={isStarred}
+                              >
+                                <span aria-hidden="true">
+                                  {isStarred ? "★" : "☆"}
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            );
+          })}
+
+          {visibleTopics.length === 0 && (
+            <div className="panel empty sheet-empty">
+              No problems match these filters. Try clearing the search or choosing
+              a different difficulty.
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import {
 import { LessonBlocks } from "@/components/LessonBlocks";
 import { LessonQuiz } from "@/components/LessonQuiz";
 import { CompleteButton } from "@/components/CompleteButton";
+import { ReadingProgress } from "@/components/ReadingProgress";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,7 +33,12 @@ export default async function LessonPage({ params }: Props) {
   const { prev, next } = adjacentLessons(slug);
 
   return (
-    <article className="shell" style={{ maxWidth: 820, padding: "2.25rem 0 3.5rem" }}>
+    <article
+      id="lesson-article"
+      className="shell"
+      style={{ maxWidth: 820, padding: "2.25rem 0 3.5rem" }}
+    >
+      <ReadingProgress articleId="lesson-article" />
       <div className="reveal" style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", fontSize: "0.82rem", color: "var(--muted)" }}>
         <Link href="/learn">Curriculum</Link>
         <span aria-hidden>/</span>
@@ -109,6 +115,36 @@ export default async function LessonPage({ params }: Props) {
           <span />
         )}
       </nav>
+
+      {next ? (
+        <aside style={{ marginTop: "2rem" }} aria-label="Up next">
+          <p className="type-label" style={{ marginBottom: "0.65rem" }}>
+            Up next
+          </p>
+          <Link
+            href={`/lesson/${next.slug}`}
+            className="card group"
+            style={{ maxWidth: "34rem", marginLeft: "auto" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "1rem",
+              }}
+            >
+              <div>
+                <h3>{next.title}</h3>
+                <p>{next.subtitle}</p>
+              </div>
+              <span className="chip" style={{ flexShrink: 0 }}>
+                {next.minutes} min
+              </span>
+            </div>
+          </Link>
+        </aside>
+      ) : null}
     </article>
   );
 }
