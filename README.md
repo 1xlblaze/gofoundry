@@ -25,3 +25,13 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run build
 npm start
 ```
+
+## Deploy (GitHub Pages)
+
+Repo: https://github.com/1xlblaze/gofoundry
+
+Pushes to `main` build the static site and publish the `gh-pages` branch.
+
+**One-time setup:** open [Pages settings](https://github.com/1xlblaze/gofoundry/settings/pages) → Source: **Deploy from a branch** → Branch: **gh-pages** / **/ (root)** → Save.
+
+Live URL after that: https://1xlblaze.github.io/gofoundry/
