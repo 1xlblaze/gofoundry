@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { WaitlistForm } from "@/components/WaitlistForm";
 import { cheatSheets } from "@/content/cheatsheets";
+import { PrintButton } from "./PrintButton";
 
 export const metadata: Metadata = {
   title: "Go Engineering Cheat Sheets",
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function CheatSheetsPage() {
   return (
-    <main className="shell sheetdoc-page">
+    <main className="shell sheetdoc-page magnet-print-root">
       <header className="page-hero sheetdoc-hero">
         <span className="kicker">Print-ready references</span>
         <h1>Go cheat sheets</h1>
@@ -20,7 +22,34 @@ export default function CheatSheetsPage() {
         </p>
       </header>
 
-      <section className="panel sheetdoc-directory" aria-labelledby="sheetdoc-directory-title">
+      <section className="panel magnet-panel magnet-no-print" aria-labelledby="magnet-title">
+        <div className="magnet-copy">
+          <p className="type-label">Free staff-level review pack</p>
+          <h2 id="magnet-title" className="type-title">
+            Keep the field guides within reach
+          </h2>
+          <p>
+            Join the list for new printable Go references, then save this
+            collection as a clean PDF today.
+          </p>
+        </div>
+        <div className="magnet-actions">
+          <WaitlistForm
+            tier="cheatsheet"
+            source="cheatsheet-pdf"
+            buttonLabel="Send me new sheets"
+          />
+          <PrintButton />
+          <p className="magnet-print-instructions">
+            Your browser&apos;s print dialog can save the two field guides as a PDF.
+          </p>
+        </div>
+      </section>
+
+      <section
+        className="panel sheetdoc-directory magnet-no-print"
+        aria-labelledby="sheetdoc-directory-title"
+      >
         <div>
           <p className="type-label">In this collection</p>
           <h2 id="sheetdoc-directory-title" className="type-title">

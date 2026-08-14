@@ -9,6 +9,7 @@ export const internalsLessons: Lesson[] = [
     difficulty: "advanced",
     minutes: 50,
     tags: ["scheduler", "runtime", "goroutines", "preemption"],
+    free: true,
     prerequisites: ["goroutines and channels", "basic operating-system threads"],
     blocks: [
       {
@@ -603,6 +604,7 @@ for v := range ch {
     difficulty: "advanced",
     minutes: 50,
     tags: ["interfaces", "escape-analysis", "compiler", "allocation"],
+    free: true,
     prerequisites: ["interfaces", "pointers and methods"],
     blocks: [
       {

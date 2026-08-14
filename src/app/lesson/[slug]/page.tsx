@@ -52,6 +52,9 @@ export default async function LessonPage({ params }: Props) {
         <h1>{lesson.title}</h1>
         <p>{lesson.subtitle}</p>
         <div className="meta-row">
+          {lesson.free && (
+            <span className="chip chip-brand">Free teaser · Staff-grade sample</span>
+          )}
           <span className="chip">{lesson.minutes} min</span>
           <span className="chip chip-brand" style={{ textTransform: "capitalize" }}>
             {lesson.difficulty}

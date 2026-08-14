@@ -87,6 +87,7 @@ export type Lesson = {
   difficulty: Difficulty;
   minutes: number;
   tags: string[];
+  free?: boolean;
   prerequisites?: string[];
   blocks: ContentBlock[];
   quiz: QuizQuestion[];

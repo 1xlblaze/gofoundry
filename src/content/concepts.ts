@@ -2324,6 +2324,7 @@ func FuzzNormalize(f *testing.F) {
     difficulty: "advanced",
     minutes: 55,
     tags: ["memory", "escape-analysis", "allocations", "benchmarking", "pprof"],
+    free: true,
     prerequisites: ["concurrency-goroutines", "generics-and-testing"],
     blocks: [
       {

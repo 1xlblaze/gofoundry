@@ -51,6 +51,145 @@ func main() {
 }
 `;
 
+const ALLOCATIONS = 1000;
+
+const STRING_CONCAT_ALLOCS = `package main
+
+import (
+\t"fmt"
+\t"runtime"
+)
+
+const operations = ${ALLOCATIONS}
+
+var sink string
+
+//go:noinline
+func target(parts []string) string {
+\tresult := ""
+\tfor _, part := range parts {
+\t\tresult += part
+\t}
+\treturn result
+}
+
+func heapDelta(after, before uint64) int64 {
+\tif after >= before {
+\t\treturn int64(after - before)
+\t}
+\treturn -int64(before - after)
+}
+
+func main() {
+\tparts := []string{"escape", "-", "analysis", "-", "makes", "-", "allocations", "-", "visible"}
+
+\truntime.GC()
+\tvar before, after runtime.MemStats
+\truntime.ReadMemStats(&before)
+
+\tfor i := 0; i < operations; i++ {
+\t\tsink = target(parts)
+\t}
+
+\truntime.ReadMemStats(&after)
+\truntime.KeepAlive(sink)
+
+\tallocDelta := heapDelta(after.Alloc, before.Alloc)
+\ttotalDelta := after.TotalAlloc - before.TotalAlloc
+\tmallocsDelta := after.Mallocs - before.Mallocs
+\tnumGC := after.NumGC - before.NumGC
+\tbytesPerOp := float64(totalDelta) / float64(operations)
+\tallocsPerOp := float64(mallocsDelta) / float64(operations)
+
+\tfmt.Printf("AllocDelta: %d bytes\\n", allocDelta)
+\tfmt.Printf("TotalAlloc delta: %d bytes\\n", totalDelta)
+\tfmt.Printf("Mallocs delta: %d\\n", mallocsDelta)
+\tfmt.Printf("NumGC: %d\\n", numGC)
+\tfmt.Printf("Per-op estimate: %.2f B/op, %.3f allocs/op\\n", bytesPerOp, allocsPerOp)
+\tfmt.Printf("GF_METRIC AllocDelta=%d TotalAllocDelta=%d MallocsDelta=%d NumGC=%d BytesPerOp=%.2f AllocsPerOp=%.3f\\n",
+\t\tallocDelta, totalDelta, mallocsDelta, numGC, bytesPerOp, allocsPerOp)
+}
+`;
+
+const STRINGS_BUILDER_ALLOCS = `package main
+
+import (
+\t"fmt"
+\t"runtime"
+\t"strings"
+)
+
+const operations = ${ALLOCATIONS}
+
+var sink string
+
+//go:noinline
+func target(parts []string) string {
+\tsize := 0
+\tfor _, part := range parts {
+\t\tsize += len(part)
+\t}
+
+\tvar builder strings.Builder
+\tbuilder.Grow(size)
+\tfor _, part := range parts {
+\t\tbuilder.WriteString(part)
+\t}
+\treturn builder.String()
+}
+
+func heapDelta(after, before uint64) int64 {
+\tif after >= before {
+\t\treturn int64(after - before)
+\t}
+\treturn -int64(before - after)
+}
+
+func main() {
+\tparts := []string{"escape", "-", "analysis", "-", "makes", "-", "allocations", "-", "visible"}
+
+\truntime.GC()
+\tvar before, after runtime.MemStats
+\truntime.ReadMemStats(&before)
+
+\tfor i := 0; i < operations; i++ {
+\t\tsink = target(parts)
+\t}
+
+\truntime.ReadMemStats(&after)
+\truntime.KeepAlive(sink)
+
+\tallocDelta := heapDelta(after.Alloc, before.Alloc)
+\ttotalDelta := after.TotalAlloc - before.TotalAlloc
+\tmallocsDelta := after.Mallocs - before.Mallocs
+\tnumGC := after.NumGC - before.NumGC
+\tbytesPerOp := float64(totalDelta) / float64(operations)
+\tallocsPerOp := float64(mallocsDelta) / float64(operations)
+
+\tfmt.Printf("AllocDelta: %d bytes\\n", allocDelta)
+\tfmt.Printf("TotalAlloc delta: %d bytes\\n", totalDelta)
+\tfmt.Printf("Mallocs delta: %d\\n", mallocsDelta)
+\tfmt.Printf("NumGC: %d\\n", numGC)
+\tfmt.Printf("Per-op estimate: %.2f B/op, %.3f allocs/op\\n", bytesPerOp, allocsPerOp)
+\tfmt.Printf("GF_METRIC AllocDelta=%d TotalAllocDelta=%d MallocsDelta=%d NumGC=%d BytesPerOp=%.2f AllocsPerOp=%.3f\\n",
+\t\tallocDelta, totalDelta, mallocsDelta, numGC, bytesPerOp, allocsPerOp)
+}
+`;
+
+export const ALLOCATION_SNIPPETS = {
+  concat: {
+    label: "string += loop",
+    code: STRING_CONCAT_ALLOCS,
+  },
+  builder: {
+    label: "strings.Builder",
+    code: STRINGS_BUILDER_ALLOCS,
+  },
+} as const;
+
+type WorkbenchMode = "run" | "measure";
+type AllocationSnippetKey = keyof typeof ALLOCATION_SNIPPETS;
+
 type PlaygroundEvent = {
   Message?: unknown;
   Kind?: unknown;
@@ -64,6 +203,15 @@ type PlaygroundResult = {
 type OutputLine = {
   kind: "stdout" | "stderr";
   message: string;
+};
+
+type AllocationMetrics = {
+  allocDelta: number;
+  totalAllocDelta: number;
+  mallocsDelta: number;
+  numGC: number;
+  bytesPerOp: number;
+  allocsPerOp: number;
 };
 
 function parseOutput(result: PlaygroundResult): OutputLine[] {
@@ -86,23 +234,93 @@ function parseOutput(result: PlaygroundResult): OutputLine[] {
   return lines;
 }
 
+function parseAllocationMetrics(lines: OutputLine[]): AllocationMetrics | null {
+  const stdout = lines
+    .filter((line) => line.kind === "stdout")
+    .map((line) => line.message)
+    .join("\n");
+  const match = stdout.match(
+    /GF_METRIC\s+AllocDelta=(-?\d+)\s+TotalAllocDelta=(\d+)\s+MallocsDelta=(\d+)\s+NumGC=(\d+)\s+BytesPerOp=([\d.]+)\s+AllocsPerOp=([\d.]+)/,
+  );
+
+  if (!match) return null;
+
+  const values = match.slice(1).map(Number);
+  if (!values.every(Number.isFinite)) return null;
+
+  return {
+    allocDelta: values[0],
+    totalAllocDelta: values[1],
+    mallocsDelta: values[2],
+    numGC: values[3],
+    bytesPerOp: values[4],
+    allocsPerOp: values[5],
+  };
+}
+
+function formatInteger(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
 export function GoWorkbench({
   initialCode = DEFAULT_CODE,
   title = "Worker pool playground",
+  initialMode = "run",
+  onCodeChange,
 }: {
   initialCode?: string;
   title?: string;
+  initialMode?: WorkbenchMode;
+  onCodeChange?: (code: string) => void;
 }) {
   const titleId = useId();
-  const [code, setCode] = useState(initialCode);
+  const [mode, setMode] = useState<WorkbenchMode>(initialMode);
+  const [runSource, setRunSource] = useState(initialCode);
+  const [measureCode, setMeasureCode] = useState(STRING_CONCAT_ALLOCS);
+  const [activeSnippet, setActiveSnippet] =
+    useState<AllocationSnippetKey>("concat");
   const [output, setOutput] = useState<OutputLine[]>([]);
+  const [metrics, setMetrics] = useState<AllocationMetrics | null>(null);
   const [hasRun, setHasRun] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const code = mode === "run" ? runSource : measureCode;
+
+  function resetResult() {
+    setOutput([]);
+    setMetrics(null);
+    setHasRun(false);
+  }
+
+  function selectMode(nextMode: WorkbenchMode) {
+    if (nextMode === mode) return;
+    setMode(nextMode);
+    resetResult();
+    onCodeChange?.(nextMode === "run" ? runSource : measureCode);
+  }
+
+  function updateCode(value: string) {
+    if (mode === "run") {
+      setRunSource(value);
+    } else {
+      setMeasureCode(value);
+    }
+    setMetrics(null);
+    onCodeChange?.(value);
+  }
+
+  function selectSnippet(key: AllocationSnippetKey) {
+    const nextCode = ALLOCATION_SNIPPETS[key].code;
+    setActiveSnippet(key);
+    setMeasureCode(nextCode);
+    resetResult();
+    onCodeChange?.(nextCode);
+  }
 
   async function runCode() {
     setIsRunning(true);
     setHasRun(true);
     setOutput([]);
+    setMetrics(null);
 
     try {
       const response = await fetch("/api/playground", {
@@ -113,6 +331,9 @@ export function GoWorkbench({
       const result = (await response.json()) as PlaygroundResult;
       const lines = parseOutput(result);
 
+      if (mode === "measure" && response.ok) {
+        setMetrics(parseAllocationMetrics(lines));
+      }
       setOutput(
         lines.length > 0
           ? lines
@@ -144,16 +365,64 @@ export function GoWorkbench({
           <span className="type-label">Interactive Go</span>
           <h3 id={titleId}>{title}</h3>
         </div>
-        <button
-          type="button"
-          className="primary-btn lab-run-btn"
-          onClick={runCode}
-          disabled={isRunning}
-        >
-          <span aria-hidden="true">{isRunning ? "◌" : "▶"}</span>
-          {isRunning ? "Running…" : "Run code"}
-        </button>
+        <div className="bench-workbench-actions">
+          <div className="bench-mode-toggle" aria-label="Workbench mode">
+            <button
+              type="button"
+              className={mode === "run" ? "active" : ""}
+              onClick={() => selectMode("run")}
+              aria-pressed={mode === "run"}
+              disabled={isRunning}
+            >
+              Run
+            </button>
+            <button
+              type="button"
+              className={mode === "measure" ? "active" : ""}
+              onClick={() => selectMode("measure")}
+              aria-pressed={mode === "measure"}
+              disabled={isRunning}
+            >
+              Measure allocs
+            </button>
+          </div>
+          <button
+            type="button"
+            className="primary-btn lab-run-btn"
+            onClick={runCode}
+            disabled={isRunning}
+          >
+            <span aria-hidden="true">{isRunning ? "◌" : "▶"}</span>
+            {isRunning
+              ? mode === "measure"
+                ? "Measuring…"
+                : "Running…"
+              : mode === "measure"
+                ? "Measure allocations"
+                : "Run code"}
+          </button>
+        </div>
       </div>
+
+      {mode === "measure" && (
+        <div className="bench-snippet-bar">
+          <span>Starter harness:</span>
+          {(Object.keys(ALLOCATION_SNIPPETS) as AllocationSnippetKey[]).map(
+            (key) => (
+              <button
+                type="button"
+                key={key}
+                className={activeSnippet === key ? "active" : ""}
+                onClick={() => selectSnippet(key)}
+                aria-pressed={activeSnippet === key}
+                disabled={isRunning}
+              >
+                {ALLOCATION_SNIPPETS[key].label}
+              </button>
+            ),
+          )}
+        </div>
+      )}
 
       <div className="lab-editor-shell">
         <MonacoEditor
@@ -161,7 +430,7 @@ export function GoWorkbench({
           language="go"
           theme="vs-dark"
           value={code}
-          onChange={(value) => setCode(value ?? "")}
+          onChange={(value) => updateCode(value ?? "")}
           options={{
             ariaLabel: "Go code editor",
             automaticLayout: true,
@@ -210,19 +479,47 @@ export function GoWorkbench({
       <aside className="bench-panel" aria-label="Allocation gauge preview">
         <div className="bench-copy">
           <div className="bench-title-row">
-            <span className="type-label">Allocation gauge</span>
-            <span className="bench-pro-badge">Pro</span>
+            <span className="type-label">Allocation measurements</span>
+            {mode === "measure" && metrics && (
+              <span className="bench-live-badge">Live</span>
+            )}
           </div>
           <p>
-            Full allocs/op + escape analysis requires the Pro sandbox
-            (Docker/--race). Playground runs validate correctness instantly.
+            <code>go test -bench</code> + <code>-race</code> need Pro sandbox
+            (Docker). This harness measures allocations in the Playground runtime
+            via <code>ReadMemStats</code> — real numbers, not marketing.
           </p>
         </div>
-        <div className="bench-gauges" aria-label="Benchmark metrics pending">
-          <span className="bench-gauge">ns/op · pending</span>
-          <span className="bench-gauge">B/op · pending</span>
-          <span className="bench-gauge">allocs/op · pending</span>
-        </div>
+        {mode === "measure" && metrics ? (
+          <div className="bench-gauges" aria-label="Live allocation metrics">
+            <span className="bench-gauge bench-gauge-live">
+              Alloc Δ {formatInteger(metrics.allocDelta)} B
+            </span>
+            <span className="bench-gauge bench-gauge-live">
+              Total {formatInteger(metrics.totalAllocDelta)} B
+            </span>
+            <span className="bench-gauge bench-gauge-live">
+              {metrics.bytesPerOp.toFixed(2)} B/op
+            </span>
+            <span className="bench-gauge bench-gauge-live">
+              {metrics.allocsPerOp.toFixed(3)} allocs/op
+            </span>
+            <span className="bench-gauge bench-gauge-live">
+              {formatInteger(metrics.mallocsDelta)} mallocs
+            </span>
+            <span className="bench-gauge bench-gauge-live">
+              {formatInteger(metrics.numGC)} GC
+            </span>
+          </div>
+        ) : (
+          <p className="bench-metric-empty">
+            {mode === "run"
+              ? "Switch to Measure allocs to run a ReadMemStats harness."
+              : hasRun && !isRunning
+                ? "No metrics parsed. Fix any compiler error, then run the harness again."
+                : "Run the harness to populate live allocation metrics."}
+          </p>
+        )}
       </aside>
     </div>
   );

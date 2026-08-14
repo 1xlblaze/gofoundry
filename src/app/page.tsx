@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { allLessons, getTrack, tracks } from "@/content";
+import { allLessons, freeLessons, getTrack, tracks } from "@/content";
+import { HeroSnippet } from "@/components/HeroSnippet";
 import { HeroVisual } from "@/components/HeroVisual";
 import { MotionRoot } from "@/components/MotionRoot";
 import { pillars } from "@/content/pillars";
@@ -43,6 +44,47 @@ export default function HomePage() {
               View pricing
             </Link>
           </div>
+          <HeroSnippet />
+        </div>
+      </section>
+
+      <section className="shell section teaser-section">
+        <div className="section-head" data-motion>
+          <div>
+            <p className="kicker">Start with the real material</p>
+            <h2>Open deep dives (no paywall)</h2>
+            <p>
+              Read complete staff-grade samples on the runtime, allocation, and compiler behavior
+              that shapes production Go.
+            </p>
+          </div>
+        </div>
+        <div className="teaser-grid">
+          {freeLessons.map((lesson) => {
+            const track = getTrack(lesson.track);
+            return (
+              <Link
+                key={lesson.slug}
+                href={`/lesson/${lesson.slug}`}
+                className="teaser-card"
+                data-motion
+              >
+                <div className="teaser-card-top">
+                  <span className="teaser-chip teaser-chip-free">Free</span>
+                  <span className="teaser-chip">{track.short}</span>
+                </div>
+                <h3>{lesson.title}</h3>
+                <p>{lesson.subtitle}</p>
+                <div className="teaser-card-meta">
+                  <span>{lesson.difficulty}</span>
+                  <span>{lesson.minutes} min</span>
+                  <strong>
+                    Read lesson <span aria-hidden>→</span>
+                  </strong>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

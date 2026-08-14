@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConcurrencyVisualizer } from "@/components/ConcurrencyVisualizer";
+import { EscapeAnalyzer } from "@/components/EscapeAnalyzer";
 import { GoWorkbench } from "@/components/GoWorkbench";
 
 export const metadata: Metadata = {
@@ -87,8 +88,8 @@ export default function LabPage() {
             <h2 id="workbench-title">Turn the model into muscle memory</h2>
           </div>
           <p>
-            Start with a bounded worker pool. Change the worker count, remove a
-            close, or move Wait to see what the program guarantees.
+            Start with a bounded worker pool, or switch to Measure allocs for a
+            real ReadMemStats comparison in the Playground runtime.
           </p>
         </div>
         <GoWorkbench
@@ -97,18 +98,40 @@ export default function LabPage() {
         />
       </section>
 
-      <section className="lab-section lab-cta" aria-labelledby="sandbox-title">
-        <div>
-          <span className="type-label">03 · Measure under load</span>
-          <h2 id="sandbox-title">Need the race detector and real allocs/op?</h2>
+      <section className="lab-section" aria-labelledby="escape-title">
+        <div className="lab-section-head">
+          <div>
+            <span className="type-label">03 · Follow the allocation</span>
+            <h2 id="escape-title">See why values leave the stack</h2>
+          </div>
           <p>
-            The Pro sandbox runs code in isolated containers with race detection,
-            benchmark metrics, and escape-analysis output.
+            Explore compiler-style traces for returned pointers, boxed values,
+            closure captures, and locals too large for the stack.
           </p>
         </div>
-        <Link className="primary-btn lab-cta-btn" href="/pricing">
-          Explore Pro sandbox →
-        </Link>
+        <EscapeAnalyzer />
+      </section>
+
+      <section className="lab-section lab-cta" aria-labelledby="sandbox-title">
+        <div>
+          <span className="type-label">04 · Shape and stress the solution</span>
+          <h2 id="sandbox-title">Take the next problem from sketch to proof</h2>
+          <p>
+            Build it in the HEAT canvas, or use the Pro sandbox for race detection,
+            benchmark tooling, and live compiler escape output.
+          </p>
+        </div>
+        <div className="bench-cta-actions">
+          <Link className="secondary-btn" href="/heat">
+            Open HEAT canvas
+          </Link>
+          <Link className="ghost-btn" href="/sandbox">
+            How execution works
+          </Link>
+          <Link className="primary-btn" href="/pricing">
+            Pro sandbox waitlist →
+          </Link>
+        </div>
       </section>
     </div>
   );

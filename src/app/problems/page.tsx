@@ -97,6 +97,10 @@ export default function ProblemsPage() {
         </p>
       </header>
 
+      <Link className="heat-canvas-practice-cta" href="/heat">
+        Plan your next solution in the HEAT canvas →
+      </Link>
+
       <div className="stat-row sheet-stats">
         <div className="stat">
           <strong>

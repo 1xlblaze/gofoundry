@@ -121,6 +121,11 @@ export default function LearnPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3 pl-12 font-mono text-[0.7rem] tracking-wide text-ink-faint uppercase sm:pl-0">
+                            {lesson.free && (
+                              <span className="bg-mint/35 px-2 py-0.5 font-semibold text-teal-deep normal-case tracking-tight">
+                                Free
+                              </span>
+                            )}
                             <span>{lesson.minutes}m</span>
                             <span>{lesson.difficulty}</span>
                             {complete && (

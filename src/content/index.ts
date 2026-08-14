@@ -86,6 +86,8 @@ export const allLessons: Lesson[] = [
   ...hldLessons,
 ];
 
+export const freeLessons = allLessons.filter((lesson) => lesson.free);
+
 const bySlug = new Map(allLessons.map((l) => [l.slug, l]));
 
 export function getLesson(slug: string): Lesson | undefined {
