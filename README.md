@@ -64,5 +64,18 @@ psql $DATABASE_URL -f db/migrations/002_seed_problems.sql
 
 Set `DATABASE_URL` to persist HEAT submissions.
 
+### Full stack (Docker)
+
+```bash
+docker-compose up --build
+```
+
+Services: `app` (:3000), `worker` (:8081), `postgres`, `redis`.
+
+### Stripe
+
+Configure `STRIPE_SECRET_KEY`, webhook secret, and price IDs in `.env.local`. Checkout at `/pricing`.
+
+## Deploy
 
 Vercel (Node runtime — not static export). Connect the GitHub repo and set the env vars above.
