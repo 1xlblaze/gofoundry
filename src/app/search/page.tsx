@@ -9,40 +9,40 @@ export default function SearchPage() {
   const results = useMemo(() => searchLessons(q), [q]);
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="font-[family-name:var(--font-display)] text-4xl font-semibold tracking-tight">
-        Search
-      </h1>
-      <p className="mt-3 text-ink-soft">
-        Find lessons across DSA, concepts, internals, LLD, and HLD.
+    <div className="reading-rail mx-auto px-6 py-14 sm:py-16">
+      <p className="type-label">Find lessons</p>
+      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">Search</h1>
+      <p className="mt-4 text-[var(--text-lead)] leading-relaxed text-ink-soft">
+        DSA, concepts, internals, LLD, and HLD — one index.
       </p>
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="e.g. dijkstra, garbage collector, rate limiter…"
-        className="mt-8 w-full rounded-2xl border border-[var(--line)] bg-foam/80 px-5 py-4 text-base outline-none ring-teal/30 focus:ring-2"
+        placeholder="dijkstra, garbage collector, rate limiter…"
+        className="mt-10 w-full border-b border-[var(--line-strong)] bg-transparent py-4 text-lg outline-none placeholder:text-ink-faint focus:border-teal"
         autoFocus
       />
-      <ul className="mt-8 divide-y divide-[var(--line)]">
+      <ul className="mt-6">
         {results.map((lesson) => {
           const track = getTrack(lesson.track);
           return (
-            <li key={lesson.slug}>
-              <Link
-                href={`/lesson/${lesson.slug}`}
-                className="block py-4 transition hover:bg-foam/50"
-              >
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+            <li key={lesson.slug} className="border-b border-[var(--line)]">
+              <Link href={`/lesson/${lesson.slug}`} className="group block py-5">
+                <p className="type-label" style={{ color: track.accent }}>
                   {track.short}
                 </p>
-                <p className="mt-1 font-semibold">{lesson.title}</p>
-                <p className="text-sm text-ink-soft">{lesson.subtitle}</p>
+                <p className="type-title mt-2 text-[1.15rem] text-ink transition-colors group-hover:text-teal-deep">
+                  {lesson.title}
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  {lesson.subtitle}
+                </p>
               </Link>
             </li>
           );
         })}
         {q.trim() && results.length === 0 && (
-          <li className="py-8 text-ink-soft">No lessons matched “{q}”.</li>
+          <li className="py-10 text-ink-soft">No lessons matched “{q}”.</li>
         )}
       </ul>
     </div>

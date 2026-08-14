@@ -5,64 +5,79 @@ import { HeroVisual } from "@/components/HeroVisual";
 export default function HomePage() {
   return (
     <div>
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid min-h-[calc(100vh-4.5rem)] max-w-6xl items-center gap-10 px-6 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-0">
-          <div className="relative z-10 max-w-xl">
-            <p className="brand-mark animate-rise text-4xl font-semibold tracking-tight text-teal-deep sm:text-5xl md:text-6xl">
+      <section className="relative min-h-[calc(100vh-3.75rem)] overflow-hidden">
+        <div className="hero-plane" aria-hidden>
+          <HeroVisual />
+        </div>
+
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-3.75rem)] max-w-6xl items-end px-6 pb-16 pt-20 sm:items-center sm:pb-20 sm:pt-10">
+          <div className="max-w-2xl">
+            <p
+              className="brand-mark animate-rise text-[var(--text-display)] text-ink"
+              style={{
+                background:
+                  "linear-gradient(105deg, #0b1220 20%, #005a54 55%, #0b1220 90%)",
+                backgroundSize: "200% auto",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                animation: "rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both, sheen 8s ease infinite alternate",
+              }}
+            >
               GoFoundry
             </p>
-            <h1 className="animate-rise-delay mt-5 font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight tracking-tight text-ink sm:text-4xl">
-              Master Go from algorithms to distributed systems.
+            <h1 className="type-title animate-rise-delay mt-6 max-w-xl text-[clamp(1.65rem,3.2vw,2.35rem)] text-ink">
+              From algorithms to distributed systems — in Go.
             </h1>
-            <p className="animate-rise-delay-2 mt-5 max-w-md text-lg leading-relaxed text-ink-soft">
-              Detailed DSA in Go, language concepts, runtime internals, LLD, and HLD —
-              with quizzes and local progress tracking.
+            <p className="animate-rise-delay-2 mt-5 max-w-md text-[var(--text-lead)] leading-relaxed text-ink-soft">
+              DSA, language concepts, runtime internals, LLD, and HLD with quizzes and
+              progress tracking.
             </p>
-            <div className="animate-rise-delay-2 mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/learn"
-                className="rounded-full bg-teal-deep px-6 py-3 text-sm font-semibold text-foam transition hover:bg-teal"
-              >
+            <div className="animate-rise-delay-2 mt-9 flex flex-wrap gap-3">
+              <Link href="/learn" className="btn-primary">
                 Open curriculum
               </Link>
-              <Link
-                href="/track/dsa"
-                className="rounded-full border border-[var(--line)] bg-foam/70 px-6 py-3 text-sm font-semibold text-ink transition hover:border-teal"
-              >
+              <Link href="/track/dsa" className="btn-ghost">
                 Start with DSA
               </Link>
             </div>
           </div>
-          <div className="relative hidden h-[min(70vh,520px)] lg:block">
-            <HeroVisual />
-          </div>
         </div>
       </section>
 
-      <section className="border-t border-[var(--line)] bg-foam/40 py-20">
+      <section className="relative border-t border-[var(--line)] bg-foam/50 py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
-            Five tracks. One forge.
+          <p className="type-label">Tracks</p>
+          <h2 className="type-title mt-3 text-[var(--text-h2)] text-ink">
+            Five disciplines. One forge.
           </h2>
-          <p className="mt-3 max-w-2xl text-ink-soft">
-            {allLessons.length} lessons spanning interview algorithms through production
-            system design — written for Go engineers.
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
+            {allLessons.length} lessons from interview algorithms to production system
+            design — written for Go engineers.
           </p>
-          <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {tracks.map((t) => (
+
+          <div className="mt-14 grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+            {tracks.map((t, i) => (
               <Link
                 key={t.id}
                 href={`/track/${t.id}`}
-                className="group block border-t-2 pt-5 transition"
-                style={{ borderColor: t.accent }}
+                className="group block border-t border-[var(--line-strong)] pt-6 transition"
+                style={{ borderTopColor: t.accent }}
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">
-                  {t.short}
-                </p>
-                <h3 className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold group-hover:text-teal-deep">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="type-label" style={{ color: t.accent }}>
+                    {t.short}
+                  </p>
+                  <span className="font-mono text-xs text-ink-faint">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="type-title mt-3 text-[1.35rem] text-ink transition-colors group-hover:text-teal-deep">
                   {t.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{t.description}</p>
+                <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-soft">
+                  {t.description}
+                </p>
               </Link>
             ))}
           </div>

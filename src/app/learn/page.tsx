@@ -20,30 +20,29 @@ export default function LearnPage() {
   const pct = total ? Math.round((done / total) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
-      <h1 className="font-[family-name:var(--font-display)] text-4xl font-semibold tracking-tight">
-        Curriculum
-      </h1>
-      <p className="mt-3 max-w-2xl text-ink-soft">
-        Work the tracks in any order. Progress is saved in this browser.
+    <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16">
+      <p className="type-label">All tracks</p>
+      <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">Curriculum</h1>
+      <p className="mt-4 max-w-xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
+        Work the tracks in any order. Progress stays in this browser.
       </p>
 
-      <div className="mt-8">
-        <div className="mb-2 flex items-end justify-between text-sm">
-          <span className="font-medium text-ink">
-            {done} / {total} lessons complete
+      <div className="mt-10 max-w-xl">
+        <div className="mb-2.5 flex items-end justify-between text-sm">
+          <span className="font-semibold tracking-tight text-ink">
+            {done} / {total} complete
           </span>
-          <span className="text-ink-soft">{pct}%</span>
+          <span className="font-mono text-ink-faint">{pct}%</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-paper-2">
+        <div className="h-1.5 overflow-hidden bg-paper-2">
           <div
-            className="h-full rounded-full bg-teal transition-all duration-500"
+            className="h-full bg-teal transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
       </div>
 
-      <div className="mt-14 space-y-14">
+      <div className="mt-16 space-y-16">
         {tracks.map((track) => {
           const lessons = lessonsForTrack(track.id);
           const trackDone = lessons.filter((l) =>
@@ -51,47 +50,51 @@ export default function LearnPage() {
           ).length;
           return (
             <section key={track.id}>
-              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--line)] pb-4">
+              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--line)] pb-5">
                 <div>
-                  <p
-                    className="text-xs font-semibold uppercase tracking-[0.18em]"
-                    style={{ color: track.accent }}
-                  >
+                  <p className="type-label" style={{ color: track.accent }}>
                     {track.short}
                   </p>
-                  <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold">
-                    <Link href={`/track/${track.id}`} className="hover:text-teal-deep">
+                  <h2 className="type-title mt-2 text-[var(--text-h2)]">
+                    <Link
+                      href={`/track/${track.id}`}
+                      className="text-ink transition-colors hover:text-teal-deep"
+                    >
                       {track.title}
                     </Link>
                   </h2>
                 </div>
-                <p className="text-sm text-ink-soft">
-                  {trackDone}/{lessons.length} done
+                <p className="font-mono text-sm text-ink-faint">
+                  {trackDone}/{lessons.length}
                 </p>
               </div>
-              <ol className="mt-6 divide-y divide-[var(--line)]">
+              <ol className="mt-2">
                 {lessons.map((lesson, i) => {
                   const complete = progress.completed.includes(lesson.slug);
                   return (
-                    <li key={lesson.slug}>
+                    <li key={lesson.slug} className="border-b border-[var(--line)]">
                       <Link
                         href={`/lesson/${lesson.slug}`}
-                        className="flex flex-col gap-1 py-4 transition hover:bg-foam/50 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+                        className="group flex flex-col gap-2 py-5 transition sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
                       >
-                        <div className="flex gap-4">
-                          <span className="w-8 font-mono text-sm text-ink-soft">
+                        <div className="flex gap-5">
+                          <span className="w-7 font-mono text-sm text-ink-faint">
                             {String(i + 1).padStart(2, "0")}
                           </span>
                           <div>
-                            <p className="font-semibold text-ink">{lesson.title}</p>
-                            <p className="text-sm text-ink-soft">{lesson.subtitle}</p>
+                            <p className="type-title text-[1.1rem] text-ink transition-colors group-hover:text-teal-deep">
+                              {lesson.title}
+                            </p>
+                            <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-ink-soft">
+                              {lesson.subtitle}
+                            </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 pl-12 text-xs font-medium uppercase tracking-wide text-ink-soft sm:pl-0">
-                          <span>{lesson.minutes} min</span>
+                        <div className="flex items-center gap-3 pl-12 font-mono text-[0.7rem] tracking-wide text-ink-faint uppercase sm:pl-0">
+                          <span>{lesson.minutes}m</span>
                           <span>{lesson.difficulty}</span>
                           {complete && (
-                            <span className="rounded-full bg-mint/40 px-2 py-1 text-teal-deep">
+                            <span className="bg-mint/35 px-2 py-0.5 font-semibold text-teal-deep normal-case tracking-tight">
                               Done
                             </span>
                           )}

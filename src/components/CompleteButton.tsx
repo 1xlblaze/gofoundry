@@ -17,10 +17,10 @@ export function CompleteButton({ slug }: { slug: string }) {
         markComplete(slug);
         setDone(true);
       }}
-      className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+      className={`px-4 py-2 text-[0.8rem] font-semibold tracking-tight transition ${
         done
-          ? "bg-mint/40 text-teal-deep"
-          : "border border-[var(--line)] bg-foam/80 text-ink hover:border-teal"
+          ? "bg-mint/35 text-teal-deep"
+          : "border border-[var(--line-strong)] bg-foam/70 text-ink hover:border-teal"
       }`}
     >
       {done ? "Completed" : "Mark complete"}

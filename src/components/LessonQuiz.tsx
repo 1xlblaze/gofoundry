@@ -35,23 +35,27 @@ export function LessonQuiz({
   }
 
   return (
-    <section className="mt-14 border-t border-[var(--line)] pt-10">
-      <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold">
+    <section className="mt-16 border-t border-[var(--line)] pt-12">
+      <p className="type-label">Quiz</p>
+      <h2 className="type-title mt-2 text-[var(--text-h2)] text-ink">
         Check your understanding
       </h2>
-      <p className="mt-2 text-sm text-ink-soft">
+      <p className="mt-3 text-sm leading-relaxed text-ink-soft">
         Answer all questions, then submit. A perfect score marks the lesson complete.
       </p>
-      <div className="mt-8 space-y-8">
+      <div className="mt-10 space-y-10">
         {questions.map((q, qi) => (
           <fieldset key={q.id}>
-            <legend className="font-semibold text-ink">
-              {qi + 1}. {q.prompt}
+            <legend className="type-title text-[1.05rem] text-ink">
+              <span className="mr-2 font-mono text-sm text-ink-faint">
+                {String(qi + 1).padStart(2, "0")}
+              </span>
+              {q.prompt}
             </legend>
-            <div className="mt-3 space-y-2">
+            <div className="mt-4 space-y-2">
               {q.options.map((opt, oi) => {
                 const selected = answers[q.id] === oi;
-                let ring = "border-[var(--line)]";
+                let ring = "border-[var(--line)] bg-foam/40";
                 if (submitted) {
                   if (oi === q.answerIndex) ring = "border-teal bg-mint/20";
                   else if (selected) ring = "border-copper bg-copper/10";
@@ -61,11 +65,11 @@ export function LessonQuiz({
                 return (
                   <label
                     key={oi}
-                    className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-sm transition ${ring}`}
+                    className={`flex cursor-pointer items-start gap-3 border px-4 py-3.5 text-sm leading-relaxed transition ${ring}`}
                   >
                     <input
                       type="radio"
-                      className="mt-1"
+                      className="mt-1 accent-[var(--signal)]"
                       name={q.id}
                       checked={selected}
                       disabled={submitted}
@@ -73,13 +77,13 @@ export function LessonQuiz({
                         setAnswers((prev) => ({ ...prev, [q.id]: oi }))
                       }
                     />
-                    <span>{opt}</span>
+                    <span className="text-ink-soft">{opt}</span>
                   </label>
                 );
               })}
             </div>
             {submitted && (
-              <p className="mt-3 text-sm text-ink-soft">{q.explanation}</p>
+              <p className="type-serif mt-3 text-sm text-ink-soft">{q.explanation}</p>
             )}
           </fieldset>
         ))}
@@ -89,14 +93,14 @@ export function LessonQuiz({
           type="button"
           onClick={onSubmit}
           disabled={Object.keys(answers).length < questions.length}
-          className="mt-8 rounded-full bg-teal-deep px-6 py-3 text-sm font-semibold text-foam transition hover:bg-teal disabled:cursor-not-allowed disabled:opacity-40"
+          className="btn-primary mt-10 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Submit quiz
         </button>
       ) : (
-        <p className="mt-8 text-sm font-medium text-ink">
-          Score: {Math.round(score * 100)}% (
-          {Math.round(score * questions.length)}/{questions.length})
+        <p className="mt-10 font-mono text-sm text-ink">
+          Score {Math.round(score * 100)}% · {Math.round(score * questions.length)}/
+          {questions.length}
         </p>
       )}
     </section>

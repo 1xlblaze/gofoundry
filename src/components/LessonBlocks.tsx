@@ -2,7 +2,7 @@ import type { ContentBlock } from "@/content/types";
 
 export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {blocks.map((block, i) => {
         switch (block.type) {
           case "prose":
@@ -17,9 +17,13 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
           case "code":
             return (
               <div key={i} className="code-panel">
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-xs uppercase tracking-wider text-mint/80">
-                  <span>{block.title ?? "Example"}</span>
-                  <span>{block.language}</span>
+                <div className="flex items-center justify-between border-b border-white/8 px-4 py-2.5">
+                  <span className="text-[0.7rem] font-medium tracking-[0.12em] text-[#99f6e4]/80 uppercase">
+                    {block.title ?? "Example"}
+                  </span>
+                  <span className="font-mono text-[0.65rem] tracking-wide text-white/35">
+                    {block.language}
+                  </span>
                 </div>
                 <pre>
                   <code>{block.code}</code>
@@ -29,19 +33,17 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
           case "callout": {
             const styles =
               block.tone === "warn"
-                ? "border-copper/40 bg-copper/10"
+                ? "border-copper/35 bg-copper/8"
                 : block.tone === "tip"
-                  ? "border-teal/30 bg-mint/20"
-                  : "border-[var(--line)] bg-paper-2/80";
+                  ? "border-teal/25 bg-mint/15"
+                  : "border-[var(--line)] bg-paper-2/70";
             return (
               <aside
                 key={i}
-                className={`rounded-2xl border px-5 py-4 text-sm leading-relaxed text-ink ${styles}`}
+                className={`border-l-[3px] px-5 py-4 text-[0.95rem] leading-relaxed text-ink ${styles}`}
               >
-                <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">
-                  {block.tone}
-                </p>
-                {block.body}
+                <p className="type-label mb-2">{block.tone}</p>
+                <p className="type-serif text-[1.02rem] text-ink-soft">{block.body}</p>
               </aside>
             );
           }
@@ -49,18 +51,24 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             return (
               <div
                 key={i}
-                className="grid gap-4 rounded-2xl border border-[var(--line)] bg-foam/70 p-5 sm:grid-cols-2"
+                className="grid gap-6 border border-[var(--line)] bg-foam/60 px-5 py-5 sm:grid-cols-2"
               >
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-ink-soft">Time</p>
-                  <p className="mt-1 font-mono text-sm">{block.time}</p>
+                  <p className="type-label">Time</p>
+                  <p className="mt-2 font-mono text-sm leading-relaxed text-ink">
+                    {block.time}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-ink-soft">Space</p>
-                  <p className="mt-1 font-mono text-sm">{block.space}</p>
+                  <p className="type-label">Space</p>
+                  <p className="mt-2 font-mono text-sm leading-relaxed text-ink">
+                    {block.space}
+                  </p>
                 </div>
                 {block.notes && (
-                  <p className="sm:col-span-2 text-sm text-ink-soft">{block.notes}</p>
+                  <p className="type-serif text-sm text-ink-soft sm:col-span-2">
+                    {block.notes}
+                  </p>
                 )}
               </div>
             );
@@ -68,15 +76,15 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             return (
               <div key={i}>
                 {block.title && (
-                  <h3 className="mb-3 font-[family-name:var(--font-display)] text-xl font-semibold">
-                    {block.title}
-                  </h3>
+                  <h3 className="type-title mb-4 text-[1.35rem] text-ink">{block.title}</h3>
                 )}
-                <ol className="space-y-3">
+                <ol className="space-y-3.5">
                   {block.items.map((item, j) => (
-                    <li key={j} className="flex gap-3 text-ink-soft">
-                      <span className="font-mono text-sm text-teal">{j + 1}.</span>
-                      <span>{item}</span>
+                    <li key={j} className="flex gap-4">
+                      <span className="font-mono text-sm font-medium text-teal">
+                        {String(j + 1).padStart(2, "0")}
+                      </span>
+                      <span className="type-serif text-[1.05rem] text-ink-soft">{item}</span>
                     </li>
                   ))}
                 </ol>
