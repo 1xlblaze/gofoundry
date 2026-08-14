@@ -191,6 +191,12 @@ func GetUser(ctx context.Context, id string) (*User, error) {
     tags: ["messaging", "events"],
     blocks: [
       {
+        type: "diagram",
+        kind: "outbox",
+        title: "Outbox etch",
+        caption: "One DB transaction for state + outbox row — then relay.",
+      },
+      {
         type: "prose",
         title: "Semantics",
         body: "At-most-once, at-least-once, exactly-once (usually effective exactly-once via idempotency). Queues (SQS/Rabbit) for task distribution; logs (Kafka) for replayable event streams. Consumer groups, DLQs, ordering keys, and backpressure matter.",

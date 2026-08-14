@@ -1,15 +1,19 @@
 import Link from "next/link";
+import { auth } from "@/auth";
+import { AuthButtons } from "@/components/AuthButtons";
 
 const links = [
   { href: "/learn", label: "Curriculum" },
+  { href: "/track/method", label: "HEAT" },
   { href: "/track/dsa", label: "DSA" },
-  { href: "/track/internals", label: "Internals" },
   { href: "/track/lld", label: "LLD" },
   { href: "/track/hld", label: "HLD" },
   { href: "/search", label: "Search" },
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const session = await auth();
+
   return (
     <header className="nav-blur sticky top-0 z-40">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
@@ -27,9 +31,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Link href="/learn" className="btn-primary !px-4 !py-2 text-[0.8rem]">
-          Start learning
-        </Link>
+        <AuthButtons mode="nav" userName={session?.user?.name} />
       </div>
     </header>
   );

@@ -119,6 +119,21 @@ func NewHasher(name string) (Hasher, error) {
     tags: ["rate-limit", "concurrency"],
     blocks: [
       {
+        type: "diagram",
+        kind: "token-bucket",
+        title: "Limiter etch",
+        caption: "Capacity = burst. Refill rate = sustained QPS.",
+      },
+      {
+        type: "answer",
+        opening: "I'd clarify key granularity, burst vs smooth, and single-node vs Redis.",
+        beats: [
+          "Draw token bucket with capacity and refill.",
+          "Discuss mutex / Redis+Lua for distributed.",
+          "Fail-open vs fail-closed on dependency loss.",
+        ],
+      },
+      {
         type: "prose",
         title: "Requirements",
         body: "Allow N requests per window per key (IP/user). Must be concurrency-safe. Optional burst. Discuss in-memory vs Redis for multi-instance. Algorithms: fixed window (simple, bursty at edges), sliding window log/counter, token bucket, leaky bucket.",

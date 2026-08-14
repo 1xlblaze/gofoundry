@@ -3,16 +3,50 @@ export type TrackId =
   | "concepts"
   | "internals"
   | "lld"
-  | "hld";
+  | "hld"
+  | "method";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
+
+export type DiagramKind =
+  | "two-pointers"
+  | "sliding-window"
+  | "linked-list-reverse"
+  | "bfs-levels"
+  | "tree-dfs"
+  | "heap-shape"
+  | "token-bucket"
+  | "outbox"
+  | "gpm-scheduler"
+  | "hash-map-buckets"
+  | "heat-cycle";
 
 export type ContentBlock =
   | { type: "prose"; title?: string; body: string }
   | { type: "code"; title?: string; language: "go" | "bash" | "text"; code: string }
   | { type: "callout"; tone: "tip" | "warn" | "note"; body: string }
   | { type: "complexity"; time: string; space: string; notes?: string }
-  | { type: "steps"; title?: string; items: string[] };
+  | { type: "steps"; title?: string; items: string[] }
+  | {
+      type: "think";
+      title?: string;
+      clarify: string[];
+      model: string[];
+      pitfalls?: string[];
+    }
+  | {
+      type: "answer";
+      title?: string;
+      opening: string;
+      beats: string[];
+      closing?: string;
+    }
+  | {
+      type: "diagram";
+      title?: string;
+      kind: DiagramKind;
+      caption?: string;
+    };
 
 export type QuizQuestion = {
   id: string;

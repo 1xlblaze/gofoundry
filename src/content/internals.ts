@@ -11,6 +11,23 @@ export const internalsLessons: Lesson[] = [
     tags: ["scheduler", "runtime"],
     blocks: [
       {
+        type: "diagram",
+        kind: "gpm-scheduler",
+        title: "G·M·P etch",
+        caption: "M needs a P to execute Go code — draw this in system interviews.",
+      },
+      {
+        type: "think",
+        clarify: [
+          "CPU-bound vs blocking syscall heavy?",
+          "What is GOMAXPROCS relative to cores?",
+        ],
+        model: [
+          "G runnable queues on P",
+          "Syscall handoff frees P for another M",
+        ],
+      },
+      {
         type: "prose",
         title: "The triad",
         body: "G = goroutine, M = OS thread (machine), P = processor (logical resource required to run Go code). GOMAXPROCS Ps cooperate to run runnable Gs. Work-stealing balances run queues. Blocking syscalls can detach M from P so other Ms keep running Go code.",

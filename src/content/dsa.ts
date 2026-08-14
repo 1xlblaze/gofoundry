@@ -11,6 +11,38 @@ export const dsaLessons: Lesson[] = [
     tags: ["arrays", "slices", "two-pointers"],
     blocks: [
       {
+        type: "think",
+        title: "HEAT · Hear & model",
+        clarify: [
+          "Is the slice sorted? Can we mutate in place?",
+          "Do we share the backing array with the caller?",
+          "What is n, and do we need stable order?",
+        ],
+        model: [
+          "Draw indices L/R on the array before coding",
+          "Slice header = ptr + len + cap — mutations hit shared memory",
+          "Prefer two pointers / write index over nested loops",
+        ],
+        pitfalls: ["Forgetting append may reallocate and break shared aliases"],
+      },
+      {
+        type: "diagram",
+        title: "Two-pointer etch",
+        kind: "two-pointers",
+        caption: "Etch this before Temper — move the pointer that restores the invariant.",
+      },
+      {
+        type: "answer",
+        title: "How to answer",
+        opening: "I'd treat this as an in-place slice problem with two indices.",
+        beats: [
+          "Clarify mutability and sortedness.",
+          "Diagram L/R (or read/write) on the backing array.",
+          "State O(n)/O(1) target, then implement with clear invariant comments.",
+          "Dry-run empty, one element, and all-duplicates.",
+        ],
+      },
+      {
         type: "prose",
         title: "Mental model",
         body: "In Go, an array is a fixed-length value type. A slice is a descriptor over an underlying array: pointer, length, and capacity. Almost all day-to-day work uses slices. Understanding how append reallocates is the difference between O(1) amortized growth and accidental quadratic copies.",
@@ -124,6 +156,35 @@ func uniqueSorted(nums []int) int {
     tags: ["strings", "utf-8", "hashmap"],
     blocks: [
       {
+        type: "think",
+        title: "HEAT · Hear",
+        clarify: [
+          "ASCII letters only, or full UTF-8 runes?",
+          "Case sensitivity? Whitespace?",
+          "Need longest / shortest / count of windows?",
+        ],
+        model: [
+          "Sliding window + last-seen index map",
+          "Frequency array[26] when alphabet is tiny",
+        ],
+      },
+      {
+        type: "diagram",
+        kind: "sliding-window",
+        title: "Window etch",
+        caption: "Expand right; shrink left when the invariant breaks.",
+      },
+      {
+        type: "answer",
+        title: "How to answer",
+        opening: "I'll clarify the alphabet first — that decides map vs [26]int.",
+        beats: [
+          "Draw the window on an example string.",
+          "Name the invariant (e.g. all unique chars).",
+          "Code the expand/shrink loop; cite O(n).",
+        ],
+      },
+      {
         type: "prose",
         title: "Bytes are not characters",
         body: "A Go string is an immutable sequence of bytes, usually UTF-8. Indexing s[i] yields a byte. Ranging with for _, r := range s yields runes (code points). For DSA interviews, clarify whether the alphabet is ASCII; that unlocks O(1) arrays of size 26/128/256.",
@@ -195,6 +256,32 @@ func lengthOfLongestSubstring(s string) int {
     minutes: 28,
     tags: ["linked-list", "pointers"],
     blocks: [
+      {
+        type: "diagram",
+        kind: "linked-list-reverse",
+        title: "Pointer rewiring",
+        caption: "Etch prev/curr/next — never lose the rest of the list.",
+      },
+      {
+        type: "think",
+        clarify: [
+          "Singly or doubly linked? Cycle possible?",
+          "May the head change? (use dummy)",
+        ],
+        model: [
+          "Three-pointer rotate for reverse",
+          "Fast/slow for mid / cycle",
+        ],
+      },
+      {
+        type: "answer",
+        opening: "I'll draw the nodes and label prev, curr, next before touching code.",
+        beats: [
+          "Walk one rewiring step on the diagram.",
+          "Implement the loop; mention nil termination.",
+          "Offer Floyd if cycle detection is adjacent.",
+        ],
+      },
       {
         type: "prose",
         title: "When lists win",
@@ -362,6 +449,12 @@ func nextGreater(nums []int) []int {
     tags: ["hashmap", "set"],
     blocks: [
       {
+        type: "diagram",
+        kind: "hash-map-buckets",
+        title: "Map etch",
+        caption: "Hash → bucket → overflow — average O(1), not magic.",
+      },
+      {
         type: "prose",
         title: "The interview Swiss army knife",
         body: "Maps turn many O(n²) scans into O(n). In Go, map[K]V is unordered; never rely on iteration order. For sets, use map[T]struct{} to avoid wasting a bool per key.",
@@ -423,6 +516,17 @@ func groupAnagrams(strs []string) [][]string {
     minutes: 32,
     tags: ["trees", "dfs", "bfs"],
     blocks: [
+      {
+        type: "diagram",
+        kind: "tree-dfs",
+        title: "Traversal etch",
+        caption: "Say when you visit the node — pre, in, or post.",
+      },
+      {
+        type: "think",
+        clarify: ["Binary vs n-ary? Need parent pointers? Balanced?"],
+        model: ["Recursion tree or explicit stack", "BFS queue for levels"],
+      },
       {
         type: "prose",
         title: "Traversal catalog",
@@ -507,6 +611,12 @@ func levelOrder(root *TreeNode) [][]int {
     tags: ["bst", "heap", "topk"],
     blocks: [
       {
+        type: "diagram",
+        kind: "heap-shape",
+        title: "Heap etch",
+        caption: "Array indices make parent/child math trivial — draw before coding top-K.",
+      },
+      {
         type: "prose",
         title: "Order statistics vs priorities",
         body: "A BST supports ordered operations (predecessor, range queries). A binary heap supports peek-min/max in O(1) and insert/pop in O(log n). In Go, implement heap.Interface from container/heap for interview-grade priority queues.",
@@ -568,6 +678,21 @@ func (k *KthLargest) Add(val int) int {
     minutes: 35,
     tags: ["graphs", "bfs", "dfs"],
     blocks: [
+      {
+        type: "diagram",
+        kind: "bfs-levels",
+        title: "BFS etch",
+        caption: "Queue = frontier. First reach = fewest edges when unweighted.",
+      },
+      {
+        type: "answer",
+        opening: "I'll pick adjacency lists, then BFS if shortest unweighted path, else DFS/components.",
+        beats: [
+          "Draw the graph or grid and mark visited.",
+          "State O(V+E).",
+          "Code with clear queue or recursion; call out visited.",
+        ],
+      },
       {
         type: "prose",
         title: "Representation first",
@@ -925,6 +1050,12 @@ func coinChange(coins []int, amount int) int {
     minutes: 26,
     tags: ["sliding-window", "two-pointers"],
     blocks: [
+      {
+        type: "diagram",
+        kind: "sliding-window",
+        title: "Window etch",
+        caption: "Draw the window bounds; name the invariant out loud.",
+      },
       {
         type: "prose",
         title: "Fixed vs variable window",

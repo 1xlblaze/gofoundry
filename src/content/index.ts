@@ -1,4 +1,5 @@
 import type { Lesson, TrackId, TrackMeta } from "./types";
+import { methodLessons } from "./method";
 import { dsaLessons } from "./dsa";
 import { conceptsLessons } from "./concepts";
 import { internalsLessons } from "./internals";
@@ -7,11 +8,19 @@ import { hldLessons } from "./hld";
 
 export const tracks: TrackMeta[] = [
   {
+    id: "method",
+    title: "Foundry HEAT Method",
+    short: "HEAT",
+    description:
+      "Our USP: Hear → Etch → Anchor → Temper — how to think, diagram, and answer in Go.",
+    accent: "var(--accent-method)",
+  },
+  {
     id: "dsa",
     title: "Data Structures & Algorithms",
     short: "DSA",
     description:
-      "Arrays to DP — interview-ready patterns implemented idiomatic Go.",
+      "Arrays to DP — interview-ready patterns with diagrams and idiomatic Go.",
     accent: "var(--accent-dsa)",
   },
   {
@@ -49,6 +58,7 @@ export const tracks: TrackMeta[] = [
 ];
 
 export const allLessons: Lesson[] = [
+  ...methodLessons,
   ...dsaLessons,
   ...conceptsLessons,
   ...internalsLessons,

@@ -1,37 +1,37 @@
 # GoFoundry
 
-Interactive Go learning platform covering:
+Interactive Go learning platform with a unique **Foundry HEAT** method:
 
-- **DSA** — arrays/slices through DP, graphs, tries
-- **Concepts** — interfaces, concurrency, context, generics, performance
-- **Internals** — scheduler (G/M/P), GC, maps/slices, channels, escape analysis
-- **LLD** — SOLID, patterns, rate limiter, LRU, URL shortener, parking lot, notifications
-- **HLD** — foundations, CAP, caching, DBs, messaging, case studies, resilience
+**Hear → Etch → Anchor → Temper**
 
-Features: detailed lessons with Go code, quizzes, search, and browser-local progress.
+- How to think + how to answer interview scripts
+- draw.io–style diagrams in lessons
+- DSA, concepts, internals, LLD, HLD in idiomatic Go
+- Quizzes + local progress
+- Google Sign-In (Auth.js) + optional Keycloak OIDC
 
 ## Develop
 
 ```bash
 npm install
+cp .env.example .env.local   # fill Google / Keycloak / AUTH_SECRET
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+## Auth env
 
-## Build
-
-```bash
-npm run build
-npm start
+```
+AUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+# optional Keycloak
+KEYCLOAK_CLIENT_ID=
+KEYCLOAK_CLIENT_SECRET=
+KEYCLOAK_ISSUER=https://your-keycloak/realms/your-realm
 ```
 
-## Deploy (GitHub Pages)
+Google redirect URI: `http://localhost:3000/api/auth/callback/google`
 
-Repo: https://github.com/1xlblaze/gofoundry
+## Deploy
 
-Pushes to `main` build the static site and publish the `gh-pages` branch.
-
-**One-time setup:** open [Pages settings](https://github.com/1xlblaze/gofoundry/settings/pages) → Source: **Deploy from a branch** → Branch: **gh-pages** / **/ (root)** → Save.
-
-Live URL after that: https://1xlblaze.github.io/gofoundry/
+Vercel (Node runtime — not static export). Connect the GitHub repo and set the env vars above.

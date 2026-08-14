@@ -4,15 +4,19 @@ const repo = "gofoundry";
 const isGhPages = process.env.GITHUB_PAGES === "true";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  images: { unoptimized: true },
-  trailingSlash: true,
+  // Vercel uses the Node server (needed for Auth.js).
+  // GitHub Pages builds still opt into static export via GITHUB_PAGES=true.
   ...(isGhPages
     ? {
+        output: "export" as const,
+        images: { unoptimized: true },
+        trailingSlash: true,
         basePath: `/${repo}`,
         assetPrefix: `/${repo}/`,
       }
-    : {}),
+    : {
+        images: { unoptimized: true },
+      }),
 };
 
 export default nextConfig;
