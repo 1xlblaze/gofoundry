@@ -22,11 +22,9 @@ export function listDsaProblems(): PlatformProblem[] {
   return listPlatformProblems("dsa");
 }
 
-export function isProProblem(id: string): boolean {
-  const problem = byId.get(id);
-  if (!problem) return false;
-  // First DSA problem is free; rest require Pro
-  return problem.id !== "dsa-sliding-window-maximum";
+/** All in-app problems are free during the public beta. */
+export function isProProblem(_id: string): boolean {
+  return false;
 }
 
 export function exportProblemsManifest() {

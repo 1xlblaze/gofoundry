@@ -8,8 +8,16 @@ export type DbClient = {
 
 let pool: DbClient | null = null;
 
+function resolveDatabaseUrl(): string | undefined {
+  return (
+    process.env.DATABASE_URL ??
+    process.env.POSTGRES_URL ??
+    process.env.POSTGRES_PRISMA_URL
+  );
+}
+
 export function isDatabaseConfigured(): boolean {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(resolveDatabaseUrl());
 }
 
 export async function getDb(): Promise<DbClient | null> {
@@ -18,7 +26,7 @@ export async function getDb(): Promise<DbClient | null> {
 
   const { Pool } = await import("pg");
   const pgPool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: resolveDatabaseUrl(),
     max: 5,
     idleTimeoutMillis: 30_000,
   });

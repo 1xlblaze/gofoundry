@@ -1,0 +1,16 @@
+# Render blueprint for the Go sandbox worker (free tier)
+# Dashboard: New → Blueprint → connect this repo
+
+services:
+  - type: web
+    name: gofoundry-worker
+    runtime: docker
+    dockerfilePath: deploy/Dockerfile.worker
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SANDBOX_WORKER_PORT
+        value: "8081"
+      - key: GO_BIN
+        value: /usr/bin/go

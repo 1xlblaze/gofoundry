@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
+import { seedPlatformProblems } from "@/lib/platform/seed-problems";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -50,5 +51,7 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, results });
+  const seed = await seedPlatformProblems(db);
+
+  return NextResponse.json({ ok: true, results, seed });
 }

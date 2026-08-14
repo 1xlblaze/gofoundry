@@ -7,10 +7,13 @@
     "build": "npm run sync:worker && next build",
     "start": "next start",
     "lint": "eslint",
-    "sync:worker": "tsx scripts/sync-worker-problems.mjs"
+    "sync:worker": "tsx scripts/sync-worker-problems.mjs",
+    "seed:problems": "tsx scripts/seed-problems.mjs",
+    "deploy:setup": "node scripts/deploy-setup.mjs"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "@upstash/redis": "^1.38.2",
     "next": "16.3.0",
     "next-auth": "^5.0.0-beta.32",
     "pg": "^8.16.0",
