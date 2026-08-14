@@ -5708,3 +5708,158 @@ a.brand-mark {
     grid-template-columns: 1fr;
   }
 }
+
+/* Etch / Excalidraw canvas */
+.etch-canvas-root {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.etch-canvas-frame {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #faf8f5;
+}
+
+.etch-canvas-loading {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  color: var(--muted);
+}
+
+.etch-preset-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.etch-preset-chip {
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  background: var(--bg-elevated);
+}
+
+.etch-save-note {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.etch-canvas-root-compact .etch-canvas-frame {
+  border-radius: 0.85rem;
+}
+
+.lesson-roadmap {
+  display: grid;
+  gap: 1rem;
+}
+
+.lesson-roadmap-head h2 {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+.lesson-roadmap-head p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.lesson-roadmap-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lesson-roadmap-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  background: var(--bg-elevated);
+}
+
+.lesson-roadmap-index {
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.lesson-roadmap-visual {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  background: color-mix(in srgb, var(--brand) 8%, white);
+}
+
+.lesson-roadmap-think {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.lesson-roadmap-action {
+  border-color: color-mix(in srgb, var(--brand) 25%, var(--line));
+}
+
+.diagram-callout {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 25%, var(--line));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 6%, white), white);
+}
+
+.diagram-callout-head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.diagram-callout-head h3 {
+  margin: 0;
+}
+
+.diagram-callout-badge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 12%, white);
+}
+
+.diagram-callout figcaption {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.lesson-etch-pad {
+  display: grid;
+  gap: 1rem;
+}
+
+.lesson-etch-pad-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lesson-etch-pad-head h2 {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.lesson-etch-pad-head p {
+  margin: 0;
+  max-width: 42rem;
+  color: var(--ink-soft);
+}

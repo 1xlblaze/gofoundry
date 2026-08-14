@@ -179,12 +179,14 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "diagram":
             return (
-              <Diagram
-                key={i}
-                kind={block.kind}
-                title={block.title}
-                caption={block.caption}
-              />
+              <figure key={i} className="diagram-callout panel">
+                <div className="diagram-callout-head">
+                  <span className="diagram-callout-badge">Visual anchor</span>
+                  {block.title && <h3>{block.title}</h3>}
+                </div>
+                <Diagram kind={block.kind} caption={block.caption} />
+                {block.caption && <figcaption>{block.caption}</figcaption>}
+              </figure>
             );
           default:
             return null;

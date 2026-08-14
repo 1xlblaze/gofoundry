@@ -14,6 +14,9 @@ type DiagnosticPanelProps = {
   problemId: string;
   code: string;
   modes?: DiagnosticMode[];
+  etchDiagram?: Record<string, unknown>;
+  hearNotes?: Record<string, unknown>;
+  anchorInvariants?: Record<string, unknown>;
   onMarkers?: (markers: DiagnosticMarker[]) => void;
   onComplete?: (events: DiagnosticStreamEvent[]) => void;
 };
@@ -32,6 +35,9 @@ export function DiagnosticPanel({
   problemId,
   code,
   modes = ["correctness", "race", "leak", "bench", "escape"],
+  etchDiagram,
+  hearNotes,
+  anchorInvariants,
   onMarkers,
   onComplete,
 }: DiagnosticPanelProps) {
@@ -103,7 +109,14 @@ export function DiagnosticPanel({
       const response = await fetch("/api/diagnostics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ problemId, code, modes }),
+        body: JSON.stringify({
+          problemId,
+          code,
+          modes,
+          etchDiagram,
+          hearNotes,
+          anchorInvariants,
+        }),
       });
 
       if (!response.ok) {

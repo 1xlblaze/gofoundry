@@ -7,11 +7,14 @@
     "build": "npm run sync:worker && next build",
     "start": "next start",
     "lint": "eslint",
+    "test:e2e": "playwright test",
+    "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://gofoundry-seven.vercel.app playwright test",
     "sync:worker": "tsx scripts/sync-worker-problems.mjs",
     "seed:problems": "tsx scripts/seed-problems.mjs",
     "deploy:setup": "node scripts/deploy-setup.mjs"
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
     "@monaco-editor/react": "^4.7.0",
     "@upstash/redis": "^1.38.2",
     "next": "16.3.0",
@@ -23,6 +26,7 @@
     "stripe": "^22.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.15.2",

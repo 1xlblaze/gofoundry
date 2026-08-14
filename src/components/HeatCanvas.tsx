@@ -1,8 +1,24 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { GoWorkbench } from "@/components/GoWorkbench";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
+import {
+  emptyEtchScene,
+  etchSceneToPayload,
+  parseEtchScene,
+  serializeEtchScene,
+  type EtchScene,
+} from "@/lib/etch-diagram";
+
+const EtchCanvas = dynamic(
+  () => import("@/components/EtchCanvas").then((mod) => mod.EtchCanvas),
+  {
+    ssr: false,
+    loading: () => <div className="etch-canvas-loading">Loading drawing canvas…</div>,
+  },
+);
 
 const STORAGE_KEY = "gofoundry-heat-canvas-v2";
 
@@ -154,6 +170,7 @@ function readStoredDraft(): HeatDraft {
 
 export function HeatCanvas() {
   const [draft, setDraft] = useState<HeatDraft>(DEFAULT_DRAFT);
+  const [etchScene, setEtchScene] = useState<EtchScene>(() => emptyEtchScene());
   const [hydrated, setHydrated] = useState(false);
   const [workbenchKey, setWorkbenchKey] = useState(0);
 
@@ -164,8 +181,16 @@ export function HeatCanvas() {
     draft.spaceComplexity !== "Unknown";
 
   useEffect(() => {
-    setDraft(readStoredDraft());
-    setHydrated(true);
+    try {
+      const stored = readStoredDraft();
+      setDraft(stored);
+      setEtchScene(parseEtchScene(stored.diagram) ?? emptyEtchScene());
+    } catch {
+      setDraft(DEFAULT_DRAFT);
+      setEtchScene(emptyEtchScene());
+    } finally {
+      setHydrated(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -208,6 +233,7 @@ export function HeatCanvas() {
           type="button"
           onClick={() => {
             setDraft(DEFAULT_DRAFT);
+            setEtchScene(emptyEtchScene());
             setWorkbenchKey((current) => current + 1);
           }}
           className="heat-canvas-reset"
@@ -345,18 +371,18 @@ export function HeatCanvas() {
             <p>Use boxes, arrows, indices, queues, or goroutines. Rough is useful.</p>
           </div>
         </div>
-        <label className="heat-canvas-field">
-          <span>ASCII model</span>
-          <textarea
-            value={draft.diagram}
-            onChange={(event) =>
-              setDraft((current) => ({ ...current, diagram: event.target.value }))
-            }
-            rows={9}
-            spellCheck={false}
-            placeholder="[input] -> [state] -> [answer]"
-          />
-        </label>
+        <EtchCanvas
+          preset="general"
+          value={etchScene}
+          onChange={(scene) => {
+            setEtchScene(scene);
+            setDraft((current) => ({
+              ...current,
+              diagram: scene.elements.length > 0 ? serializeEtchScene(scene) : current.diagram,
+            }));
+          }}
+          height={420}
+        />
       </section>
 
       <section
@@ -456,6 +482,16 @@ export function HeatCanvas() {
             problemId="dsa-sliding-window-maximum"
             code={draft.code}
             modes={["correctness", "race", "leak", "bench", "escape"]}
+            etchDiagram={etchSceneToPayload(etchScene)}
+            hearNotes={{
+              constraints: draft.constraints,
+              operational: draft.operational,
+            }}
+            anchorInvariants={{
+              pattern: draft.pattern,
+              timeComplexity: draft.timeComplexity,
+              spaceComplexity: draft.spaceComplexity,
+            }}
           />
         )}
       </section>
