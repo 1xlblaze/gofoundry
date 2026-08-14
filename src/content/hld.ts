@@ -35,14 +35,27 @@ const q = (
   id: string,
   prompt: string,
   correct: string,
-  ...wrong: [string, string, string]
-): QuizQuestion => ({
-  id,
-  prompt,
-  options: [correct, ...wrong],
-  answerIndex: 0,
-  explanation: correct,
-});
+  wrong: [string, string, string],
+  explanation: string,
+): QuizQuestion => {
+  const options = [correct, ...wrong];
+  let seed = 0;
+  for (let i = 0; i < id.length; i++) seed = (seed * 31 + id.charCodeAt(i)) >>> 0;
+  for (let i = options.length - 1; i > 0; i--) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const j = seed % (i + 1);
+    const tmp = options[i]!;
+    options[i] = options[j]!;
+    options[j] = tmp;
+  }
+  return {
+    id,
+    prompt,
+    options,
+    answerIndex: options.indexOf(correct),
+    explanation,
+  };
+};
 
 const tradeoff = (
   title: string,
@@ -217,10 +230,10 @@ export const hldLessons: Lesson[] = [
         "The design is intentionally evolutionary: each added component answers a quantified bottleneck or required guarantee.",
     },
     quiz: [
-      q("foundation-1", "Why estimate peak QPS before choosing components?", "It turns architecture choices into capacity decisions tied to expected load", "It guarantees no outages", "It selects a programming language", "It replaces requirements"),
-      q("foundation-2", "What belongs on the synchronous write path?", "Only work required to uphold the response contract", "Every analytics event", "All email delivery", "Nightly reports"),
-      q("foundation-3", "Why are stateless API instances easier to scale?", "Any healthy instance can serve a request behind the load balancer", "They need no data store", "They guarantee consistency", "They cannot fail"),
-      q("foundation-4", "What does an idempotency key protect?", "Repeated delivery of one logical write from causing duplicate effects", "Read cache misses", "TLS expiry", "Schema migrations"),
+      q("foundation-1", "Why estimate peak QPS before choosing components?", "It turns architecture choices into capacity decisions tied to expected load", ["It guarantees no outages", "It selects a programming language", "It replaces requirements"], "Correct answer: It turns architecture choices into capacity decisions tied to expected load. The other options confuse related ideas or skip a key constraint."),
+      q("foundation-2", "What belongs on the synchronous write path?", "Only work required to uphold the response contract", ["Every analytics event", "All email delivery", "Nightly reports"], "Correct answer: Only work required to uphold the response contract. The other options confuse related ideas or skip a key constraint."),
+      q("foundation-3", "Why are stateless API instances easier to scale?", "Any healthy instance can serve a request behind the load balancer", ["They need no data store", "They guarantee consistency", "They cannot fail"], "Correct answer: Any healthy instance can serve a request behind the load balancer. The other options confuse related ideas or skip a key constraint."),
+      q("foundation-4", "What does an idempotency key protect?", "Repeated delivery of one logical write from causing duplicate effects", ["Read cache misses", "TLS expiry", "Schema migrations"], "Correct answer: Repeated delivery of one logical write from causing duplicate effects. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -315,10 +328,10 @@ export const hldLessons: Lesson[] = [
         "The correct design uses strong coordination only for invariants that need it and exposes weaker guarantees explicitly elsewhere.",
     },
     quiz: [
-      q("cap-1", "When does CAP force a C-versus-A choice?", "While a network partition prevents replicas from coordinating", "During every normal request", "Only with SQL", "Only at one replica"),
-      q("cap-2", "Why must a timed-out write be retried idempotently?", "It may have committed even though the acknowledgement was lost", "Timeout proves failure", "Leaders never retry", "It speeds reads"),
-      q("cap-3", "What does a fencing token prevent?", "A stale former leader from continuing to mutate protected resources", "Follower reads", "Log compaction", "TLS replay"),
-      q("cap-4", "How can follower reads provide read-your-writes?", "Require the follower to reach the client’s observed version/commit token", "Read any follower immediately", "Disable replication", "Use wall clocks"),
+      q("cap-1", "When does CAP force a C-versus-A choice?", "While a network partition prevents replicas from coordinating", ["During every normal request", "Only with SQL", "Only at one replica"], "Correct answer: While a network partition prevents replicas from coordinating. The other options confuse related ideas or skip a key constraint."),
+      q("cap-2", "Why must a timed-out write be retried idempotently?", "It may have committed even though the acknowledgement was lost", ["Timeout proves failure", "Leaders never retry", "It speeds reads"], "Correct answer: It may have committed even though the acknowledgement was lost. The other options confuse related ideas or skip a key constraint."),
+      q("cap-3", "What does a fencing token prevent?", "A stale former leader from continuing to mutate protected resources", ["Follower reads", "Log compaction", "TLS replay"], "Correct answer: A stale former leader from continuing to mutate protected resources. The other options confuse related ideas or skip a key constraint."),
+      q("cap-4", "How can follower reads provide read-your-writes?", "Require the follower to reach the client’s observed version/commit token", ["Read any follower immediately", "Disable replication", "Use wall clocks"], "Correct answer: Require the follower to reach the client’s observed version/commit token. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -418,10 +431,10 @@ export const hldLessons: Lesson[] = [
         "The cache improves latency and cost but remains disposable; bounded staleness and origin protection are explicit design properties.",
     },
     quiz: [
-      q("cache-1", "Why add TTL jitter?", "It prevents many keys from expiring and refilling at the same instant", "It guarantees strong consistency", "It encrypts values", "It sorts keys"),
-      q("cache-2", "What is a cache stampede?", "Many concurrent misses for one key overwhelm the origin with duplicate fills", "An LRU eviction", "A CDN purge", "A database transaction"),
-      q("cache-3", "Why use content-hashed asset URLs?", "Changed content gets a new immutable key, avoiding invalidation", "They hide the asset", "They reduce file size", "They enforce authentication"),
-      q("cache-4", "Should a cache miss be treated as an infrastructure error?", "No; miss, hit, and cache failure are distinct outcomes", "Always", "Only at CDN", "Only for nil"),
+      q("cache-1", "Why add TTL jitter?", "It prevents many keys from expiring and refilling at the same instant", ["It guarantees strong consistency", "It encrypts values", "It sorts keys"], "Correct answer: It prevents many keys from expiring and refilling at the same instant. The other options confuse related ideas or skip a key constraint."),
+      q("cache-2", "What is a cache stampede?", "Many concurrent misses for one key overwhelm the origin with duplicate fills", ["An LRU eviction", "A CDN purge", "A database transaction"], "Correct answer: Many concurrent misses for one key overwhelm the origin with duplicate fills. The other options confuse related ideas or skip a key constraint."),
+      q("cache-3", "Why use content-hashed asset URLs?", "Changed content gets a new immutable key, avoiding invalidation", ["They hide the asset", "They reduce file size", "They enforce authentication"], "Correct answer: Changed content gets a new immutable key, avoiding invalidation. The other options confuse related ideas or skip a key constraint."),
+      q("cache-4", "Should a cache miss be treated as an infrastructure error?", "No; miss, hit, and cache failure are distinct outcomes", ["Always", "Only at CDN", "Only for nil"], "Correct answer: No; miss, hit, and cache failure are distinct outcomes. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -516,10 +529,10 @@ export const hldLessons: Lesson[] = [
         "The design scales by preserving single-shard transactional paths and exporting other workloads asynchronously.",
     },
     quiz: [
-      q("db-1", "Why use a database unique constraint instead of check-then-insert?", "The constraint closes the concurrency race atomically", "It makes reads stale", "It avoids indexes", "It removes transactions"),
-      q("db-2", "Why can hash sharding hurt range scans?", "Adjacent keys distribute across many shards and require scatter-gather", "Hashes are sorted", "It duplicates rows", "It disables writes"),
-      q("db-3", "Are replicas a backup strategy?", "No; corruption or deletion can replicate, so independent restorable backups are required", "Yes, always", "Only with caches", "Only in one region"),
-      q("db-4", "Why prefer cursor pagination over large OFFSET?", "It seeks from an indexed stable boundary instead of scanning skipped rows", "It returns random order", "It requires no index", "It guarantees snapshots forever"),
+      q("db-1", "Why use a database unique constraint instead of check-then-insert?", "The constraint closes the concurrency race atomically", ["It makes reads stale", "It avoids indexes", "It removes transactions"], "Correct answer: The constraint closes the concurrency race atomically. The other options confuse related ideas or skip a key constraint."),
+      q("db-2", "Why can hash sharding hurt range scans?", "Adjacent keys distribute across many shards and require scatter-gather", ["Hashes are sorted", "It duplicates rows", "It disables writes"], "Correct answer: Adjacent keys distribute across many shards and require scatter-gather. The other options confuse related ideas or skip a key constraint."),
+      q("db-3", "Are replicas a backup strategy?", "No; corruption or deletion can replicate, so independent restorable backups are required", ["Yes, always", "Only with caches", "Only in one region"], "Correct answer: No; corruption or deletion can replicate, so independent restorable backups are required. The other options confuse related ideas or skip a key constraint."),
+      q("db-4", "Why prefer cursor pagination over large OFFSET?", "It seeks from an indexed stable boundary instead of scanning skipped rows", ["It returns random order", "It requires no index", "It guarantees snapshots forever"], "Correct answer: It seeks from an indexed stable boundary instead of scanning skipped rows. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -619,10 +632,10 @@ export const hldLessons: Lesson[] = [
         "The guarantee is effective exactly-once business behavior built from at-least-once delivery and idempotent state transitions.",
     },
     quiz: [
-      q("msg-1", "What race does a transactional outbox remove?", "Committing database state but failing to publish its event, or vice versa", "Cache eviction", "DNS failure", "Follower lag"),
-      q("msg-2", "Does exactly-once broker delivery alone guarantee exactly-once external effects?", "No; the consumer's side effect and acknowledgement can still fail separately", "Always", "Only for HTTP", "Only with one partition"),
-      q("msg-3", "What does a partition key normally guarantee?", "Ordering for records sharing that key/partition", "Global total order at infinite scale", "No duplicates", "Constant latency"),
-      q("msg-4", "Why bound consumer concurrency?", "To propagate backpressure and protect memory/downstream dependencies", "To disable retries", "To sort events", "To increase lag intentionally"),
+      q("msg-1", "What race does a transactional outbox remove?", "Committing database state but failing to publish its event, or vice versa", ["Cache eviction", "DNS failure", "Follower lag"], "Correct answer: Committing database state but failing to publish its event, or vice versa. The other options confuse related ideas or skip a key constraint."),
+      q("msg-2", "Does exactly-once broker delivery alone guarantee exactly-once external effects?", "No; the consumer's side effect and acknowledgement can still fail separately", ["Always", "Only for HTTP", "Only with one partition"], "Correct answer: No; the consumer's side effect and acknowledgement can still fail separately. The other options confuse related ideas or skip a key constraint."),
+      q("msg-3", "What does a partition key normally guarantee?", "Ordering for records sharing that key/partition", ["Global total order at infinite scale", "No duplicates", "Constant latency"], "Correct answer: Ordering for records sharing that key/partition. The other options confuse related ideas or skip a key constraint."),
+      q("msg-4", "Why bound consumer concurrency?", "To propagate backpressure and protect memory/downstream dependencies", ["To disable retries", "To sort events", "To increase lag intentionally"], "Correct answer: To propagate backpressure and protect memory/downstream dependencies. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -737,10 +750,10 @@ export const hldLessons: Lesson[] = [
         "The core path remains code→versioned mapping→redirect, while policy and analytics evolve independently.",
     },
     quiz: [
-      q("url-1", "Why is a unique database constraint still needed for random codes?", "Concurrent creators or random collisions must be resolved atomically", "Random values never collide", "Caches enforce uniqueness", "Analytics checks it"),
-      q("url-2", "Why keep click analytics asynchronous?", "Redirect latency and availability should not depend on the analytics pipeline", "Analytics cannot use HTTP", "Events are always exact", "It shortens codes"),
-      q("url-3", "What is the downside of permanent redirects?", "Cached destinations and takedowns can be hard to change quickly", "They cannot use CDNs", "They always hit origin", "They forbid HTTPS"),
-      q("url-4", "What is the main storage access pattern?", "Point lookup by domain and short code", "Full-table URL sorting", "Cross-code transactions", "Graph traversal"),
+      q("url-1", "Why is a unique database constraint still needed for random codes?", "Concurrent creators or random collisions must be resolved atomically", ["Random values never collide", "Caches enforce uniqueness", "Analytics checks it"], "Correct answer: Concurrent creators or random collisions must be resolved atomically. The other options confuse related ideas or skip a key constraint."),
+      q("url-2", "Why keep click analytics asynchronous?", "Redirect latency and availability should not depend on the analytics pipeline", ["Analytics cannot use HTTP", "Events are always exact", "It shortens codes"], "Correct answer: Redirect latency and availability should not depend on the analytics pipeline. The other options confuse related ideas or skip a key constraint."),
+      q("url-3", "What is the downside of permanent redirects?", "Cached destinations and takedowns can be hard to change quickly", ["They cannot use CDNs", "They always hit origin", "They forbid HTTPS"], "Correct answer: Cached destinations and takedowns can be hard to change quickly. The other options confuse related ideas or skip a key constraint."),
+      q("url-4", "What is the main storage access pattern?", "Point lookup by domain and short code", ["Full-table URL sorting", "Cross-code transactions", "Graph traversal"], "Correct answer: Point lookup by domain and short code. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -855,10 +868,10 @@ export const hldLessons: Lesson[] = [
         "Clients can always reconstruct truth from ordered durable history, so realtime delivery is an optimization rather than the only copy.",
     },
     quiz: [
-      q("chat-1", "Why persist before realtime fan-out?", "A gateway or broker failure must not lose an acknowledged message", "Persistence makes sockets faster", "Fan-out creates IDs", "Presence requires SQL"),
-      q("chat-2", "What should a reconnecting client provide?", "A durable sequence/cursor so the server can return missed messages", "Only its IP address", "A new user ID", "The gateway pod name"),
-      q("chat-3", "Why use hybrid fan-out?", "Small groups benefit from materialized inboxes while huge channels avoid write explosion", "It guarantees global order", "It removes storage", "It prevents retries"),
-      q("chat-4", "How should a gateway handle a persistently slow socket?", "Bound its queue, disconnect it, and let the client resync", "Allocate unbounded memory", "Block every other socket", "Drop durable history"),
+      q("chat-1", "Why persist before realtime fan-out?", "A gateway or broker failure must not lose an acknowledged message", ["Persistence makes sockets faster", "Fan-out creates IDs", "Presence requires SQL"], "Correct answer: A gateway or broker failure must not lose an acknowledged message. The other options confuse related ideas or skip a key constraint."),
+      q("chat-2", "What should a reconnecting client provide?", "A durable sequence/cursor so the server can return missed messages", ["Only its IP address", "A new user ID", "The gateway pod name"], "Correct answer: A durable sequence/cursor so the server can return missed messages. The other options confuse related ideas or skip a key constraint."),
+      q("chat-3", "Why use hybrid fan-out?", "Small groups benefit from materialized inboxes while huge channels avoid write explosion", ["It guarantees global order", "It removes storage", "It prevents retries"], "Correct answer: Small groups benefit from materialized inboxes while huge channels avoid write explosion. The other options confuse related ideas or skip a key constraint."),
+      q("chat-4", "How should a gateway handle a persistently slow socket?", "Bound its queue, disconnect it, and let the client resync", ["Allocate unbounded memory", "Block every other socket", "Drop durable history"], "Correct answer: Bound its queue, disconnect it, and let the client resync. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -973,10 +986,10 @@ export const hldLessons: Lesson[] = [
         "The result is hierarchical: cheap local protection absorbs volume while shared state is reserved for limits that require coordination.",
     },
     quiz: [
-      q("rl-1", "Why use a server-side atomic script?", "Refill, check, and consume must not race across instances", "Scripts reduce token size", "HTTP requires Lua", "It disables expiry"),
-      q("rl-2", "What do token leases trade for lower latency?", "A bounded amount of global quota overshoot", "All availability", "Policy versioning", "Authentication"),
-      q("rl-3", "Why use server time for shared buckets?", "Clients/processes can have skewed or manipulated wall clocks", "Redis cannot store timestamps", "It increases burst", "It encrypts limits"),
-      q("rl-4", "Should every endpoint use the same fail-open policy?", "No; choose based on downstream safety, cost, and availability requirements", "Yes, always open", "Yes, always closed", "Only GET matters"),
+      q("rl-1", "Why use a server-side atomic script?", "Refill, check, and consume must not race across instances", ["Scripts reduce token size", "HTTP requires Lua", "It disables expiry"], "Correct answer: Refill, check, and consume must not race across instances. The other options confuse related ideas or skip a key constraint."),
+      q("rl-2", "What do token leases trade for lower latency?", "A bounded amount of global quota overshoot", ["All availability", "Policy versioning", "Authentication"], "Correct answer: A bounded amount of global quota overshoot. The other options confuse related ideas or skip a key constraint."),
+      q("rl-3", "Why use server time for shared buckets?", "Clients/processes can have skewed or manipulated wall clocks", ["Redis cannot store timestamps", "It increases burst", "It encrypts limits"], "Correct answer: Clients/processes can have skewed or manipulated wall clocks. The other options confuse related ideas or skip a key constraint."),
+      q("rl-4", "Should every endpoint use the same fail-open policy?", "No; choose based on downstream safety, cost, and availability requirements", ["Yes, always open", "Yes, always closed", "Only GET matters"], "Correct answer: No; choose based on downstream safety, cost, and availability requirements. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1091,10 +1104,10 @@ export const hldLessons: Lesson[] = [
         "The system stays available because durable posts survive projection lag and the read path can merge/fallback safely.",
     },
     quiz: [
-      q("feed-1", "Why use hybrid fan-out?", "Follower-count skew makes push efficient for normal authors but explosive for celebrities", "It guarantees strong global order", "It avoids ranking", "It stores no posts"),
-      q("feed-2", "Why filter privacy and deletes at read time?", "Asynchronous inbox cleanup can lag, so current rules must still be enforced", "It improves compression", "Caches cannot delete", "Followers are immutable"),
-      q("feed-3", "Why hydrate post IDs in batches?", "RPC-per-post would multiply latency and downstream QPS", "IDs contain no data", "Batches guarantee order", "It replaces caching"),
-      q("feed-4", "What should happen if the ranker times out?", "Return a bounded chronological/heuristic fallback within the feed SLO", "Fail every feed request", "Retry forever", "Delete candidates"),
+      q("feed-1", "Why use hybrid fan-out?", "Follower-count skew makes push efficient for normal authors but explosive for celebrities", ["It guarantees strong global order", "It avoids ranking", "It stores no posts"], "Correct answer: Follower-count skew makes push efficient for normal authors but explosive for celebrities. The other options confuse related ideas or skip a key constraint."),
+      q("feed-2", "Why filter privacy and deletes at read time?", "Asynchronous inbox cleanup can lag, so current rules must still be enforced", ["It improves compression", "Caches cannot delete", "Followers are immutable"], "Correct answer: Asynchronous inbox cleanup can lag, so current rules must still be enforced. The other options confuse related ideas or skip a key constraint."),
+      q("feed-3", "Why hydrate post IDs in batches?", "RPC-per-post would multiply latency and downstream QPS", ["IDs contain no data", "Batches guarantee order", "It replaces caching"], "Correct answer: RPC-per-post would multiply latency and downstream QPS. The other options confuse related ideas or skip a key constraint."),
+      q("feed-4", "What should happen if the ranker times out?", "Return a bounded chronological/heuristic fallback within the feed SLO", ["Fail every feed request", "Retry forever", "Delete candidates"], "Correct answer: Return a bounded chronological/heuristic fallback within the feed SLO. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1189,10 +1202,10 @@ export const hldLessons: Lesson[] = [
         "The system is operable because failures are bounded and every user-visible symptom can be connected to actionable evidence.",
     },
     quiz: [
-      q("obs-1", "Why alert on SLO burn rate?", "It relates current errors to how quickly the user-facing error budget is being consumed", "It eliminates dashboards", "It measures CPU only", "It guarantees no false alerts"),
-      q("obs-2", "Why can retries worsen an outage?", "They multiply work against an already failing or saturated dependency", "They remove deadlines", "They reduce QPS", "They disable logging"),
-      q("obs-3", "What is a metric-cardinality risk?", "Unbounded label values create too many time series", "Metrics use numbers", "Histograms have buckets", "Counters increase"),
-      q("obs-4", "What should happen to optional telemetry when its buffers fill?", "Apply an explicit shedding/sampling policy rather than exhausting application memory", "Spawn unlimited goroutines", "Block forever", "Crash silently"),
+      q("obs-1", "Why alert on SLO burn rate?", "It relates current errors to how quickly the user-facing error budget is being consumed", ["It eliminates dashboards", "It measures CPU only", "It guarantees no false alerts"], "Correct answer: It relates current errors to how quickly the user-facing error budget is being consumed. The other options confuse related ideas or skip a key constraint."),
+      q("obs-2", "Why can retries worsen an outage?", "They multiply work against an already failing or saturated dependency", ["They remove deadlines", "They reduce QPS", "They disable logging"], "Correct answer: They multiply work against an already failing or saturated dependency. The other options confuse related ideas or skip a key constraint."),
+      q("obs-3", "What is a metric-cardinality risk?", "Unbounded label values create too many time series", ["Metrics use numbers", "Histograms have buckets", "Counters increase"], "Correct answer: Unbounded label values create too many time series. The other options confuse related ideas or skip a key constraint."),
+      q("obs-4", "What should happen to optional telemetry when its buffers fill?", "Apply an explicit shedding/sampling policy rather than exhausting application memory", ["Spawn unlimited goroutines", "Block forever", "Crash silently"], "Correct answer: Apply an explicit shedding/sampling policy rather than exhausting application memory. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1307,10 +1320,10 @@ export const hldLessons: Lesson[] = [
         "Object storage is durable origin, CDN is the delivery plane, and manifests are the small consistency boundary joining them.",
     },
     quiz: [
-      q("video-1", "Why upload directly to object storage?", "It removes huge media bytes from API servers while retaining authorized multipart control", "It skips validation", "It avoids checksums", "It transcodes instantly"),
-      q("video-2", "What does adaptive bitrate change?", "The rendition selected for upcoming segments based on bandwidth and buffer", "The original upload", "The CDN provider per byte", "The video duration"),
-      q("video-3", "Why publish a manifest atomically?", "Players must not receive references to missing or incomplete segments", "Manifests are large", "It increases bitrate", "It removes DRM"),
-      q("video-4", "What is the best autoscaling signal for transcoders?", "Queued media duration weighted by expected processing cost", "Only job count", "HTTP QPS", "CDN cache hits"),
+      q("video-1", "Why upload directly to object storage?", "It removes huge media bytes from API servers while retaining authorized multipart control", ["It skips validation", "It avoids checksums", "It transcodes instantly"], "Correct answer: It removes huge media bytes from API servers while retaining authorized multipart control. The other options confuse related ideas or skip a key constraint."),
+      q("video-2", "What does adaptive bitrate change?", "The rendition selected for upcoming segments based on bandwidth and buffer", ["The original upload", "The CDN provider per byte", "The video duration"], "Correct answer: The rendition selected for upcoming segments based on bandwidth and buffer. The other options confuse related ideas or skip a key constraint."),
+      q("video-3", "Why publish a manifest atomically?", "Players must not receive references to missing or incomplete segments", ["Manifests are large", "It increases bitrate", "It removes DRM"], "Correct answer: Players must not receive references to missing or incomplete segments. The other options confuse related ideas or skip a key constraint."),
+      q("video-4", "What is the best autoscaling signal for transcoders?", "Queued media duration weighted by expected processing cost", ["Only job count", "HTTP QPS", "CDN cache hits"], "Correct answer: Queued media duration weighted by expected processing cost. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1425,10 +1438,10 @@ export const hldLessons: Lesson[] = [
         "Approximate location finds candidates quickly; one strongly consistent transition determines the real assignment.",
     },
     quiz: [
-      q("ride-1", "Why keep GPS state separate from trip state?", "GPS is high-churn and approximate while assignment must be durable and consistent", "GPS cannot be stored", "Trips never update", "They use different clients"),
-      q("ride-2", "What prevents two riders from winning the same driver?", "A conditional atomic AVAILABLE→RESERVED claim tied to the offer", "Nearest-distance sorting", "A cache TTL", "Push notification"),
-      q("ride-3", "Why prune before calling ETA routing?", "Detailed routes for every nearby driver would multiply expensive computation", "ETA cannot batch", "Distance is exact", "Cells provide payment"),
-      q("ride-4", "What happens when driver GPS stops?", "Its geo availability expires by TTL while durable trip state remains", "The trip is deleted", "Every rider retries GPS", "The cell becomes permanent"),
+      q("ride-1", "Why keep GPS state separate from trip state?", "GPS is high-churn and approximate while assignment must be durable and consistent", ["GPS cannot be stored", "Trips never update", "They use different clients"], "Correct answer: GPS is high-churn and approximate while assignment must be durable and consistent. The other options confuse related ideas or skip a key constraint."),
+      q("ride-2", "What prevents two riders from winning the same driver?", "A conditional atomic AVAILABLE→RESERVED claim tied to the offer", ["Nearest-distance sorting", "A cache TTL", "Push notification"], "Correct answer: A conditional atomic AVAILABLE→RESERVED claim tied to the offer. The other options confuse related ideas or skip a key constraint."),
+      q("ride-3", "Why prune before calling ETA routing?", "Detailed routes for every nearby driver would multiply expensive computation", ["ETA cannot batch", "Distance is exact", "Cells provide payment"], "Correct answer: Detailed routes for every nearby driver would multiply expensive computation. The other options confuse related ideas or skip a key constraint."),
+      q("ride-4", "What happens when driver GPS stops?", "Its geo availability expires by TTL while durable trip state remains", ["The trip is deleted", "Every rider retries GPS", "The cell becomes permanent"], "Correct answer: Its geo availability expires by TTL while durable trip state remains. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1545,10 +1558,10 @@ export const hldLessons: Lesson[] = [
         "No network response alone moves money twice: stable identities and balanced durable transitions establish the financial record.",
     },
     quiz: [
-      q("pay-1", "What should a service do after an ambiguous processor timeout?", "Keep the intent pending/unknown and query using the same provider idempotency key", "Submit a fresh charge immediately", "Mark success", "Delete the intent"),
-      q("pay-2", "Why use double-entry postings?", "Each economic event has balanced debits and credits that can be audited", "It halves storage", "It avoids transactions", "It uses floating point"),
-      q("pay-3", "What should happen if one idempotency key is reused with different parameters?", "Reject it as a conflict rather than returning or creating a different payment", "Create both", "Ignore amount", "Change the key server-side"),
-      q("pay-4", "Why is reconciliation still needed?", "Provider and internal records can diverge despite APIs/webhooks, so independent comparison catches exceptions", "It improves CDN hits", "It replaces the ledger", "It creates cards"),
+      q("pay-1", "What should a service do after an ambiguous processor timeout?", "Keep the intent pending/unknown and query using the same provider idempotency key", ["Submit a fresh charge immediately", "Mark success", "Delete the intent"], "Correct answer: Keep the intent pending/unknown and query using the same provider idempotency key. The other options confuse related ideas or skip a key constraint."),
+      q("pay-2", "Why use double-entry postings?", "Each economic event has balanced debits and credits that can be audited", ["It halves storage", "It avoids transactions", "It uses floating point"], "Correct answer: Each economic event has balanced debits and credits that can be audited. The other options confuse related ideas or skip a key constraint."),
+      q("pay-3", "What should happen if one idempotency key is reused with different parameters?", "Reject it as a conflict rather than returning or creating a different payment", ["Create both", "Ignore amount", "Change the key server-side"], "Correct answer: Reject it as a conflict rather than returning or creating a different payment. The other options confuse related ideas or skip a key constraint."),
+      q("pay-4", "Why is reconciliation still needed?", "Provider and internal records can diverge despite APIs/webhooks, so independent comparison catches exceptions", ["It improves CDN hits", "It replaces the ledger", "It creates cards"], "Correct answer: Provider and internal records can diverge despite APIs/webhooks, so independent comparison catches exceptions. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1658,10 +1671,10 @@ export const hldLessons: Lesson[] = [
         "The serving path remains O(prefix length plus a small candidate set); expensive learning and aggregation stay offline.",
     },
     quiz: [
-      q("ac-1", "Why precompute top-K candidates per prefix state?", "It avoids scanning and ranking a large corpus on every keystroke", "It guarantees perfect relevance", "It removes normalization", "It stores user passwords"),
-      q("ac-2", "Why keep the old index during rollout?", "A failed or corrupt new snapshot can be rejected or rolled back without outage", "It doubles QPS", "It sorts prefixes", "It is required by HTTP"),
-      q("ac-3", "What should happen if realtime trends fail?", "Serve the immutable global snapshot with reduced freshness", "Fail every request", "Return raw logs", "Rebuild synchronously"),
-      q("ac-4", "Why are one-character prefixes dangerous?", "They are extremely hot and match huge candidate spaces", "They cannot be UTF-8", "They always contain PII", "They bypass caches"),
+      q("ac-1", "Why precompute top-K candidates per prefix state?", "It avoids scanning and ranking a large corpus on every keystroke", ["It guarantees perfect relevance", "It removes normalization", "It stores user passwords"], "Correct answer: It avoids scanning and ranking a large corpus on every keystroke. The other options confuse related ideas or skip a key constraint."),
+      q("ac-2", "Why keep the old index during rollout?", "A failed or corrupt new snapshot can be rejected or rolled back without outage", ["It doubles QPS", "It sorts prefixes", "It is required by HTTP"], "Correct answer: A failed or corrupt new snapshot can be rejected or rolled back without outage. The other options confuse related ideas or skip a key constraint."),
+      q("ac-3", "What should happen if realtime trends fail?", "Serve the immutable global snapshot with reduced freshness", ["Fail every request", "Return raw logs", "Rebuild synchronously"], "Correct answer: Serve the immutable global snapshot with reduced freshness. The other options confuse related ideas or skip a key constraint."),
+      q("ac-4", "Why are one-character prefixes dangerous?", "They are extremely hot and match huge candidate spaces", ["They cannot be UTF-8", "They always contain PII", "They bypass caches"], "Correct answer: They are extremely hot and match huge candidate spaces. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1776,10 +1789,10 @@ export const hldLessons: Lesson[] = [
         "The API promises durable acceptance; channel-specific status and user-visible delivery converge asynchronously without sacrificing consent.",
     },
     quiz: [
-      q("notify-1", "Why recheck preferences before marketing delivery?", "A user may opt out after campaign expansion, and current consent must win", "It improves template grammar", "Queues cannot store users", "Providers require SQL"),
-      q("notify-2", "Why isolate transactional and campaign queues?", "Bulk fan-out must not consume the latency/capacity reserved for urgent messages", "They use different bytes", "Campaigns never retry", "Transactions have no templates"),
-      q("notify-3", "What does provider acceptance mean?", "The provider accepted responsibility; it may not prove device delivery or user read", "The user read it", "Billing completed", "The email is correct"),
-      q("notify-4", "How should ambiguous provider timeout be handled?", "Reuse stable identity and check/retry safely before failover", "Send through every provider", "Mark delivered", "Delete the attempt"),
+      q("notify-1", "Why recheck preferences before marketing delivery?", "A user may opt out after campaign expansion, and current consent must win", ["It improves template grammar", "Queues cannot store users", "Providers require SQL"], "Correct answer: A user may opt out after campaign expansion, and current consent must win. The other options confuse related ideas or skip a key constraint."),
+      q("notify-2", "Why isolate transactional and campaign queues?", "Bulk fan-out must not consume the latency/capacity reserved for urgent messages", ["They use different bytes", "Campaigns never retry", "Transactions have no templates"], "Correct answer: Bulk fan-out must not consume the latency/capacity reserved for urgent messages. The other options confuse related ideas or skip a key constraint."),
+      q("notify-3", "What does provider acceptance mean?", "The provider accepted responsibility; it may not prove device delivery or user read", ["The user read it", "Billing completed", "The email is correct"], "Correct answer: The provider accepted responsibility; it may not prove device delivery or user read. The other options confuse related ideas or skip a key constraint."),
+      q("notify-4", "How should ambiguous provider timeout be handled?", "Reuse stable identity and check/retry safely before failover", ["Send through every provider", "Mark delivered", "Delete the attempt"], "Correct answer: Reuse stable identity and check/retry safely before failover. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -1895,10 +1908,10 @@ export const hldLessons: Lesson[] = [
         "Immutable bytes provide durable scale; versioned metadata supplies names, permissions, atomic visibility, and sync order.",
     },
     quiz: [
-      q("file-1", "Why upload bytes directly to object storage?", "API/metadata servers avoid carrying massive payload bandwidth and memory", "It skips authorization", "It removes metadata", "It prevents retries"),
-      q("file-2", "When does a file version become visible?", "After verified bytes and an atomic metadata/version commit", "After the first part", "Before checksums", "When CDN sees it"),
-      q("file-3", "Why delay physical deletion after a tombstone?", "Versions, retention, legal holds, retries, or deduplicated manifests may still reference bytes", "Object stores cannot delete", "It improves upload speed", "Paths require it"),
-      q("file-4", "What enables incremental client sync?", "An ordered per-namespace change log consumed from an opaque cursor", "Listing all blobs every second", "CDN purge events", "Random hashes only"),
+      q("file-1", "Why upload bytes directly to object storage?", "API/metadata servers avoid carrying massive payload bandwidth and memory", ["It skips authorization", "It removes metadata", "It prevents retries"], "Correct answer: API/metadata servers avoid carrying massive payload bandwidth and memory. The other options confuse related ideas or skip a key constraint."),
+      q("file-2", "When does a file version become visible?", "After verified bytes and an atomic metadata/version commit", ["After the first part", "Before checksums", "When CDN sees it"], "Correct answer: After verified bytes and an atomic metadata/version commit. The other options confuse related ideas or skip a key constraint."),
+      q("file-3", "Why delay physical deletion after a tombstone?", "Versions, retention, legal holds, retries, or deduplicated manifests may still reference bytes", ["Object stores cannot delete", "It improves upload speed", "Paths require it"], "Correct answer: Versions, retention, legal holds, retries, or deduplicated manifests may still reference bytes. The other options confuse related ideas or skip a key constraint."),
+      q("file-4", "What enables incremental client sync?", "An ordered per-namespace change log consumed from an opaque cursor", ["Listing all blobs every second", "CDN purge events", "Random hashes only"], "Correct answer: An ordered per-namespace change log consumed from an opaque cursor. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeHldLesson({
@@ -2011,10 +2024,10 @@ export const hldLessons: Lesson[] = [
         "One routing and API model supports pooled and dedicated tenants, while every data path fails closed without an authenticated tenant scope.",
     },
     quiz: [
-      q("saas-1", "Why must tenant identity come from trusted auth context?", "A caller-controlled body parameter could otherwise access another tenant", "Bodies cannot contain strings", "It improves compression", "Databases assign users"),
-      q("saas-2", "What is the main benefit of cells?", "They bound failure/noisy-neighbor blast radius and support regional tenant placement", "They eliminate databases", "They provide global transactions", "They remove routing"),
-      q("saas-3", "Why is database-per-tenant poor for millions of tiny tenants?", "Connections, migrations, backups, and catalogs create huge operational overhead", "It has weak isolation", "It cannot use SQL", "It forces one region"),
-      q("saas-4", "How should a tenant move avoid writes to both old and new owners?", "Use a routing epoch/fencing token during catch-up and cutover", "Rely on DNS TTL only", "Copy once and hope", "Disable idempotency"),
+      q("saas-1", "Why must tenant identity come from trusted auth context?", "A caller-controlled body parameter could otherwise access another tenant", ["Bodies cannot contain strings", "It improves compression", "Databases assign users"], "Correct answer: A caller-controlled body parameter could otherwise access another tenant. The other options confuse related ideas or skip a key constraint."),
+      q("saas-2", "What is the main benefit of cells?", "They bound failure/noisy-neighbor blast radius and support regional tenant placement", ["They eliminate databases", "They provide global transactions", "They remove routing"], "Correct answer: They bound failure/noisy-neighbor blast radius and support regional tenant placement. The other options confuse related ideas or skip a key constraint."),
+      q("saas-3", "Why is database-per-tenant poor for millions of tiny tenants?", "Connections, migrations, backups, and catalogs create huge operational overhead", ["It has weak isolation", "It cannot use SQL", "It forces one region"], "Correct answer: Connections, migrations, backups, and catalogs create huge operational overhead. The other options confuse related ideas or skip a key constraint."),
+      q("saas-4", "How should a tenant move avoid writes to both old and new owners?", "Use a routing epoch/fencing token during catch-up and cutover", ["Rely on DNS TTL only", "Copy once and hope", "Disable idempotency"], "Correct answer: Use a routing epoch/fencing token during catch-up and cutover. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
 ];

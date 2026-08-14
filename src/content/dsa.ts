@@ -39,14 +39,27 @@ const q = (
   id: string,
   prompt: string,
   correct: string,
-  ...wrong: [string, string, string]
-): QuizQuestion => ({
-  id,
-  prompt,
-  options: [correct, ...wrong],
-  answerIndex: 0,
-  explanation: correct,
-});
+  wrong: [string, string, string],
+  explanation: string,
+): QuizQuestion => {
+  const options = [correct, ...wrong];
+  let seed = 0;
+  for (let i = 0; i < id.length; i++) seed = (seed * 31 + id.charCodeAt(i)) >>> 0;
+  for (let i = options.length - 1; i > 0; i--) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const j = seed % (i + 1);
+    const tmp = options[i]!;
+    options[i] = options[j]!;
+    options[j] = tmp;
+  }
+  return {
+    id,
+    prompt,
+    options,
+    answerIndex: options.indexOf(correct),
+    explanation,
+  };
+};
 
 const makeDsaLesson = (config: DsaLessonConfig): Lesson => {
   const blocks: ContentBlock[] = [
@@ -243,10 +256,10 @@ func rangeSum(prefix []int64, left, right int) int64 {
       closing: "The optimal scan is O(n) time and O(1) extra space because each pointer advances at most n times.",
     },
     quiz: [
-      q("arr-1", "What does a slice value contain?", "A pointer, length, and capacity", "All elements inline", "Only a pointer", "A deep copy"),
-      q("arr-2", "Why may a two-pointer solution move left when a sorted pair sum is too small?", "Every pair using the current smallest left value and an index no larger than right is also too small", "left must always alternate with right", "append requires it", "It makes the array sorted"),
-      q("arr-3", "What is the safest type for large accumulated integer sums?", "int64 when constraints can exceed int range", "byte", "rune", "bool"),
-      q("arr-4", "What does prefix[right+1]-prefix[left] represent?", "The inclusive range sum from left through right", "Only nums[right]", "The total array sum", "The range length"),
+      q("arr-1", "What does a slice value contain?", "A pointer, length, and capacity", ["All elements inline", "Only a pointer", "A deep copy"], "Correct answer: A pointer, length, and capacity. The other options confuse related ideas or skip a key constraint."),
+      q("arr-2", "Why may a two-pointer solution move left when a sorted pair sum is too small?", "Every pair using the current smallest left value and an index no larger than right is also too small", ["left must always alternate with right", "append requires it", "It makes the array sorted"], "Correct answer: Every pair using the current smallest left value and an index no larger than right is also too small. The other options confuse related ideas or skip a key constraint."),
+      q("arr-3", "What is the safest type for large accumulated integer sums?", "int64 when constraints can exceed int range", ["byte", "rune", "bool"], "Correct answer: int64 when constraints can exceed int range. The other options confuse related ideas or skip a key constraint."),
+      q("arr-4", "What does prefix[right+1]-prefix[left] represent?", "The inclusive range sum from left through right", ["Only nums[right]", "The total array sum", "The range length"], "Correct answer: The inclusive range sum from left through right. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -400,10 +413,10 @@ func mergeSortedLists(lists [][]int) []int {
       closing: "Keeping only k candidates reduces both update cost and memory from n to k.",
     },
     quiz: [
-      q("bh-1", "Is every heap array globally sorted?", "No; only parent-child priority is guaranteed", "Yes, ascending", "Yes, level by level", "Only after every push"),
-      q("bh-2", "What heap finds the kth largest with k retained items?", "A min-heap of size k", "A max-heap of size n", "No heap can", "A FIFO queue"),
-      q("bh-3", "Why validate a BST with inherited bounds?", "Ancestor constraints apply to every descendant", "It balances the tree", "It detects graph cycles", "It reduces storage"),
-      q("bh-4", "What is heap.Init complexity for n items?", "O(n)", "O(log n)", "O(n log n) necessarily", "O(1)"),
+      q("bh-1", "Is every heap array globally sorted?", "No; only parent-child priority is guaranteed", ["Yes, ascending", "Yes, level by level", "Only after every push"], "Correct answer: No; only parent-child priority is guaranteed. The other options confuse related ideas or skip a key constraint."),
+      q("bh-2", "What heap finds the kth largest with k retained items?", "A min-heap of size k", ["A max-heap of size n", "No heap can", "A FIFO queue"], "Correct answer: A min-heap of size k. The other options confuse related ideas or skip a key constraint."),
+      q("bh-3", "Why validate a BST with inherited bounds?", "Ancestor constraints apply to every descendant", ["It balances the tree", "It detects graph cycles", "It reduces storage"], "Correct answer: Ancestor constraints apply to every descendant. The other options confuse related ideas or skip a key constraint."),
+      q("bh-4", "What is heap.Init complexity for n items?", "O(n)", ["O(log n)", "O(n log n) necessarily", "O(1)"], "Correct answer: O(n). The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -553,10 +566,10 @@ func mergeSortedLists(lists [][]int) []int {
       closing: "Each vertex is discovered once and each adjacency entry is inspected once, so traversal is O(V+E).",
     },
     quiz: [
-      q("graph-1", "When does BFS guarantee a shortest path?", "When every traversed edge has equal cost", "For arbitrary negative weights", "Only on trees", "Only on complete graphs"),
-      q("graph-2", "Why does a general graph need visited state?", "Cycles and converging paths could otherwise repeat work forever", "To sort neighbors", "To allocate edges", "To balance the graph"),
-      q("graph-3", "How do you cover a disconnected graph?", "Start a traversal from every still-unvisited vertex", "Run from vertex zero only", "Add fake weighted edges", "Use recursion without visited"),
-      q("graph-4", "What reconstructs a BFS path?", "A parent recorded at first discovery", "Only a distance count", "Heap priorities", "Map iteration order"),
+      q("graph-1", "When does BFS guarantee a shortest path?", "When every traversed edge has equal cost", ["For arbitrary negative weights", "Only on trees", "Only on complete graphs"], "Correct answer: When every traversed edge has equal cost. The other options confuse related ideas or skip a key constraint."),
+      q("graph-2", "Why does a general graph need visited state?", "Cycles and converging paths could otherwise repeat work forever", ["To sort neighbors", "To allocate edges", "To balance the graph"], "Correct answer: Cycles and converging paths could otherwise repeat work forever. The other options confuse related ideas or skip a key constraint."),
+      q("graph-3", "How do you cover a disconnected graph?", "Start a traversal from every still-unvisited vertex", ["Run from vertex zero only", "Add fake weighted edges", "Use recursion without visited"], "Correct answer: Start a traversal from every still-unvisited vertex. The other options confuse related ideas or skip a key constraint."),
+      q("graph-4", "What reconstructs a BFS path?", "A parent recorded at first discovery", ["Only a distance count", "Heap priorities", "Map iteration order"], "Correct answer: A parent recorded at first discovery. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -712,10 +725,10 @@ func bellmanFord(n, source int, edges []FlatEdge) ([]int64, bool) {
       closing: "Under nonnegative weights, each useful relaxation enters the heap and every finalized pop has the optimal distance.",
     },
     quiz: [
-      q("ga-1", "What invalidates Dijkstra's greedy finalization?", "A negative edge can later create a cheaper route", "Duplicate positive edges", "Disconnected vertices", "Using int64"),
-      q("ga-2", "How does lazy Dijkstra handle old heap entries?", "Skip an item whose distance differs from the current dist value", "Delete the graph", "Process every item fully", "Use FIFO"),
-      q("ga-3", "What does an MST minimize?", "The total weight needed to connect all vertices", "Every pairwise path simultaneously", "Only source distance", "The number of vertices"),
-      q("ga-4", "Which algorithm detects reachable negative cycles?", "Bellman-Ford via one extra relaxation pass", "Plain BFS", "Binary search", "Prim"),
+      q("ga-1", "What invalidates Dijkstra's greedy finalization?", "A negative edge can later create a cheaper route", ["Duplicate positive edges", "Disconnected vertices", "Using int64"], "Correct answer: A negative edge can later create a cheaper route. The other options confuse related ideas or skip a key constraint."),
+      q("ga-2", "How does lazy Dijkstra handle old heap entries?", "Skip an item whose distance differs from the current dist value", ["Delete the graph", "Process every item fully", "Use FIFO"], "Correct answer: Skip an item whose distance differs from the current dist value. The other options confuse related ideas or skip a key constraint."),
+      q("ga-3", "What does an MST minimize?", "The total weight needed to connect all vertices", ["Every pairwise path simultaneously", "Only source distance", "The number of vertices"], "Correct answer: The total weight needed to connect all vertices. The other options confuse related ideas or skip a key constraint."),
+      q("ga-4", "Which algorithm detects reachable negative cycles?", "Bellman-Ford via one extra relaxation pass", ["Plain BFS", "Binary search", "Prim"], "Correct answer: Bellman-Ford via one extra relaxation pass. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -835,10 +848,10 @@ func bellmanFord(n, source int, edges []FlatEdge) ([]int64, bool) {
       closing: "The invariant that each frame restores shared state makes every sibling branch independent.",
     },
     quiz: [
-      q("rb-1", "Why copy path when recording a solution?", "The search will keep mutating the shared backing storage", "Copies sort values", "Recursion requires arrays", "It reduces time to O(n)"),
-      q("rb-2", "What does the start index prevent in subset generation?", "Reusing earlier positions and generating order-duplicate subsets", "Stack overflow", "Negative values", "Map collisions"),
-      q("rb-3", "What is the key restoration invariant?", "A frame returns path and auxiliary flags to their entry state", "Every frame keeps all choices", "The path is always empty", "Results share memory"),
-      q("rb-4", "Can all n! permutations be returned in polynomial total time?", "No, writing the output already takes Ω(n·n!)", "Yes, with a heap", "Yes, with BFS", "Only in Go"),
+      q("rb-1", "Why copy path when recording a solution?", "The search will keep mutating the shared backing storage", ["Copies sort values", "Recursion requires arrays", "It reduces time to O(n)"], "Correct answer: The search will keep mutating the shared backing storage. The other options confuse related ideas or skip a key constraint."),
+      q("rb-2", "What does the start index prevent in subset generation?", "Reusing earlier positions and generating order-duplicate subsets", ["Stack overflow", "Negative values", "Map collisions"], "Correct answer: Reusing earlier positions and generating order-duplicate subsets. The other options confuse related ideas or skip a key constraint."),
+      q("rb-3", "What is the key restoration invariant?", "A frame returns path and auxiliary flags to their entry state", ["Every frame keeps all choices", "The path is always empty", "Results share memory"], "Correct answer: A frame returns path and auxiliary flags to their entry state. The other options confuse related ideas or skip a key constraint."),
+      q("rb-4", "Can all n! permutations be returned in polynomial total time?", "No, writing the output already takes Ω(n·n!)", ["Yes, with a heap", "Yes, with BFS", "Only in Go"], "Correct answer: No, writing the output already takes Ω(n·n!). The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -965,10 +978,10 @@ func unboundedKnapsack(weights, values []int, capacity int) int {
       closing: "Each distinct state is solved once, converting repeated exponential exploration into the size of the state graph.",
     },
     quiz: [
-      q("dp-1", "What makes a DP state sufficient?", "It contains all information future choices need", "It stores the entire call stack", "It is always one integer", "It uses a map"),
-      q("dp-2", "Why iterate capacity downward in 0/1 knapsack?", "To read the previous item layer and prevent reusing the current item", "To sort items", "To allow infinite reuse", "To reduce capacity"),
-      q("dp-3", "How should unreachable minimum-cost states be initialized?", "To a safe infinity sentinel, with the base state set explicitly", "To zero", "To a random value", "To the target answer"),
-      q("dp-4", "What does pseudo-polynomial mean here?", "Runtime depends on a numeric value such as capacity, not only its encoded length", "Runtime is exponential", "Runtime is approximate", "Space is always constant"),
+      q("dp-1", "What makes a DP state sufficient?", "It contains all information future choices need", ["It stores the entire call stack", "It is always one integer", "It uses a map"], "Correct answer: It contains all information future choices need. The other options confuse related ideas or skip a key constraint."),
+      q("dp-2", "Why iterate capacity downward in 0/1 knapsack?", "To read the previous item layer and prevent reusing the current item", ["To sort items", "To allow infinite reuse", "To reduce capacity"], "Correct answer: To read the previous item layer and prevent reusing the current item. The other options confuse related ideas or skip a key constraint."),
+      q("dp-3", "How should unreachable minimum-cost states be initialized?", "To a safe infinity sentinel, with the base state set explicitly", ["To zero", "To a random value", "To the target answer"], "Correct answer: To a safe infinity sentinel, with the base state set explicitly. The other options confuse related ideas or skip a key constraint."),
+      q("dp-4", "What does pseudo-polynomial mean here?", "Runtime depends on a numeric value such as capacity, not only its encoded length", ["Runtime is exponential", "Runtime is approximate", "Space is always constant"], "Correct answer: Runtime depends on a numeric value such as capacity, not only its encoded length. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1106,10 +1119,10 @@ func unboundedKnapsack(weights, values []int, capacity int) int {
       closing: "Although one loop is nested, the two monotonic boundaries perform at most 2n moves.",
     },
     quiz: [
-      q("sw-1", "Why is a standard variable sum window unsafe with negative numbers?", "Removing a left value may increase rather than decrease the sum", "Negative numbers cannot be added", "Maps reject negatives", "The array becomes unsorted"),
-      q("sw-2", "When does a shortest-covering window update its answer?", "While the window is valid, before tightening until it breaks", "Only when invalid", "Before adding right", "After clearing all counts"),
-      q("sw-3", "Why is the nested shrink loop still linear?", "left advances at most n times total", "The compiler removes it", "right never moves", "Maps are constant space"),
-      q("sw-4", "What makes a fixed window efficient?", "The next aggregate removes one outgoing item and adds one incoming item", "It sorts every range", "It uses recursion", "It scans each range from scratch"),
+      q("sw-1", "Why is a standard variable sum window unsafe with negative numbers?", "Removing a left value may increase rather than decrease the sum", ["Negative numbers cannot be added", "Maps reject negatives", "The array becomes unsorted"], "Correct answer: Removing a left value may increase rather than decrease the sum. The other options confuse related ideas or skip a key constraint."),
+      q("sw-2", "When does a shortest-covering window update its answer?", "While the window is valid, before tightening until it breaks", ["Only when invalid", "Before adding right", "After clearing all counts"], "Correct answer: While the window is valid, before tightening until it breaks. The other options confuse related ideas or skip a key constraint."),
+      q("sw-3", "Why is the nested shrink loop still linear?", "left advances at most n times total", ["The compiler removes it", "right never moves", "Maps are constant space"], "Correct answer: left advances at most n times total. The other options confuse related ideas or skip a key constraint."),
+      q("sw-4", "What makes a fixed window efficient?", "The next aggregate removes one outgoing item and adds one incoming item", ["It sorts every range", "It uses recursion", "It scans each range from scratch"], "Correct answer: The next aggregate removes one outgoing item and adds one incoming item. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1231,10 +1244,10 @@ func unboundedKnapsack(weights, values []int, capacity int) int {
       closing: "Each rune enters once and causes at most one forward jump of left, so the window remains linear.",
     },
     quiz: [
-      q("str-1", "What does len(s) report for a Go string?", "Its byte length", "Its rune count", "Its grapheme count", "Its capacity"),
-      q("str-2", "What does range over a string yield?", "Byte offset and decoded rune", "Rune index and byte", "Only ASCII", "Grapheme and width"),
-      q("str-3", "Why use strings.Builder for many concatenations?", "It avoids repeatedly copying the growing immutable string", "It normalizes Unicode", "It sorts words", "It interns every string"),
-      q("str-4", "When is [26]int a correct frequency table?", "When input is guaranteed to be exactly the mapped 26-letter alphabet", "For arbitrary UTF-8", "For grapheme clusters", "Whenever len is under 26"),
+      q("str-1", "What does len(s) report for a Go string?", "Its byte length", ["Its rune count", "Its grapheme count", "Its capacity"], "Correct answer: Its byte length. The other options confuse related ideas or skip a key constraint."),
+      q("str-2", "What does range over a string yield?", "Byte offset and decoded rune", ["Rune index and byte", "Only ASCII", "Grapheme and width"], "Correct answer: Byte offset and decoded rune. The other options confuse related ideas or skip a key constraint."),
+      q("str-3", "Why use strings.Builder for many concatenations?", "It avoids repeatedly copying the growing immutable string", ["It normalizes Unicode", "It sorts words", "It interns every string"], "Correct answer: It avoids repeatedly copying the growing immutable string. The other options confuse related ideas or skip a key constraint."),
+      q("str-4", "When is [26]int a correct frequency table?", "When input is guaranteed to be exactly the mapped 26-letter alphabet", ["For arbitrary UTF-8", "For grapheme clusters", "Whenever len is under 26"], "Correct answer: When input is guaranteed to be exactly the mapped 26-letter alphabet. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1361,10 +1374,10 @@ func reverseRecursive(head *ListNode) *ListNode {
       closing: "Every node is visited a constant number of times and only pointer variables are allocated.",
     },
     quiz: [
-      q("ll-1", "Why save next before reversing curr.Next?", "Otherwise the unprocessed suffix may become unreachable", "To sort the list", "To allocate a sentinel", "To detect UTF-8"),
-      q("ll-2", "When is a dummy node especially useful?", "When an operation may change the head", "Only for cyclic lists", "Only for arrays", "When values are negative"),
-      q("ll-3", "What must Floyd pointers compare?", "Node pointer identity", "Only node values", "List length", "Memory capacity"),
-      q("ll-4", "What extra space does recursive reversal use?", "O(n) call stack in the worst case", "Always O(1)", "O(log n) for every list", "O(n²)"),
+      q("ll-1", "Why save next before reversing curr.Next?", "Otherwise the unprocessed suffix may become unreachable", ["To sort the list", "To allocate a sentinel", "To detect UTF-8"], "Correct answer: Otherwise the unprocessed suffix may become unreachable. The other options confuse related ideas or skip a key constraint."),
+      q("ll-2", "When is a dummy node especially useful?", "When an operation may change the head", ["Only for cyclic lists", "Only for arrays", "When values are negative"], "Correct answer: When an operation may change the head. The other options confuse related ideas or skip a key constraint."),
+      q("ll-3", "What must Floyd pointers compare?", "Node pointer identity", ["Only node values", "List length", "Memory capacity"], "Correct answer: Node pointer identity. The other options confuse related ideas or skip a key constraint."),
+      q("ll-4", "What extra space does recursive reversal use?", "O(n) call stack in the worst case", ["Always O(1)", "O(log n) for every list", "O(n²)"], "Correct answer: O(n) call stack in the worst case. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1490,10 +1503,10 @@ func (q *Queue[T]) Pop() (T, bool) {
       closing: "Each item is pushed and removed a bounded number of times, giving linear total work.",
     },
     quiz: [
-      q("sq-1", "Why does BFS use a queue?", "FIFO processes vertices in nondecreasing discovery distance", "Queues sort edge weights", "Queues detect negative cycles", "FIFO is recursive"),
-      q("sq-2", "When should BFS mark a node visited?", "When it is enqueued", "After every neighbor finishes", "Only at the end", "When it is dequeued twice"),
-      q("sq-3", "Why can q=q[1:] be undesirable in a long-lived service?", "The small slice may retain a large backing array and referenced objects", "It is always O(n)", "It reverses the queue", "It copies all elements"),
-      q("sq-4", "Why is a queue built from two stacks amortized O(1)?", "Each element transfers between stacks at most once", "It never moves data", "Both stacks are sorted", "Go optimizes every method"),
+      q("sq-1", "Why does BFS use a queue?", "FIFO processes vertices in nondecreasing discovery distance", ["Queues sort edge weights", "Queues detect negative cycles", "FIFO is recursive"], "Correct answer: FIFO processes vertices in nondecreasing discovery distance. The other options confuse related ideas or skip a key constraint."),
+      q("sq-2", "When should BFS mark a node visited?", "When it is enqueued", ["After every neighbor finishes", "Only at the end", "When it is dequeued twice"], "Correct answer: When it is enqueued. The other options confuse related ideas or skip a key constraint."),
+      q("sq-3", "Why can q=q[1:] be undesirable in a long-lived service?", "The small slice may retain a large backing array and referenced objects", ["It is always O(n)", "It reverses the queue", "It copies all elements"], "Correct answer: The small slice may retain a large backing array and referenced objects. The other options confuse related ideas or skip a key constraint."),
+      q("sq-4", "Why is a queue built from two stacks amortized O(1)?", "Each element transfers between stacks at most once", ["It never moves data", "Both stacks are sorted", "Go optimizes every method"], "Correct answer: Each element transfers between stacks at most once. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1620,10 +1633,10 @@ func twoSumMap(nums []int, target int) [2]int {
       closing: "The map converts n repeated linear searches into one expected-constant lookup per element.",
     },
     quiz: [
-      q("hm-1", "Why use the comma-ok map lookup?", "It distinguishes a missing key from a present key holding the zero value", "It sorts keys", "It locks the map", "It hashes twice"),
-      q("hm-2", "Which type can be a Go map key?", "An array whose element type is comparable", "A slice", "A map", "A function"),
-      q("hm-3", "Why check Two Sum's complement before inserting the current value?", "It prevents pairing an element with itself unless an earlier duplicate exists", "It saves all memory", "It preserves map order", "It handles UTF-8"),
-      q("hm-4", "Is Go map iteration order stable?", "No, callers must sort keys when deterministic order matters", "Yes, insertion order", "Yes, key order", "Only for integers"),
+      q("hm-1", "Why use the comma-ok map lookup?", "It distinguishes a missing key from a present key holding the zero value", ["It sorts keys", "It locks the map", "It hashes twice"], "Correct answer: It distinguishes a missing key from a present key holding the zero value. The other options confuse related ideas or skip a key constraint."),
+      q("hm-2", "Which type can be a Go map key?", "An array whose element type is comparable", ["A slice", "A map", "A function"], "Correct answer: An array whose element type is comparable. The other options confuse related ideas or skip a key constraint."),
+      q("hm-3", "Why check Two Sum's complement before inserting the current value?", "It prevents pairing an element with itself unless an earlier duplicate exists", ["It saves all memory", "It preserves map order", "It handles UTF-8"], "Correct answer: It prevents pairing an element with itself unless an earlier duplicate exists. The other options confuse related ideas or skip a key constraint."),
+      q("hm-4", "Is Go map iteration order stable?", "No, callers must sort keys when deterministic order matters", ["Yes, insertion order", "Yes, key order", "Only for integers"], "Correct answer: No, callers must sort keys when deterministic order matters. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1768,10 +1781,10 @@ func isBalanced(root *TreeNode) bool {
       closing: "The traversal is correct by structural induction: child contracts hold, then the parent combines them exactly once.",
     },
     quiz: [
-      q("tree-1", "Which traversal naturally combines child heights?", "Postorder", "Preorder only", "Level order only", "Random order"),
-      q("tree-2", "What does a BFS queue contain at a level boundary?", "Exactly the nodes at the current depth", "Every ancestor twice", "Only leaves", "A sorted traversal"),
-      q("tree-3", "Why can a naive balance algorithm be O(n²)?", "It recomputes subtree heights for many ancestors", "It uses a queue", "Nil checks are expensive", "Trees require sorting"),
-      q("tree-4", "What is recursive DFS auxiliary space on a skewed tree?", "O(n)", "O(1)", "O(log n) always", "O(n²)"),
+      q("tree-1", "Which traversal naturally combines child heights?", "Postorder", ["Preorder only", "Level order only", "Random order"], "Correct answer: Postorder. The other options confuse related ideas or skip a key constraint."),
+      q("tree-2", "What does a BFS queue contain at a level boundary?", "Exactly the nodes at the current depth", ["Every ancestor twice", "Only leaves", "A sorted traversal"], "Correct answer: Exactly the nodes at the current depth. The other options confuse related ideas or skip a key constraint."),
+      q("tree-3", "Why can a naive balance algorithm be O(n²)?", "It recomputes subtree heights for many ancestors", ["It uses a queue", "Nil checks are expensive", "Trees require sorting"], "Correct answer: It recomputes subtree heights for many ancestors. The other options confuse related ideas or skip a key constraint."),
+      q("tree-4", "What is recursive DFS auxiliary space on a skewed tree?", "O(n)", ["O(1)", "O(log n) always", "O(n²)"], "Correct answer: O(n). The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -1885,10 +1898,10 @@ func rank(candidates []Candidate) {
       closing: "The search halves the only interval that can contain the transition, so it terminates in O(log n).",
     },
     quiz: [
-      q("sort-1", "What does lower bound return?", "The first index whose value is at least the target", "Any matching index", "The last smaller index", "Always a present target"),
-      q("sort-2", "Why use <= when merge chooses from the left half?", "Equal left elements remain before equal right elements, preserving stability", "It removes duplicates", "It makes search constant", "It reverses output"),
-      q("sort-3", "What must a custom comparator provide?", "A consistent strict ordering with intended tie behavior", "Random answers", "Only equality", "A hash"),
-      q("sort-4", "Why can lowerBound return len(nums)?", "The target belongs after every existing value", "The search failed internally", "The slice is nil", "Midpoint overflowed"),
+      q("sort-1", "What does lower bound return?", "The first index whose value is at least the target", ["Any matching index", "The last smaller index", "Always a present target"], "Correct answer: The first index whose value is at least the target. The other options confuse related ideas or skip a key constraint."),
+      q("sort-2", "Why use <= when merge chooses from the left half?", "Equal left elements remain before equal right elements, preserving stability", ["It removes duplicates", "It makes search constant", "It reverses output"], "Correct answer: Equal left elements remain before equal right elements, preserving stability. The other options confuse related ideas or skip a key constraint."),
+      q("sort-3", "What must a custom comparator provide?", "A consistent strict ordering with intended tie behavior", ["Random answers", "Only equality", "A hash"], "Correct answer: A consistent strict ordering with intended tie behavior. The other options confuse related ideas or skip a key constraint."),
+      q("sort-4", "Why can lowerBound return len(nums)?", "The target belongs after every existing value", ["The search failed internally", "The slice is nil", "Midpoint overflowed"], "Correct answer: The target belongs after every existing value. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2035,10 +2048,10 @@ func (t *Trie) HasPrefix(prefix string) bool { return t.walk(prefix) != nil }`,
       closing: "These representations are powerful because they make the needed structural state directly indexable.",
     },
     quiz: [
-      q("tb-1", "Why does exact trie search check IsWord?", "A stored longer word may share the queried prefix without the prefix being a word", "Children are sorted", "Maps require it", "It checks UTF-8 validity"),
-      q("tb-2", "What does mask | (1<<i) do?", "Sets bit i", "Clears bit i", "Toggles every bit", "Counts bits"),
-      q("tb-3", "Why is visited[node] insufficient in a collect-all problem?", "The same node with different collected masks has different future possibilities", "Nodes repeat values", "BFS needs weights", "Tries are recursive"),
-      q("tb-4", "What is the fundamental bitmask-subset limit?", "The state count grows as 2ⁿ", "Masks cannot store zero", "Bits are unordered", "Go has no shifts"),
+      q("tb-1", "Why does exact trie search check IsWord?", "A stored longer word may share the queried prefix without the prefix being a word", ["Children are sorted", "Maps require it", "It checks UTF-8 validity"], "Correct answer: A stored longer word may share the queried prefix without the prefix being a word. The other options confuse related ideas or skip a key constraint."),
+      q("tb-2", "What does mask | (1<<i) do?", "Sets bit i", ["Clears bit i", "Toggles every bit", "Counts bits"], "Correct answer: Sets bit i. The other options confuse related ideas or skip a key constraint."),
+      q("tb-3", "Why is visited[node] insufficient in a collect-all problem?", "The same node with different collected masks has different future possibilities", ["Nodes repeat values", "BFS needs weights", "Tries are recursive"], "Correct answer: The same node with different collected masks has different future possibilities. The other options confuse related ideas or skip a key constraint."),
+      q("tb-4", "What is the fundamental bitmask-subset limit?", "The state count grows as 2ⁿ", ["Masks cannot store zero", "Bits are unordered", "Go has no shifts"], "Correct answer: The state count grows as 2ⁿ. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2190,10 +2203,10 @@ func (t *Trie) HasPrefix(prefix string) bool { return t.walk(prefix) != nil }`,
       closing: "The selected algorithm follows directly from the edge-weight contract rather than from graph size alone.",
     },
     quiz: [
-      q("sp-1", "When may Dijkstra stop for one target?", "When the target's current non-stale item is popped", "When target is first pushed", "Before any relaxation", "After sorting vertices"),
-      q("sp-2", "What does Bellman-Ford's extra pass detect?", "A reachable negative cycle if another relaxation succeeds", "A minimum spanning tree", "A trie prefix", "Only disconnected nodes"),
-      q("sp-3", "What is Floyd-Warshall's main use?", "All-pairs shortest paths on modest-size graphs", "Streaming top K", "Unweighted components only", "Hash lookup"),
-      q("sp-4", "Why use 0-1 BFS?", "Deque ordering replaces a heap when weights are only zero or one", "It handles arbitrary negatives", "It computes an MST", "It removes visited state"),
+      q("sp-1", "When may Dijkstra stop for one target?", "When the target's current non-stale item is popped", ["When target is first pushed", "Before any relaxation", "After sorting vertices"], "Correct answer: When the target's current non-stale item is popped. The other options confuse related ideas or skip a key constraint."),
+      q("sp-2", "What does Bellman-Ford's extra pass detect?", "A reachable negative cycle if another relaxation succeeds", ["A minimum spanning tree", "A trie prefix", "Only disconnected nodes"], "Correct answer: A reachable negative cycle if another relaxation succeeds. The other options confuse related ideas or skip a key constraint."),
+      q("sp-3", "What is Floyd-Warshall's main use?", "All-pairs shortest paths on modest-size graphs", ["Streaming top K", "Unweighted components only", "Hash lookup"], "Correct answer: All-pairs shortest paths on modest-size graphs. The other options confuse related ideas or skip a key constraint."),
+      q("sp-4", "Why use 0-1 BFS?", "Deque ordering replaces a heap when weights are only zero or one", ["It handles arbitrary negatives", "It computes an MST", "It removes visited state"], "Correct answer: Deque ordering replaces a heap when weights are only zero or one. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2305,10 +2318,10 @@ func maximumActivities(intervals []Interval) []Interval {
       closing: "The proof, not the short code, is what distinguishes this from a heuristic.",
     },
     quiz: [
-      q("gr-1", "Why select the earliest-finishing compatible interval?", "It leaves at least as much room as any alternative first choice", "It is the shortest interval", "It starts earliest", "It avoids sorting"),
-      q("gr-2", "What is an exchange argument?", "A proof that replacing an optimal choice with the greedy choice does not worsen the solution", "A map operation", "A randomized test", "A heap deletion"),
-      q("gr-3", "Why is 0/1 knapsack not generally greedy by value density?", "An indivisible high-density choice can block a better combination", "Values cannot be sorted", "Capacity is negative", "DP cannot solve it"),
-      q("gr-4", "What does Jump Game's farthest variable summarize?", "The maximum index reachable from the processed prefix", "The minimum jump value", "A chosen path only", "The array length"),
+      q("gr-1", "Why select the earliest-finishing compatible interval?", "It leaves at least as much room as any alternative first choice", ["It is the shortest interval", "It starts earliest", "It avoids sorting"], "Correct answer: It leaves at least as much room as any alternative first choice. The other options confuse related ideas or skip a key constraint."),
+      q("gr-2", "What is an exchange argument?", "A proof that replacing an optimal choice with the greedy choice does not worsen the solution", ["A map operation", "A randomized test", "A heap deletion"], "Correct answer: A proof that replacing an optimal choice with the greedy choice does not worsen the solution. The other options confuse related ideas or skip a key constraint."),
+      q("gr-3", "Why is 0/1 knapsack not generally greedy by value density?", "An indivisible high-density choice can block a better combination", ["Values cannot be sorted", "Capacity is negative", "DP cannot solve it"], "Correct answer: An indivisible high-density choice can block a better combination. The other options confuse related ideas or skip a key constraint."),
+      q("gr-4", "What does Jump Game's farthest variable summarize?", "The maximum index reachable from the processed prefix", ["The minimum jump value", "A chosen path only", "The array length"], "Correct answer: The maximum index reachable from the processed prefix. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2437,10 +2450,10 @@ func modPow(base, exponent, modulus int64) int64 {
       closing: "Once semantics are explicit, both the interval sweep and arithmetic loop follow a small invariant.",
     },
     quiz: [
-      q("im-1", "Do [0,10) and [10,20) overlap?", "No, half-open intervals release the endpoint before the next start", "Yes, always", "Only in Go", "Only if sorted"),
-      q("im-2", "What does Euclid preserve?", "gcd(a,b)=gcd(b,a mod b)", "a+b", "a·b", "Prime count"),
-      q("im-3", "Why is modular multiplication still overflow-sensitive?", "The product may overflow before the modulus is applied", "Modulus increases values", "int64 has no multiplication", "Exponents are strings"),
-      q("im-4", "What does maximum sweep active count represent?", "Peak simultaneous interval usage", "Total duration", "Number of endpoints", "Minimum start"),
+      q("im-1", "Do [0,10) and [10,20) overlap?", "No, half-open intervals release the endpoint before the next start", ["Yes, always", "Only in Go", "Only if sorted"], "Correct answer: No, half-open intervals release the endpoint before the next start. The other options confuse related ideas or skip a key constraint."),
+      q("im-2", "What does Euclid preserve?", "gcd(a,b)=gcd(b,a mod b)", ["a+b", "a·b", "Prime count"], "Correct answer: gcd(a,b)=gcd(b,a mod b). The other options confuse related ideas or skip a key constraint."),
+      q("im-3", "Why is modular multiplication still overflow-sensitive?", "The product may overflow before the modulus is applied", ["Modulus increases values", "int64 has no multiplication", "Exponents are strings"], "Correct answer: The product may overflow before the modulus is applied. The other options confuse related ideas or skip a key constraint."),
+      q("im-4", "What does maximum sweep active count represent?", "Peak simultaneous interval usage", ["Total duration", "Number of endpoints", "Minimum start"], "Correct answer: Peak simultaneous interval usage. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2586,10 +2599,10 @@ func kmpMatches(text, pattern string) []int {
       closing: "KMP's text index never retreats and the pattern index has amortized linear fallback, so total work is O(n+m).",
     },
     quiz: [
-      q("kmp-1", "What does lps[i] store?", "The longest proper prefix of pattern[:i+1] that is also its suffix", "A text index", "A hash collision count", "The next character"),
-      q("kmp-2", "Does KMP move the text index backward?", "No; mismatch changes only the matched pattern prefix when possible", "Yes, after every mismatch", "Only for ASCII", "Only after a match"),
-      q("kmp-3", "Why verify a Rabin–Karp hash match?", "Distinct substrings can collide to the same hash", "Hashes are always zero", "Verification improves sorting", "Modulus is negative"),
-      q("kmp-4", "How does KMP retain overlapping matches?", "After a match, set matched to lps[matched-1]", "Skip pattern length bytes", "Clear the LPS table", "Reverse the text"),
+      q("kmp-1", "What does lps[i] store?", "The longest proper prefix of pattern[:i+1] that is also its suffix", ["A text index", "A hash collision count", "The next character"], "Correct answer: The longest proper prefix of pattern[:i+1] that is also its suffix. The other options confuse related ideas or skip a key constraint."),
+      q("kmp-2", "Does KMP move the text index backward?", "No; mismatch changes only the matched pattern prefix when possible", ["Yes, after every mismatch", "Only for ASCII", "Only after a match"], "Correct answer: No; mismatch changes only the matched pattern prefix when possible. The other options confuse related ideas or skip a key constraint."),
+      q("kmp-3", "Why verify a Rabin–Karp hash match?", "Distinct substrings can collide to the same hash", ["Hashes are always zero", "Verification improves sorting", "Modulus is negative"], "Correct answer: Distinct substrings can collide to the same hash. The other options confuse related ideas or skip a key constraint."),
+      q("kmp-4", "How does KMP retain overlapping matches?", "After a match, set matched to lps[matched-1]", ["Skip pattern length bytes", "Clear the LPS table", "Reverse the text"], "Correct answer: After a match, set matched to lps[matched-1]. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2724,10 +2737,10 @@ func equalRange(nums []int, target int) (int, int) {
       closing: "The candidate domain halves each iteration while preserving the first feasible answer.",
     },
     quiz: [
-      q("bs-1", "What property must an answer-space check have?", "Its truth value changes monotonically across the ordered candidates", "It must be O(1)", "It must sort input", "It must recurse"),
-      q("bs-2", "Why is max(weights) the shipping lower bound?", "No package can be split, so capacity must fit the heaviest package", "It is the average", "It minimizes days automatically", "It is always feasible"),
-      q("bs-3", "What does firstTrue return if no index is true?", "n, the end of the half-open domain", "-1 necessarily", "Zero", "The last index"),
-      q("bs-4", "Why do duplicates complicate rotated search?", "They can make it impossible to tell which half is strictly ordered", "They make arrays unsliceable", "They require a heap", "They change target"),
+      q("bs-1", "What property must an answer-space check have?", "Its truth value changes monotonically across the ordered candidates", ["It must be O(1)", "It must sort input", "It must recurse"], "Correct answer: Its truth value changes monotonically across the ordered candidates. The other options confuse related ideas or skip a key constraint."),
+      q("bs-2", "Why is max(weights) the shipping lower bound?", "No package can be split, so capacity must fit the heaviest package", ["It is the average", "It minimizes days automatically", "It is always feasible"], "Correct answer: No package can be split, so capacity must fit the heaviest package. The other options confuse related ideas or skip a key constraint."),
+      q("bs-3", "What does firstTrue return if no index is true?", "n, the end of the half-open domain", ["-1 necessarily", "Zero", "The last index"], "Correct answer: n, the end of the half-open domain. The other options confuse related ideas or skip a key constraint."),
+      q("bs-4", "Why do duplicates complicate rotated search?", "They can make it impossible to tell which half is strictly ordered", ["They make arrays unsliceable", "They require a heap", "They change target"], "Correct answer: They can make it impossible to tell which half is strictly ordered. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -2874,10 +2887,10 @@ func equalRange(nums []int, target int) (int, int) {
       closing: "The template is reliable because every customization corresponds to one explicit problem contract.",
     },
     quiz: [
-      q("bkt-1", "When may combination search skip nums[i]==nums[i-1]?", "When i>start, meaning the duplicate is a sibling choice at the same depth", "Always", "Only after success", "Never"),
-      q("bkt-2", "What changes when a candidate may be reused?", "Recurse with i instead of i+1", "Remove the base case", "Never unchoose", "Use BFS"),
-      q("bkt-3", "Why temporarily mark a board cell?", "A cell cannot be reused within the current path but may be used by another starting path", "To sort the board", "To count bytes", "To persist mutation"),
-      q("bkt-4", "When is nums[i]>remaining a safe break?", "After sorting positive candidates", "With arbitrary negative candidates", "Before sorting", "For permutations only"),
+      q("bkt-1", "When may combination search skip nums[i]==nums[i-1]?", "When i>start, meaning the duplicate is a sibling choice at the same depth", ["Always", "Only after success", "Never"], "Correct answer: When i>start, meaning the duplicate is a sibling choice at the same depth. The other options confuse related ideas or skip a key constraint."),
+      q("bkt-2", "What changes when a candidate may be reused?", "Recurse with i instead of i+1", ["Remove the base case", "Never unchoose", "Use BFS"], "Correct answer: Recurse with i instead of i+1. The other options confuse related ideas or skip a key constraint."),
+      q("bkt-3", "Why temporarily mark a board cell?", "A cell cannot be reused within the current path but may be used by another starting path", ["To sort the board", "To count bytes", "To persist mutation"], "Correct answer: A cell cannot be reused within the current path but may be used by another starting path. The other options confuse related ideas or skip a key constraint."),
+      q("bkt-4", "When is nums[i]>remaining a safe break?", "After sorting positive candidates", ["With arbitrary negative candidates", "Before sorting", "For permutations only"], "Correct answer: After sorting positive candidates. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -3009,10 +3022,10 @@ func kruskal(n int, edges []CostEdge) (int64, bool) {
       closing: "Path compression and union by size keep the parent forest almost flat.",
     },
     quiz: [
-      q("dsu-1", "What does Find return?", "A representative root for the item's component", "A shortest path", "Every neighbor", "An edge weight"),
-      q("dsu-2", "What does Union returning false mean?", "The items already had the same representative", "The indices are sorted", "Memory is full", "A new component formed"),
-      q("dsu-3", "Where is component size authoritative?", "At the representative root", "At every historical node", "Only index zero", "In the edge list"),
-      q("dsu-4", "What is standard DSU poor at?", "Arbitrary online edge deletions and path reconstruction", "Incremental connectivity", "Kruskal", "Cycle detection"),
+      q("dsu-1", "What does Find return?", "A representative root for the item's component", ["A shortest path", "Every neighbor", "An edge weight"], "Correct answer: A representative root for the item's component. The other options confuse related ideas or skip a key constraint."),
+      q("dsu-2", "What does Union returning false mean?", "The items already had the same representative", ["The indices are sorted", "Memory is full", "A new component formed"], "Correct answer: The items already had the same representative. The other options confuse related ideas or skip a key constraint."),
+      q("dsu-3", "Where is component size authoritative?", "At the representative root", ["At every historical node", "Only index zero", "In the edge list"], "Correct answer: At the representative root. The other options confuse related ideas or skip a key constraint."),
+      q("dsu-4", "What is standard DSU poor at?", "Arbitrary online edge deletions and path reconstruction", ["Incremental connectivity", "Kruskal", "Cycle detection"], "Correct answer: Arbitrary online edge deletions and path reconstruction. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -3123,10 +3136,10 @@ func missingZeroToN(nums []int) int {
       closing: "The implementation is constant-space because the accumulator preserves exactly the required bitwise summary.",
     },
     quiz: [
-      q("bit-1", "What does x&(x-1) do for nonzero x?", "Clears the lowest set bit", "Sets every bit", "Negates x", "Counts bytes"),
-      q("bit-2", "Why does XOR find one unpaired value?", "Equal pairs cancel and XOR is associative and commutative", "XOR sorts values", "XOR stores a map", "It works for any multiplicity"),
-      q("bit-3", "Why prefer uint for logical shifts?", "It makes zero-filling bit intent explicit without sign extension", "uint has infinite width", "Signed ints cannot shift", "It prevents overflow entirely"),
-      q("bit-4", "What does &^ do in Go?", "Bit clear (AND NOT)", "XOR", "Division", "Left rotation"),
+      q("bit-1", "What does x&(x-1) do for nonzero x?", "Clears the lowest set bit", ["Sets every bit", "Negates x", "Counts bytes"], "Correct answer: Clears the lowest set bit. The other options confuse related ideas or skip a key constraint."),
+      q("bit-2", "Why does XOR find one unpaired value?", "Equal pairs cancel and XOR is associative and commutative", ["XOR sorts values", "XOR stores a map", "It works for any multiplicity"], "Correct answer: Equal pairs cancel and XOR is associative and commutative. The other options confuse related ideas or skip a key constraint."),
+      q("bit-3", "Why prefer uint for logical shifts?", "It makes zero-filling bit intent explicit without sign extension", ["uint has infinite width", "Signed ints cannot shift", "It prevents overflow entirely"], "Correct answer: It makes zero-filling bit intent explicit without sign extension. The other options confuse related ideas or skip a key constraint."),
+      q("bit-4", "What does &^ do in Go?", "Bit clear (AND NOT)", ["XOR", "Division", "Left rotation"], "Correct answer: Bit clear (AND NOT). The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -3271,10 +3284,10 @@ func missingZeroToN(nums []int) int {
       closing: "Every edge is removed once, and processing all vertices is equivalent to the graph being acyclic.",
     },
     quiz: [
-      q("topo-1", "What does indegree represent in Kahn's algorithm?", "The number of unresolved prerequisites/incoming edges", "The number of outgoing paths", "The shortest distance", "The heap size"),
-      q("topo-2", "How does Kahn detect a cycle?", "Fewer than V vertices can be removed", "The queue grows", "An indegree becomes zero", "Edges are weighted"),
-      q("topo-3", "What DFS edge proves a directed cycle?", "An edge to a currently visiting (active) vertex", "An edge to a complete vertex", "Any cross edge", "An edge from zero"),
-      q("topo-4", "Is topological order unique?", "Not generally; multiple zero-indegree choices can exist", "Always", "Only for disconnected graphs", "Never valid"),
+      q("topo-1", "What does indegree represent in Kahn's algorithm?", "The number of unresolved prerequisites/incoming edges", ["The number of outgoing paths", "The shortest distance", "The heap size"], "Correct answer: The number of unresolved prerequisites/incoming edges. The other options confuse related ideas or skip a key constraint."),
+      q("topo-2", "How does Kahn detect a cycle?", "Fewer than V vertices can be removed", ["The queue grows", "An indegree becomes zero", "Edges are weighted"], "Correct answer: Fewer than V vertices can be removed. The other options confuse related ideas or skip a key constraint."),
+      q("topo-3", "What DFS edge proves a directed cycle?", "An edge to a currently visiting (active) vertex", ["An edge to a complete vertex", "Any cross edge", "An edge from zero"], "Correct answer: An edge to a currently visiting (active) vertex. The other options confuse related ideas or skip a key constraint."),
+      q("topo-4", "Is topological order unique?", "Not generally; multiple zero-indegree choices can exist", ["Always", "Only for disconnected graphs", "Never valid"], "Correct answer: Not generally; multiple zero-indegree choices can exist. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
   makeDsaLesson({
@@ -3401,10 +3414,10 @@ func missingZeroToN(nums []int) int {
       closing: "Dominated candidates are permanently removed, leaving only boundaries that can still affect a future answer.",
     },
     quiz: [
-      q("mono-1", "Why is a monotonic stack algorithm O(n)?", "Each index is pushed once and popped at most once", "The inner loop never runs", "The stack is sorted globally", "It uses hashing"),
-      q("mono-2", "Why store deque indices for window maxima?", "Indices reveal expiry and distinguish duplicates", "Values cannot compare", "Indices reduce n", "Slices require them"),
-      q("mono-3", "What does the deque front represent?", "The best value among live, undominated window candidates", "The newest item always", "The smallest index ever", "An expired value"),
-      q("mono-4", "Why add a zero-height histogram sentinel?", "It forces all remaining bars to resolve their right boundary", "It increases every area", "It sorts heights", "It removes duplicates"),
+      q("mono-1", "Why is a monotonic stack algorithm O(n)?", "Each index is pushed once and popped at most once", ["The inner loop never runs", "The stack is sorted globally", "It uses hashing"], "Correct answer: Each index is pushed once and popped at most once. The other options confuse related ideas or skip a key constraint."),
+      q("mono-2", "Why store deque indices for window maxima?", "Indices reveal expiry and distinguish duplicates", ["Values cannot compare", "Indices reduce n", "Slices require them"], "Correct answer: Indices reveal expiry and distinguish duplicates. The other options confuse related ideas or skip a key constraint."),
+      q("mono-3", "What does the deque front represent?", "The best value among live, undominated window candidates", ["The newest item always", "The smallest index ever", "An expired value"], "Correct answer: The best value among live, undominated window candidates. The other options confuse related ideas or skip a key constraint."),
+      q("mono-4", "Why add a zero-height histogram sentinel?", "It forces all remaining bars to resolve their right boundary", ["It increases every area", "It sorts heights", "It removes duplicates"], "Correct answer: It forces all remaining bars to resolve their right boundary. The other options confuse related ideas or skip a key constraint."),
     ],
   }),
 ];

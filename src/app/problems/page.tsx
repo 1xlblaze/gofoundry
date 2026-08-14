@@ -41,7 +41,7 @@ const groups: PatternGroup[] = [
   {
     name: "Stacks, Queues & Monotonic Structures",
     strategy: "Use a stack to defer decisions until you see the element that resolves them.",
-    lessons: ["stacks-and-queues"],
+    lessons: ["stacks-and-queues", "monotonic-stack-queue"],
     extra: [
       "Daily Temperatures",
       "Largest Rectangle in Histogram",
@@ -73,7 +73,13 @@ const groups: PatternGroup[] = [
   {
     name: "Graphs",
     strategy: "Adjacency list + BFS/DFS/Union-Find/topological sort, chosen by what the question asks for.",
-    lessons: ["graphs-bfs-dfs", "graphs-advanced", "shortest-paths-dijkstra"],
+    lessons: [
+      "graphs-bfs-dfs",
+      "graphs-advanced",
+      "shortest-paths-dijkstra",
+      "union-find-dsu",
+      "topological-sort-patterns",
+    ],
     extra: [
       "Clone Graph",
       "Word Ladder (BFS shortest transformation)",
@@ -85,7 +91,7 @@ const groups: PatternGroup[] = [
   {
     name: "Backtracking",
     strategy: "Choose → explore → unchoose; prune branches that can't reach a valid solution.",
-    lessons: ["recursion-backtracking"],
+    lessons: ["recursion-backtracking", "backtracking-templates"],
     extra: ["Permutations II (with duplicates)", "N-Queens", "Word Search", "Palindrome Partitioning"],
   },
   {
@@ -115,7 +121,7 @@ const groups: PatternGroup[] = [
   {
     name: "Binary Search",
     strategy: "Search on the answer space when the predicate is monotonic, not just on sorted arrays.",
-    lessons: ["sorting-searching"],
+    lessons: ["sorting-searching", "binary-search-patterns"],
     extra: [
       "Search in Rotated Sorted Array",
       "Median of Two Sorted Arrays",
@@ -125,7 +131,7 @@ const groups: PatternGroup[] = [
   {
     name: "Tries & Bit Manipulation",
     strategy: "Prefix trees for string sets; bit tricks for subsets and XOR properties.",
-    lessons: ["tries-and-bitmask"],
+    lessons: ["tries-and-bitmask", "bit-manipulation-go"],
     extra: ["Word Search II (Trie + DFS)", "Design Add and Search Words", "Counting Bits"],
   },
   {

@@ -40,8 +40,8 @@ export default function HomePage() {
             Think in Go. Diagram the trade-off. Ship the proof.
           </h1>
           <p className="lede reveal-delay-2" data-motion>
-            {allLessons.length} lessons across DSA, internals, LLD, and HLD — taught with the
-            Foundry HEAT method.
+            {allLessons.length} deep lessons — mental models, worked Go code, dry-runs, trade-offs,
+            and interview scripts — not thin topic summaries.
           </p>
           <div className="hero-actions reveal-delay-3" data-motion>
             <Link href="/learn" className="primary-btn">
@@ -59,8 +59,9 @@ export default function HomePage() {
           <div>
             <h2>Foundry HEAT — one operating system for Go</h2>
             <p>
-              Hear → Etch → Anchor → Temper. Students use it to pass interviews.
-              Experienced engineers use it to design systems with explicit trade-offs.
+              Hear → Etch → Anchor → Temper. Every lesson teaches why a solution works: invariants,
+              failure modes, complexity, and the script you say out loud in an interview — so the
+              material is worth studying end-to-end, not skimming.
             </p>
           </div>
           <div className="heat-grid">
