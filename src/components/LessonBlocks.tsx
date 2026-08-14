@@ -75,20 +75,71 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "steps":
             return (
-              <div key={i}>
+              <div key={i} className="step-list">
                 {block.title && (
                   <h3 className="type-title mb-4 text-[1.35rem] text-ink">{block.title}</h3>
                 )}
-                <ol className="space-y-3.5">
+                <ol className="space-y-3">
                   {block.items.map((item, j) => (
-                    <li key={j} className="flex gap-4">
-                      <span className="font-mono text-sm font-medium text-teal">
-                        {String(j + 1).padStart(2, "0")}
-                      </span>
-                      <span className="type-serif text-[1.05rem] text-ink-soft">{item}</span>
+                    <li key={j} className="step-card flex gap-4">
+                      <span className="step-num">{String(j + 1).padStart(2, "0")}</span>
+                      <span className="step-text">{item}</span>
                     </li>
                   ))}
                 </ol>
+              </div>
+            );
+          case "tradeoff":
+            return (
+              <section key={i} className="tradeoff-section">
+                <h3 className="type-title text-[1.25rem] text-ink">{block.title}</h3>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                  {block.choices.map((c) => (
+                    <div key={c.label} className="tradeoff-card">
+                      <p className="tradeoff-label">{c.label}</p>
+                      <div className="mt-3 space-y-3">
+                        <div>
+                          <p className="type-label mb-1.5 text-teal">Pros</p>
+                          <ul className="tradeoff-list">
+                            {c.pros.map((p) => (
+                              <li key={p}>{p}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="type-label mb-1.5 text-copper">Cons</p>
+                          <ul className="tradeoff-list">
+                            {c.cons.map((p) => (
+                              <li key={p}>{p}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <p className="tradeoff-when">
+                          <span className="font-semibold text-ink">Pick when: </span>
+                          {c.when}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          case "capacity":
+            return (
+              <div key={i} className="capacity-table">
+                {block.title && (
+                  <h3 className="type-title mb-4 text-[1.2rem] text-ink">{block.title}</h3>
+                )}
+                <table>
+                  <tbody>
+                    {block.rows.map((row) => (
+                      <tr key={row.label}>
+                        <th>{row.label}</th>
+                        <td>{row.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             );
           case "think":
@@ -165,12 +216,9 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "diagram":
             return (
-              <Diagram
-                key={i}
-                kind={block.kind}
-                title={block.title}
-                caption={block.caption}
-              />
+              <div key={i} className="lesson-diagram-wrap">
+                <Diagram kind={block.kind} title={block.title} caption={block.caption} />
+              </div>
             );
           default:
             return null;

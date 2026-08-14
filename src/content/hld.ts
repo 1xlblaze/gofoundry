@@ -236,26 +236,189 @@ func GetUser(ctx context.Context, id string) (*User, error) {
     slug: "url-shortener-hld",
     track: "hld",
     title: "HLD: URL Shortener",
-    subtitle: "End-to-end design: scale, storage, and redirects.",
+    subtitle: "Architecture diagram, read/write paths, and every major trade-off spelled out.",
     difficulty: "intermediate",
-    minutes: 40,
+    minutes: 45,
     tags: ["case-study"],
     prerequisites: ["url-shortener-lld", "system-design-foundations"],
     blocks: [
       {
+        type: "think",
+        title: "HEAT · Hear first",
+        clarify: [
+          "Read vs write QPS? (typically 100:1 or more for shorteners)",
+          "Custom domains? Analytics? Link expiry? Abuse/spam?",
+          "Global or single-region? Latency SLO for redirects?",
+        ],
+        model: [
+          "Separate read path (redirect) from write path (shorten)",
+          "Cache immutable code→URL mappings aggressively",
+          "Async analytics — never block redirect on logging",
+        ],
+      },
+      {
+        type: "diagram",
+        title: "System architecture",
+        kind: "url-shortener-arch",
+        caption: "Etch this box diagram before naming trade-offs. Read path is cache-heavy; write path is consistency-heavy.",
+      },
+      {
         type: "prose",
-        title: "Scale picture",
-        body: "Redirects are extremely read-heavy. Cache code→URL in Redis + CDN for custom domains. Write path: API → ID service (range-allocated counters) → primary DB. Analytics via async events. Estimate: 100B URLs × ~100 bytes ≈ tens of TB with replication overhead.",
+        title: "Read path (redirect)",
+        body: "GET /{code} hits a redirect tier optimized for throughput. Check CDN edge cache first (custom domains terminate at CDN). On miss, check Redis (cluster-wide hot codes). On miss again, read from DB shard by code hash, populate Redis, return 301/302 to long URL. Target: sub-50ms p99 at the edge for cached paths.",
+      },
+      {
+        type: "prose",
+        title: "Write path (shorten)",
+        body: "POST /shorten validates URL, calls ID service for a unique code (or hashes long URL for idempotency), writes mapping to primary DB in the correct shard, returns short URL. Analytics event emitted async (outbox or queue) — never block the API response on Kafka/SQS.",
+      },
+      {
+        type: "capacity",
+        title: "Back-of-envelope (example scale)",
+        rows: [
+          { label: "Assumption", value: "100M new URLs/day, 10B redirects/day" },
+          { label: "Write QPS", value: "~1.2K/s average, ~5K/s peak" },
+          { label: "Read QPS", value: "~115K/s average, ~500K/s peak at edge" },
+          { label: "Storage", value: "100B rows × ~150B ≈ 15TB raw + indexes + replicas" },
+          { label: "Cache", value: "Redis: top 20% codes often cover 80% reads — size for hot set + TTL" },
+        ],
+      },
+      {
+        type: "tradeoff",
+        title: "ID generation: counter+Base62 vs hash truncate",
+        choices: [
+          {
+            label: "A — Monotonic counter + Base62",
+            pros: [
+              "Guaranteed unique, compact codes",
+              "Predictable length; easy sharding by code range",
+            ],
+            cons: [
+              "Needs coordinated ID service (ticket servers / Snowflake)",
+              "Codes are guessable (enumeration risk)",
+            ],
+            when: "High write volume, need short opaque codes, can add rate limits for enumeration",
+          },
+          {
+            label: "B — Hash(long URL) truncated + collision retry",
+            pros: [
+              "Idempotent: same long URL → same code without extra lookup",
+              "No central counter bottleneck",
+            ],
+            cons: [
+              "Collisions require retry loop",
+              "Truncation increases collision probability",
+              "Not ideal if you need non-guessable codes",
+            ],
+            when: "Idempotency matters, moderate scale, willing to handle rare collisions",
+          },
+        ],
+      },
+      {
+        type: "tradeoff",
+        title: "Redirect: 301 vs 302",
+        choices: [
+          {
+            label: "A — 301 Permanent",
+            pros: [
+              "Browsers/CDNs cache aggressively → fewer origin hits",
+              "Best for immutable mappings (most short links)",
+            ],
+            cons: [
+              "Hard to change destination later (cache sticks)",
+              "Bad if you need analytics per click at origin",
+            ],
+            when: "Mapping is immutable and you want maximum cache offload",
+          },
+          {
+            label: "B — 302 Found (temporary)",
+            pros: [
+              "Destination can change; caches revalidate more often",
+              "Better if you track every click at your redirect tier",
+            ],
+            cons: [
+              "More origin traffic; worse CDN efficiency",
+              "Higher latency on repeat visits",
+            ],
+            when: "Links expire, A/B destinations, or strict per-click analytics at origin",
+          },
+        ],
+      },
+      {
+        type: "tradeoff",
+        title: "Storage: SQL vs wide-column (Dynamo/Cassandra)",
+        choices: [
+          {
+            label: "A — SQL (PostgreSQL) + sharding",
+            pros: [
+              "Strong consistency on write, familiar ops",
+              "Secondary indexes if you need lookup by user_id",
+            ],
+            cons: [
+              "Sharding by code hash is manual",
+              "Hot shards if codes aren't uniformly distributed",
+            ],
+            when: "Moderate scale, need transactions, team knows SQL",
+          },
+          {
+            label: "B — Wide-column / KV (DynamoDB, Cassandra)",
+            pros: [
+              "Horizontal scale by partition key = code",
+              "Very high read/write throughput per partition",
+            ],
+            cons: [
+              "Limited secondary queries without extra indexes",
+              "Tunable consistency — must design carefully",
+            ],
+            when: "Massive scale, simple access pattern (get by code only)",
+          },
+        ],
+      },
+      {
+        type: "tradeoff",
+        title: "Cache: Redis cluster vs CDN-only",
+        choices: [
+          {
+            label: "A — CDN + Redis",
+            pros: [
+              "CDN handles geographic latency; Redis handles origin shielding",
+              "Two layers: edge for static redirect, Redis for dynamic miss path",
+            ],
+            cons: ["Two systems to operate; invalidation must touch both on delete"],
+            when: "Global users, high read QPS, custom domains at CDN",
+          },
+          {
+            label: "B — CDN only (long TTL on 301)",
+            pros: ["Simpler stack", "301 + long TTL = near-zero origin for hot codes"],
+            cons: [
+              "Cold codes always hit origin",
+              "302 breaks CDN caching benefits",
+            ],
+            when: "Smaller scale or mostly immutable links with 301",
+          },
+        ],
+      },
+      {
+        type: "answer",
+        title: "How to answer in the interview",
+        opening:
+          "I'll separate read and write paths, draw the architecture, then walk trade-offs with a clear pick for each.",
+        beats: [
+          "State read-heavy ratio → CDN + Redis + sharded DB.",
+          "Pick ID strategy with uniqueness vs idempotency trade-off.",
+          "301 vs 302 based on immutability and analytics needs.",
+          "Mention abuse: rate limits, URL blocklists, CAPTCHA on shorten.",
+          "Close with capacity numbers and what breaks first at 10× scale.",
+        ],
       },
       {
         type: "steps",
-        title: "Deep dives to offer",
+        title: "Go service map (what you'd implement)",
         items: [
-          "ID generation without global lock (ticket servers / Snowflake)",
-          "DB sharding by code hash",
-          "Cache invalidation on delete/update",
-          "Abuse: spam URLs, rate limits",
-          "301 vs 302 SEO/caching implications",
+          "redirect-svc — GET /{code}, cache-aside, minimal logic",
+          "api-svc — POST /shorten, auth, validation",
+          "id-svc — Snowflake / ticket server for codes",
+          "analytics-worker — consume outbox, write to columnar store",
         ],
       },
     ],

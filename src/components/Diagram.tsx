@@ -492,6 +492,49 @@ function HashMapBuckets() {
   );
 }
 
+function UrlShortenerArch() {
+  return (
+    <Frame
+      title="URL shortener — HLD"
+      caption="Solid arrows = read path · dashed = write path"
+      viewBox="0 0 800 420"
+    >
+      <rect width="800" height="420" fill="#ecf5f3" />
+      <text x="40" y="36" fill={signal} fontSize="11" fontWeight="700" fontFamily="var(--font-body), sans-serif">
+        READ PATH (redirect)
+      </text>
+      <text x="40" y="220" fill={ember} fontSize="11" fontWeight="700" fontFamily="var(--font-body), sans-serif">
+        WRITE PATH (shorten)
+      </text>
+      <NodeBox x={30} y={52} w={90} h={44} label="User" />
+      <NodeBox x={140} y={52} w={100} h={44} label="CDN" sub="edge cache" fill="#ccfbf1" />
+      <NodeBox x={270} y={52} w={110} h={44} label="Redirect" sub="svc" />
+      <NodeBox x={420} y={52} w={100} h={44} label="Redis" sub="hot codes" fill="#ccfbf1" />
+      <NodeBox x={540} y={52} w={120} h={44} label="DB shard" sub="by code hash" />
+      <NodeBox x={690} y={52} w={90} h={44} label="Long URL" sub="302/301" />
+      <Arrow x1={120} y1={74} x2={135} y2={74} />
+      <Arrow x1={260} y1={74} x2={265} y2={74} />
+      <Arrow x1={380} y1={74} x2={415} y2={74} />
+      <Arrow x1={520} y1={74} x2={535} y2={74} />
+      <Arrow x1={640} y1={74} x2={685} y2={74} />
+      <NodeBox x={30} y={248} w={90} h={44} label="Client" />
+      <NodeBox x={140} y={248} w={100} h={44} label="API LB" />
+      <NodeBox x={270} y={248} w={110} h={44} label="API svc" sub="POST" />
+      <NodeBox x={420} y={248} w={100} h={44} label="ID svc" sub="Snowflake" fill="#ccfbf1" />
+      <NodeBox x={540} y={248} w={120} h={44} label="DB shard" sub="insert" />
+      <NodeBox x={30} y={330} w={130} h={44} label="Analytics" sub="queue → DW" />
+      <path d="M 325 292 L 355 292 L 355 352 L 100 352" fill="none" stroke={ember} strokeWidth="2" strokeDasharray="6 5" />
+      <Arrow x1={120} y1={270} x2={135} y2={270} color={ember} />
+      <Arrow x1={260} y1={270} x2={265} y2={270} color={ember} />
+      <Arrow x1={380} y1={270} x2={415} y2={270} color={ember} />
+      <Arrow x1={520} y1={270} x2={535} y2={270} color={ember} />
+      <text x="400" y="400" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+        analytics async · never on redirect critical path
+      </text>
+    </Frame>
+  );
+}
+
 export function Diagram({ kind, title, caption }: Props) {
   switch (kind) {
     case "heat-cycle":
@@ -516,6 +559,8 @@ export function Diagram({ kind, title, caption }: Props) {
       return <GpmScheduler />;
     case "hash-map-buckets":
       return <HashMapBuckets />;
+    case "url-shortener-arch":
+      return <UrlShortenerArch />;
     default:
       return null;
   }

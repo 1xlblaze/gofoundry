@@ -50,7 +50,7 @@ export default async function LessonPage({ params }: Props) {
         {track.title}
       </p>
       <h1 className="type-title mt-3 text-[var(--text-h1)] text-ink">{lesson.title}</h1>
-      <p className="type-serif mt-4 text-[var(--text-lead)] text-ink-soft">
+      <p className="mt-4 max-w-xl text-[var(--text-lead)] leading-relaxed text-ink-soft">
         {lesson.subtitle}
       </p>
 

@@ -157,11 +157,18 @@ a {
 
 .prose-block p {
   margin: 0 0 1.15rem;
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.125rem;
+  font-family: var(--font-body), sans-serif;
+  font-size: 1.05rem;
   line-height: 1.75;
   color: var(--ink-soft);
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+  .prose-block p {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
 }
 
 .prose-block h3 {
@@ -325,7 +332,103 @@ a {
 }
 
 .reading-rail {
-  max-width: 42rem;
+  max-width: 44rem;
+}
+
+.lesson-diagram-wrap {
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+}
+
+@media (min-width: 640px) {
+  .lesson-diagram-wrap {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.step-card {
+  border: 1px solid var(--line);
+  background: rgba(243, 250, 248, 0.85);
+  padding: 0.85rem 1rem;
+}
+
+.step-num {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--signal);
+  flex-shrink: 0;
+}
+
+.step-text {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.tradeoff-section {
+  margin-top: 0.5rem;
+}
+
+.tradeoff-card {
+  border: 1px solid var(--line-strong);
+  background: var(--foam);
+  padding: 1.1rem 1.15rem;
+}
+
+.tradeoff-label {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.tradeoff-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.tradeoff-list li {
+  margin-bottom: 0.35rem;
+}
+
+.tradeoff-when {
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.capacity-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.capacity-table th {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: rgba(11, 122, 110, 0.08);
+  border: 1px solid var(--line);
+  width: 38%;
+  vertical-align: top;
+}
+
+.capacity-table td {
+  padding: 0.65rem 0.85rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  line-height: 1.55;
+  background: var(--foam);
 }
 
 .diagram-frame {

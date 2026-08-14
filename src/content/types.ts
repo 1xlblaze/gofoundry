@@ -21,7 +21,8 @@ export type DiagramKind =
   | "outbox"
   | "gpm-scheduler"
   | "hash-map-buckets"
-  | "heat-cycle";
+  | "heat-cycle"
+  | "url-shortener-arch";
 
 export type ContentBlock =
   | { type: "prose"; title?: string; body: string }
@@ -48,6 +49,21 @@ export type ContentBlock =
       title?: string;
       kind: DiagramKind;
       caption?: string;
+    }
+  | {
+      type: "tradeoff";
+      title: string;
+      choices: Array<{
+        label: string;
+        pros: string[];
+        cons: string[];
+        when: string;
+      }>;
+    }
+  | {
+      type: "capacity";
+      title?: string;
+      rows: Array<{ label: string; value: string }>;
     };
 
 export type QuizQuestion = {
