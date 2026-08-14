@@ -16,7 +16,7 @@ export async function GET() {
     try {
       supabaseHost = new URL(url).hostname;
       const response = await fetch(
-        `${url.replace(/\/$/, "")}/rest/v1/gofoundry_waitlist?select=id&limit=1`,
+        `${url.replace(/\/$/, "")}/rest/v1/problems?select=id&limit=1`,
         {
           headers: {
             apikey: anonKey,
