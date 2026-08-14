@@ -117,8 +117,8 @@ export default function LabPage() {
           <span className="type-label">04 · Shape and stress the solution</span>
           <h2 id="sandbox-title">Take the next problem from sketch to proof</h2>
           <p>
-            Build it in the HEAT canvas, or use the Pro sandbox for race detection,
-            benchmark tooling, and live compiler escape output.
+            Build it in the HEAT canvas, or open the sandbox for race detection,
+            benchmark tooling, and live compiler escape output — free for everyone.
           </p>
         </div>
         <div className="bench-cta-actions">
@@ -128,8 +128,8 @@ export default function LabPage() {
           <Link className="ghost-btn" href="/sandbox">
             How execution works
           </Link>
-          <Link className="primary-btn" href="/pricing">
-            Pro sandbox waitlist →
+          <Link className="primary-btn" href="/problems">
+            Try staff problems →
           </Link>
         </div>
       </section>

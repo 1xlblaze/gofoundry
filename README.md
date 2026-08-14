@@ -79,3 +79,5 @@ Configure `STRIPE_SECRET_KEY`, webhook secret, and price IDs in `.env.local`. Ch
 ## Deploy
 
 Vercel (Node runtime — not static export). Connect the GitHub repo and set the env vars above.
+
+**Full production setup** (Supabase `DATABASE_URL`, free Redis, free sandbox worker): see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).

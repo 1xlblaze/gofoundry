@@ -109,7 +109,7 @@ export default function ProblemsPage() {
         <h2>20 DSA + 5 LLD modules with runtime invariants</h2>
         <p>
           Solve inside GoFoundry with dual algorithmic + zero-allocation evaluation.
-          First problem is free; Pro unlocks the full set.
+          All staff problems and the Lab are free during the public beta.
         </p>
         <div className="platform-problem-cards">
           {platformProblems.map((problem) => (
@@ -119,9 +119,7 @@ export default function ProblemsPage() {
               className="platform-problem-card"
             >
               <span className="teaser-chip">{problem.trackId.toUpperCase()}</span>
-              {problem.id === "dsa-sliding-window-maximum" && (
-                <span className="teaser-chip teaser-chip-free">Free</span>
-              )}
+              <span className="teaser-chip teaser-chip-free">Free</span>
               <h3>{problem.title}</h3>
               <p>
                 {problem.algorithmicSpecs.timeComplexity} · max{" "}

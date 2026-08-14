@@ -4,24 +4,26 @@ import { MotionRoot } from "@/components/MotionRoot";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { auth } from "@/auth";
+import { isStripeConfigured } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Choose a GoFoundry plan for staff-grade Go lessons, concurrency practice, runtime performance, and system design.",
+    "GoFoundry is free during public beta — staff problems, Lab, HEAT canvas, and diagnostics.",
 };
 
 const tiers = [
   {
     id: "free",
-    name: "Free",
+    name: "Public beta",
     price: "$0",
-    cadence: "forever",
-    description: "Build the core mental models before going deeper.",
+    cadence: "everything unlocked",
+    description: "Full platform access while we ship the staff-grade curriculum.",
     features: [
-      "15 foundational lessons",
-      "1 staff DSA problem (sliding window)",
-      "Basic HEAT sheets",
+      "101-lesson curriculum",
+      "20 staff DSA problems + 5 LLD modules",
+      "Go Lab + HEAT canvas",
+      "4-gate diagnostic sandbox (vet, escape, race, bench)",
       "Community access",
     ],
   },
@@ -29,22 +31,21 @@ const tiers = [
     id: "pro",
     name: "Pro",
     price: "$18/mo",
-    cadence: "or $149/year",
-    description: "The complete individual path from runtime internals to architecture.",
+    cadence: "coming soon",
+    description: "Paid subscriptions launch later. Everything is free today.",
     features: [
-      "Full deep-dive curriculum (101 lessons)",
-      "20 staff DSA problems with 4-gate diagnostics",
-      "5 LLD design modules",
-      "Concurrency sandbox + escape analysis",
-      "Cloud-native HLD cases",
+      "Same full platform as beta",
+      "Priority diagnostic queue",
+      "Saved submission history",
+      "Advanced analytics",
     ],
   },
   {
     id: "team",
     name: "Team",
     price: "$299",
-    cadence: "per seat/year",
-    description: "A shared mastery system for engineering organizations.",
+    cadence: "per seat/year · waitlist",
+    description: "Organization features for engineering teams.",
     features: ["Team analytics", "Custom tracks", "SSO", "Priority support"],
   },
 ];
@@ -52,18 +53,20 @@ const tiers = [
 export default async function PricingPage() {
   const session = await auth();
   const userTier = session?.user?.tier ?? "free";
+  const billingLive = isStripeConfigured();
 
   return (
     <MotionRoot>
       <div className="price-page">
         <section className="shell page-hero price-hero">
           <p className="kicker" data-motion>
-            Staff-grade plans
+            Public beta
           </p>
-          <h1 data-motion>Invest in Go depth, not content volume.</h1>
+          <h1 data-motion>Everything is free right now.</h1>
           <p data-motion>
-            Start with the foundations for free. Upgrade to Pro for the full 4-gate
-            diagnostic pipeline, 20 staff DSA problems, and production LLD modules.
+            Staff problems, Go Lab, HEAT canvas, and the 4-gate diagnostic pipeline are
+            open to everyone. Pro subscriptions are not live yet — explore the full
+            platform at no cost.
           </p>
           {userTier !== "free" && (
             <p className="price-active-tier" data-motion>
@@ -76,10 +79,10 @@ export default async function PricingPage() {
           {tiers.map((tier) => (
             <article
               key={tier.id}
-              className={`panel price-tier-card${tier.id === "pro" ? " price-tier-featured" : ""}`}
+              className={`panel price-tier-card${tier.id === "free" ? " price-tier-featured" : ""}`}
               data-motion
             >
-              {tier.id === "pro" ? <span className="price-popular">Most complete</span> : null}
+              {tier.id === "free" ? <span className="price-popular">Live now</span> : null}
               <div>
                 <h2>{tier.name}</h2>
                 <p className="price-tier-description">{tier.description}</p>
@@ -95,11 +98,11 @@ export default async function PricingPage() {
               </ul>
               <div className="price-tier-action">
                 {tier.id === "free" ? (
-                  <Link href="/learn" className="primary-btn price-full-button">
-                    Start free
+                  <Link href="/problems" className="primary-btn price-full-button">
+                    Open staff problems
                   </Link>
                 ) : tier.id === "pro" ? (
-                  session ? (
+                  billingLive && session ? (
                     <div className="price-checkout-group">
                       <CheckoutButton plan="pro-monthly" label="Subscribe monthly" />
                       <CheckoutButton
@@ -109,8 +112,8 @@ export default async function PricingPage() {
                       />
                     </div>
                   ) : (
-                    <Link href="/login" className="primary-btn price-full-button">
-                      Sign in to subscribe
+                    <Link href="/lab" className="secondary-btn price-full-button">
+                      {billingLive ? "Sign in to subscribe" : "Use the free Lab →"}
                     </Link>
                   )
                 ) : (
@@ -127,9 +130,10 @@ export default async function PricingPage() {
 
         <section className="shell price-roadmap" data-motion>
           <p>
-            Pro includes the full sandbox diagnostic pipeline: <code>go vet</code>, escape
-            analysis, <code>-race</code>, goleak, and benchmark allocs/op. Deploy with Docker +
-            optional gVisor via <code>docker-compose up</code>.
+            The diagnostic pipeline runs <code>go vet</code>, escape analysis,{" "}
+            <code>-race</code>, goleak, and benchmark allocs/op. Deploy locally with{" "}
+            <code>docker-compose up</code> or use the free-tier guides in{" "}
+            <code>docs/DEPLOYMENT.md</code>.
           </p>
         </section>
 
@@ -139,7 +143,7 @@ export default async function PricingPage() {
             <h2>Interested in a lifetime pass?</h2>
             <p>
               Tell us where to send launch details. Early members will be first in line for
-              limited lifetime pricing.
+              limited lifetime pricing when paid plans go live.
             </p>
           </div>
           <WaitlistForm tier="lifetime" source="lifetime" buttonLabel="Register interest" />

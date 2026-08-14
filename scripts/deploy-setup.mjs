@@ -4,11 +4,13 @@
  *
  * Prerequisites:
  * 1. Supabase project with NEXT_PUBLIC_SUPABASE_URL + ANON_KEY in Vercel
- * 2. DATABASE_URL in Vercel (Supabase → Settings → Database → Connection string → URI)
+ * 2. DATABASE_URL in Vercel (Supabase → Settings → Database → URI, transaction pooler :6543)
  * 3. SETUP_SECRET in Vercel (random string for one-time migration)
  *
  * Usage:
  *   SETUP_SECRET=your-secret SITE_URL=https://gofoundry-seven.vercel.app node scripts/deploy-setup.mjs
+ *
+ * See docs/DEPLOYMENT.md for full free-tier setup (Redis, sandbox worker).
  */
 
 const site = process.env.SITE_URL ?? "https://gofoundry-seven.vercel.app";
