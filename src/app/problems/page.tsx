@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getLesson } from "@/content";
+import { listPlatformProblems } from "@/content/platform-problems/index";
 import {
   patternTopics,
   totalProblemCount,
@@ -28,6 +29,8 @@ const emptyProgress: ProblemProgressState = {
 const knownProblemIds = new Set(
   patternTopics.flatMap((topic) => topic.problems.map((problem) => problem.id)),
 );
+
+const platformProblems = listPlatformProblems();
 
 export default function ProblemsPage() {
   const [progress, setProgress] = useState<ProblemProgressState>(emptyProgress);
@@ -100,6 +103,34 @@ export default function ProblemsPage() {
       <Link className="heat-canvas-practice-cta" href="/heat">
         Plan your next solution in the HEAT canvas →
       </Link>
+
+      <section className="panel platform-problems-banner">
+        <p className="kicker">Staff-grade in-app problems</p>
+        <h2>20 DSA + 5 LLD modules with runtime invariants</h2>
+        <p>
+          Solve inside GoFoundry with dual algorithmic + zero-allocation evaluation.
+          First problem is free; Pro unlocks the full set.
+        </p>
+        <div className="platform-problem-cards">
+          {platformProblems.map((problem) => (
+            <Link
+              key={problem.id}
+              href={`/problems/${problem.id}`}
+              className="platform-problem-card"
+            >
+              <span className="teaser-chip">{problem.trackId.toUpperCase()}</span>
+              {problem.id === "dsa-sliding-window-maximum" && (
+                <span className="teaser-chip teaser-chip-free">Free</span>
+              )}
+              <h3>{problem.title}</h3>
+              <p>
+                {problem.algorithmicSpecs.timeComplexity} · max{" "}
+                {problem.runtimeInvariants.maxHeapAllocsPerRun ?? 0} allocs/run
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <div className="stat-row sheet-stats">
         <div className="stat">

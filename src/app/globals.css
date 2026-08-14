@@ -3695,6 +3695,23 @@ a.brand-mark {
   margin-top: auto;
 }
 
+.price-checkout-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.price-active-tier {
+  margin-top: 0.75rem;
+  color: var(--brand-deep);
+  font-weight: 650;
+}
+
+.checkout-error {
+  margin: 0.35rem 0 0;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
 .price-full-button {
   width: 100%;
 }
@@ -5312,5 +5329,382 @@ a.brand-mark {
     width: 100%;
     margin: 0;
     padding: 0;
+  }
+}
+
+/* ---- Platform upgrade: diagnostics, benchmark hero, problem workspace ---- */
+.benchmark-hero {
+  margin-top: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow);
+}
+
+.benchmark-hero-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.benchmark-hero-head h2 {
+  margin: 0.35rem 0 0.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+}
+
+.benchmark-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 1rem;
+}
+
+.benchmark-hero-editor {
+  min-height: 280px;
+}
+
+.benchmark-hero-results {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.benchmark-hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.benchmark-metric {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
+.benchmark-metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.benchmark-metric strong {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.benchmark-hero-placeholder {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.benchmark-hero-verdict {
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.benchmark-hero-verdict.pass {
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, white);
+}
+
+.benchmark-hero-verdict.fail {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, white);
+}
+
+.benchmark-hero-error {
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, white);
+  font-size: 0.85rem;
+}
+
+.diagnostic-panel {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.diagnostic-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.diagnostic-panel-head h3 {
+  margin: 0.2rem 0 0;
+}
+
+.diagnostic-progress {
+  margin: 0;
+  color: var(--brand-deep);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+.diagnostic-gates {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.diagnostic-gate {
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+}
+
+.diagnostic-gate strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.82rem;
+}
+
+.diagnostic-gate span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.diagnostic-gate-pass {
+  border-color: color-mix(in srgb, var(--ok) 40%, var(--line));
+  background: color-mix(in srgb, var(--ok) 8%, white);
+}
+
+.diagnostic-gate-fail {
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
+  background: color-mix(in srgb, var(--danger) 8%, white);
+}
+
+.diagnostic-markers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.diagnostic-markers li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+}
+
+.diagnostic-marker-loc {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.diagnostic-marker-sev {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.diagnostic-marker-warning {
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 15%, white);
+}
+
+.diagnostic-marker-info {
+  color: var(--info);
+  background: color-mix(in srgb, var(--info) 12%, white);
+}
+
+.diagnostic-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.problem-workspace-page {
+  padding: 2rem 0 4rem;
+}
+
+.problem-workspace-hero {
+  margin-bottom: 1rem;
+}
+
+.problem-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.problem-spec span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.problem-spec strong {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.problem-workspace .heat-canvas-steps button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.problem-workspace .heat-canvas-steps button.active {
+  color: var(--brand-deep);
+  background: var(--brand-soft);
+}
+
+.problem-stage h2 {
+  margin-top: 0;
+}
+
+.problem-constraint-form {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.problem-constraint-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.problem-constraint-form input,
+.problem-constraint-form select {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+
+.anchor-matrix {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.82rem;
+}
+
+.anchor-row {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.problem-workspace-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.sandbox-arch-diagram {
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+.sandbox-pipeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sandbox-pipeline li {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.platform-problems-banner {
+  margin-bottom: 1.5rem;
+}
+
+.platform-problem-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.platform-problem-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.platform-problem-card:hover {
+  border-color: var(--brand);
+  box-shadow: var(--shadow);
+}
+
+.heat-stage-locked {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.heat-hear-operational {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .benchmark-hero-grid,
+  .diagnostic-gates,
+  .problem-spec-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .benchmark-hero-grid,
+  .diagnostic-gates,
+  .problem-spec-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,0 +1,27 @@
+FROM golang:1.22-bookworm AS builder
+WORKDIR /src
+COPY worker/go.mod worker/go.sum* ./
+RUN go mod download
+COPY worker/ ./
+RUN CGO_ENABLED=0 go build -o /gofoundry-worker .
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    golang-go \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Optional gVisor runsc (download if building with gvisor profile)
+ARG INSTALL_GVISOR=false
+RUN if [ "$INSTALL_GVISOR" = "true" ]; then \
+      curl -fsSL https://storage.googleapis.com/gvisor/releases/release/latest/x86_64/runsc -o /usr/local/bin/runsc && \
+      chmod +x /usr/local/bin/runsc; \
+    fi
+
+COPY --from=builder /gofoundry-worker /usr/local/bin/gofoundry-worker
+COPY worker/problems/manifest.json /etc/gofoundry/problems.json
+
+ENV SANDBOX_WORKER_PORT=8081
+EXPOSE 8081
+CMD ["gofoundry-worker"]

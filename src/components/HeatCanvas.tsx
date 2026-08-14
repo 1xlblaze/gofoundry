@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { GoWorkbench } from "@/components/GoWorkbench";
+import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 
-const STORAGE_KEY = "gofoundry-heat-canvas-v1";
+const STORAGE_KEY = "gofoundry-heat-canvas-v2";
 
 type HeatConstraints = {
   boundedInput: boolean;
@@ -13,8 +14,16 @@ type HeatConstraints = {
   concurrencyRelevant: boolean;
 };
 
+type HeatOperational = {
+  throughputTarget: string;
+  allocationProfile: string;
+  concurrencyModel: string;
+  hearLocked: boolean;
+};
+
 type HeatDraft = {
   constraints: HeatConstraints;
+  operational: HeatOperational;
   diagram: string;
   pattern: string;
   timeComplexity: string;
@@ -89,6 +98,12 @@ const DEFAULT_DRAFT: HeatDraft = {
     duplicatesPossible: false,
     concurrencyRelevant: false,
   },
+  operational: {
+    throughputTarget: "",
+    allocationProfile: "",
+    concurrencyModel: "",
+    hearLocked: false,
+  },
   diagram: `[input] -> [transform] -> [result]
                |
                v
@@ -109,6 +124,10 @@ function readStoredDraft(): HeatDraft {
       constraints: {
         ...DEFAULT_DRAFT.constraints,
         ...(stored.constraints ?? {}),
+      },
+      operational: {
+        ...DEFAULT_DRAFT.operational,
+        ...(stored.operational ?? {}),
       },
       diagram:
         typeof stored.diagram === "string" ? stored.diagram : DEFAULT_DRAFT.diagram,
@@ -137,6 +156,12 @@ export function HeatCanvas() {
   const [draft, setDraft] = useState<HeatDraft>(DEFAULT_DRAFT);
   const [hydrated, setHydrated] = useState(false);
   const [workbenchKey, setWorkbenchKey] = useState(0);
+
+  const editorUnlocked = draft.operational.hearLocked;
+  const anchorComplete =
+    draft.pattern !== "Unselected" &&
+    draft.timeComplexity !== "Unknown" &&
+    draft.spaceComplexity !== "Unknown";
 
   useEffect(() => {
     setDraft(readStoredDraft());
@@ -227,11 +252,89 @@ export function HeatCanvas() {
             </label>
           ))}
         </div>
+        <div className="heat-hear-operational">
+          <label className="heat-canvas-field">
+            <span>Throughput target</span>
+            <input
+              value={draft.operational.throughputTarget}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  operational: {
+                    ...current.operational,
+                    throughputTarget: event.target.value,
+                  },
+                }))
+              }
+              placeholder="e.g. 100k QPS"
+            />
+          </label>
+          <label className="heat-canvas-field">
+            <span>Allocation profile</span>
+            <select
+              value={draft.operational.allocationProfile}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  operational: {
+                    ...current.operational,
+                    allocationProfile: event.target.value,
+                  },
+                }))
+              }
+            >
+              <option value="">Select…</option>
+              <option value="single-buffer">Single pre-sized buffer</option>
+              <option value="dynamic">Dynamic resizing</option>
+              <option value="zero-alloc">Zero heap allocations</option>
+            </select>
+          </label>
+          <label className="heat-canvas-field">
+            <span>Concurrency model</span>
+            <select
+              value={draft.operational.concurrencyModel}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  operational: {
+                    ...current.operational,
+                    concurrencyModel: event.target.value,
+                  },
+                }))
+              }
+            >
+              <option value="">Select…</option>
+              <option value="mutex">sync.Mutex</option>
+              <option value="atomic">atomic.Pointer</option>
+              <option value="channel">chan struct{}</option>
+              <option value="single-goroutine">Single goroutine</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            className="primary-btn"
+            disabled={
+              !draft.operational.throughputTarget ||
+              !draft.operational.allocationProfile ||
+              !draft.operational.concurrencyModel
+            }
+            onClick={() =>
+              setDraft((current) => ({
+                ...current,
+                operational: { ...current.operational, hearLocked: true },
+              }))
+            }
+          >
+            {draft.operational.hearLocked
+              ? "Constraints locked ✓"
+              : "Lock constraints & unlock editor"}
+          </button>
+        </div>
       </section>
 
       <section
         id="heat-diagram"
-        className="heat-canvas-section panel"
+        className={`heat-canvas-section panel ${!editorUnlocked ? "heat-stage-locked" : ""}`}
         aria-labelledby="heat-etch-title"
       >
         <div className="heat-canvas-section-head">
@@ -258,7 +361,7 @@ export function HeatCanvas() {
 
       <section
         id="heat-pattern"
-        className="heat-canvas-section panel"
+        className={`heat-canvas-section panel ${!editorUnlocked ? "heat-stage-locked" : ""}`}
         aria-labelledby="heat-anchor-title"
       >
         <div className="heat-canvas-section-head">
@@ -320,7 +423,7 @@ export function HeatCanvas() {
 
       <section
         id="heat-implementation"
-        className="heat-canvas-section heat-canvas-temper"
+        className={`heat-canvas-section heat-canvas-temper ${!editorUnlocked || !anchorComplete ? "heat-stage-locked" : ""}`}
         aria-labelledby="heat-temper-title"
       >
         <div className="heat-canvas-section-head">
@@ -328,9 +431,18 @@ export function HeatCanvas() {
           <div>
             <span className="type-label">Temper</span>
             <h2 id="heat-temper-title">Stress the idea in running Go</h2>
-            <p>Implement the invariant, run edge cases, then measure allocations if useful.</p>
+            <p>
+              Implement the invariant, then run the 4-gate diagnostic pipeline:
+              tests, -race, goleak, and alloc audit.
+            </p>
           </div>
         </div>
+        {!editorUnlocked && (
+          <p className="heat-stage-hint">Complete Hear and lock constraints to unlock Temper.</p>
+        )}
+        {editorUnlocked && !anchorComplete && (
+          <p className="heat-stage-hint">Select pattern and complexity in Anchor to unlock the editor.</p>
+        )}
         <GoWorkbench
           key={workbenchKey}
           initialCode={draft.code}
@@ -339,6 +451,13 @@ export function HeatCanvas() {
             setDraft((current) => ({ ...current, code }))
           }
         />
+        {editorUnlocked && anchorComplete && (
+          <DiagnosticPanel
+            problemId="dsa-sliding-window-maximum"
+            code={draft.code}
+            modes={["correctness", "race", "leak", "bench", "escape"]}
+          />
+        )}
       </section>
     </div>
   );

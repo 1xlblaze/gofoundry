@@ -1271,4 +1271,50 @@ func (w *Worker) Process(ctx context.Context, id string) error {
       },
     ],
   },
+  {
+    slug: "heat-full-interview-simulation",
+    track: "method",
+    title: "Full Interview Simulation: High-Scale Primitives Under Pressure",
+    subtitle:
+      "HEAT-05: run the complete Hear → Etch → Anchor → Temper cycle against a staff DSA problem with live diagnostic gates.",
+    difficulty: "advanced",
+    minutes: 75,
+    tags: ["heat", "interview", "dsa", "diagnostics"],
+    blocks: [
+      {
+        type: "prose",
+        title: "The simulation format",
+        body: "In a staff interview you do not get to skip constraint auditing or allocation proof. This lesson walks through a complete HEAT cycle on a sliding-window maximum problem that must satisfy both O(N) algorithmic complexity and a zero-allocation runtime bar. You will use the 4-gate diagnostic pipeline: unit tests, -race, goleak, and benchmark allocs/op.",
+      },
+      {
+        type: "steps",
+        title: "HEAT-05 checklist",
+        items: [
+          "Hear: lock throughput (100k QPS), allocation profile, and concurrency model before coding",
+          "Etch: draw the monotonic deque topology with eviction at i-k",
+          "Anchor: commit to O(N) time, O(K) space, single result-slice allocation",
+          "Temper: implement and pass all four diagnostic gates in the problem workspace",
+        ],
+      },
+      {
+        type: "callout",
+        tone: "tip",
+        body: "Open /problems/dsa-sliding-window-maximum to run the live staff diagnostic pipeline against your implementation.",
+      },
+    ],
+    quiz: [
+      {
+        id: "heat05-alloc",
+        prompt: "Why does the staff bar allow exactly 1 heap allocation per SlidingWindowMax call?",
+        options: [
+          "Go always allocates once per function",
+          "The returned result slice is the only unavoidable heap object",
+          "The deque must live on the heap",
+          "Benchmarks cannot measure zero allocations",
+        ],
+        answerIndex: 1,
+        explanation: "The result slice must escape to the caller. All working state (deque indices) should stay stack-allocated or reuse capacity.",
+      },
+    ],
+  },
 ];

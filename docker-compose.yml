@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gofoundry
+      POSTGRES_PASSWORD: gofoundry
+      POSTGRES_DB: gofoundry
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  worker:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.worker
+    environment:
+      SANDBOX_WORKER_PORT: "8081"
+      GO_BIN: /usr/local/go/bin/go
+      RUNSC_PATH: /usr/local/bin/runsc
+      CGROUP_CPU_QUOTA: "50000"
+      CGROUP_MEM_LIMIT: "268435456"
+    ports:
+      - "8081:8081"
+    security_opt:
+      - seccomp=unconfined
+    cap_add:
+      - SYS_ADMIN
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgres://gofoundry:gofoundry@postgres:5432/gofoundry
+      REDIS_URL: redis://redis:6379
+      SANDBOX_WORKER_URL: http://worker:8081
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+      - worker
+
+volumes:
+  pgdata:

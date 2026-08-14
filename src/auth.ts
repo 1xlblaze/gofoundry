@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Keycloak from "next-auth/providers/keycloak";
+import { getUserTierByEmail } from "@/lib/db";
+import type { UserTier } from "@/lib/stripe";
 
 const providers = [];
 
@@ -33,9 +35,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
+    async jwt({ token }) {
+      if (token.email) {
+        token.tier = (await getUserTierByEmail(token.email)) as UserTier;
+      }
+      return token;
+    },
     session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
+      }
+      if (session.user && token.tier) {
+        session.user.tier = token.tier as UserTier;
       }
       return session;
     },
