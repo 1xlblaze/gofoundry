@@ -1,7 +1,18 @@
 import type { NextConfig } from "next";
 
+const repo = "gofoundry";
+const isGhPages = process.env.GITHUB_PAGES === "true";
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "export",
+  images: { unoptimized: true },
+  trailingSlash: true,
+  ...(isGhPages
+    ? {
+        basePath: `/${repo}`,
+        assetPrefix: `/${repo}/`,
+      }
+    : {}),
 };
 
 export default nextConfig;
