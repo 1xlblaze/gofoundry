@@ -188,7 +188,6 @@ export function ProblemWorkspace({ problem }: ProblemWorkspaceProps) {
           <EtchCanvas
             storageKey={storageKey}
             preset={preset}
-            value={etchScene}
             onChange={setEtchScene}
             height={460}
           />

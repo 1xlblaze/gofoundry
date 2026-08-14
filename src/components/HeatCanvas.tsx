@@ -9,7 +9,6 @@ import {
   etchSceneToPayload,
   parseEtchScene,
   serializeEtchScene,
-  type EtchScene,
 } from "@/lib/etch-diagram";
 
 const EtchCanvas = dynamic(
@@ -170,7 +169,6 @@ function readStoredDraft(): HeatDraft {
 
 export function HeatCanvas() {
   const [draft, setDraft] = useState<HeatDraft>(DEFAULT_DRAFT);
-  const [etchScene, setEtchScene] = useState<EtchScene>(() => emptyEtchScene());
   const [hydrated, setHydrated] = useState(false);
   const [workbenchKey, setWorkbenchKey] = useState(0);
 
@@ -184,10 +182,8 @@ export function HeatCanvas() {
     try {
       const stored = readStoredDraft();
       setDraft(stored);
-      setEtchScene(parseEtchScene(stored.diagram) ?? emptyEtchScene());
     } catch {
       setDraft(DEFAULT_DRAFT);
-      setEtchScene(emptyEtchScene());
     } finally {
       setHydrated(true);
     }
@@ -233,7 +229,6 @@ export function HeatCanvas() {
           type="button"
           onClick={() => {
             setDraft(DEFAULT_DRAFT);
-            setEtchScene(emptyEtchScene());
             setWorkbenchKey((current) => current + 1);
           }}
           className="heat-canvas-reset"
@@ -372,13 +367,13 @@ export function HeatCanvas() {
           </div>
         </div>
         <EtchCanvas
+          storageKey="gofoundry-heat-canvas-etch"
           preset="general"
-          value={etchScene}
           onChange={(scene) => {
-            setEtchScene(scene);
+            if (scene.elements.length === 0) return;
             setDraft((current) => ({
               ...current,
-              diagram: scene.elements.length > 0 ? serializeEtchScene(scene) : current.diagram,
+              diagram: serializeEtchScene(scene),
             }));
           }}
           height={420}
@@ -482,7 +477,9 @@ export function HeatCanvas() {
             problemId="dsa-sliding-window-maximum"
             code={draft.code}
             modes={["correctness", "race", "leak", "bench", "escape"]}
-            etchDiagram={etchSceneToPayload(etchScene)}
+            etchDiagram={etchSceneToPayload(
+              parseEtchScene(draft.diagram) ?? emptyEtchScene(),
+            )}
             hearNotes={{
               constraints: draft.constraints,
               operational: draft.operational,
