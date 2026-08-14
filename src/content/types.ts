@@ -27,7 +27,9 @@ export type DiagramKind =
   | "video-arch"
   | "ride-arch"
   | "payment-arch"
-  | "feed-arch";
+  | "feed-arch"
+  | "lru-cache-structure"
+  | "singleflight-timeline";
 
 export type ContentBlock =
   | { type: "prose"; title?: string; body: string }

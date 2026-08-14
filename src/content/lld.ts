@@ -735,6 +735,7 @@ func (l *KeyedLimiter) bucketFor(key string) (*TokenBucket, error) {
     subtitle: "Maintain O(1) recency, TTL, eviction hooks, and stampede control.",
     difficulty: "advanced",
     minutes: 60,
+    free: true,
     tags: ["cache", "lru", "concurrency", "generics"],
     prerequisites: ["maps", "linked lists", "mutexes", "generics"],
     blocks: [
@@ -767,6 +768,12 @@ func (l *KeyedLimiter) bucketFor(key string) (*TokenBucket, error) {
           "Returning internal pointers that callers mutate after unlocking.",
           "Calling eviction callbacks or loaders while holding the cache lock.",
         ],
+      },
+      {
+        type: "diagram",
+        kind: "lru-cache-structure",
+        title: "Map + doubly linked list",
+        caption: "Map locates nodes in O(1); sentinel root removes head/tail edge cases. MRU at front, LRU at back.",
       },
       {
         type: "prose",
@@ -890,6 +897,12 @@ func (c *LoadingCache[K, V]) Get(ctx context.Context, key K) (V, error) {
 	}
 	return raw.(V), nil
 }`,
+      },
+      {
+        type: "diagram",
+        kind: "singleflight-timeline",
+        title: "Concurrent miss collapse",
+        caption: "Many goroutines miss the same key; singleflight elects one loader while peers await the shared result.",
       },
       {
         type: "steps",

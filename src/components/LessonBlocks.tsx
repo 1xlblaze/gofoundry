@@ -1,15 +1,26 @@
+"use client";
+
+import Link from "next/link";
 import type { ContentBlock } from "@/content/types";
 import { Diagram } from "@/components/Diagram";
 import { CodeBlock } from "@/components/CodeBlock";
+import { lessonSectionId } from "@/lib/lesson-sections";
 
-export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
+export function LessonBlocks({
+  blocks,
+  labHref,
+}: {
+  blocks: ContentBlock[];
+  labHref?: string;
+}) {
   return (
-    <div className="content-stack" style={{ gap: "1.35rem" }}>
+    <div className="content-stack lesson-blocks">
       {blocks.map((block, i) => {
+        const sectionId = lessonSectionId(i);
         switch (block.type) {
           case "prose":
             return (
-              <div key={i} className="panel prose-block reveal">
+              <div key={i} id={sectionId} className="panel prose-block lesson-section scroll-mt-28">
                 {block.title && <h3>{block.title}</h3>}
                 {block.body.split("\n\n").map((p, j) => (
                   <p key={j}>{p}</p>
@@ -18,17 +29,19 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "code":
             return (
-              <CodeBlock
-                key={i}
-                title={block.title}
-                language={block.language}
-                code={block.code}
-              />
+              <div key={i} id={sectionId} className="lesson-section scroll-mt-28">
+                <CodeBlock
+                  title={block.title}
+                  language={block.language}
+                  code={block.code}
+                  labHref={labHref}
+                />
+              </div>
             );
           case "callout": {
             const tone = block.tone === "warn" ? "warn" : block.tone === "tip" ? "tip" : "info";
             return (
-              <aside key={i} className={`callout ${tone}`}>
+              <aside key={i} id={sectionId} className={`callout ${tone} lesson-section scroll-mt-28`}>
                 <div className="callout-title">{block.tone}</div>
                 <p style={{ margin: 0 }}>{block.body}</p>
               </aside>
@@ -36,7 +49,7 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
           }
           case "complexity":
             return (
-              <div key={i} className="complexity-grid">
+              <div key={i} id={sectionId} className="complexity-grid lesson-section scroll-mt-28">
                 <div className="complexity-item">
                   <span>Time</span>
                   <strong>{block.time}</strong>
@@ -54,10 +67,8 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "steps":
             return (
-              <div key={i} className="panel prose-block">
-                {block.title && (
-                  <h3 style={{ marginTop: 0 }}>{block.title}</h3>
-                )}
+              <div key={i} id={sectionId} className="panel prose-block lesson-section scroll-mt-28">
+                {block.title && <h3 style={{ marginTop: 0 }}>{block.title}</h3>}
                 <ol className="steps">
                   {block.items.map((item) => (
                     <li key={item}>{item}</li>
@@ -67,7 +78,7 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "tradeoff":
             return (
-              <section key={i} className="tradeoff-grid">
+              <section key={i} id={sectionId} className="tradeoff-grid lesson-section scroll-mt-28">
                 <h3 className="type-title" style={{ margin: 0, gridColumn: "1 / -1" }}>
                   {block.title}
                 </h3>
@@ -102,7 +113,7 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "capacity":
             return (
-              <div key={i}>
+              <div key={i} id={sectionId} className="lesson-section scroll-mt-28">
                 {block.title && (
                   <h3 className="type-title" style={{ marginBottom: "0.75rem" }}>
                     {block.title}
@@ -120,7 +131,7 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "think":
             return (
-              <section key={i} className="think-panel">
+              <section key={i} id={sectionId} className="think-panel lesson-section scroll-mt-28">
                 <h3>{block.title ?? "How to think"}</h3>
                 <div style={{ display: "grid", gap: "1rem" }}>
                   <div>
@@ -145,7 +156,10 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
                   </div>
                   {block.pitfalls && block.pitfalls.length > 0 && (
                     <div>
-                      <p className="type-label" style={{ marginBottom: "0.45rem", color: "var(--accent)" }}>
+                      <p
+                        className="type-label"
+                        style={{ marginBottom: "0.45rem", color: "var(--accent)" }}
+                      >
                         Pitfalls
                       </p>
                       <ul>
@@ -160,11 +174,9 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "answer":
             return (
-              <section key={i} className="answer-panel">
+              <section key={i} id={sectionId} className="answer-panel lesson-section scroll-mt-28">
                 <h3>{block.title ?? "How to answer"}</h3>
-                <p style={{ margin: "0 0 0.75rem", fontWeight: 600 }}>
-                  “{block.opening}”
-                </p>
+                <p className="answer-opening">“{block.opening}”</p>
                 <ol>
                   {block.beats.map((beat) => (
                     <li key={beat}>{beat}</li>
@@ -175,11 +187,21 @@ export function LessonBlocks({ blocks }: { blocks: ContentBlock[] }) {
                     {block.closing}
                   </p>
                 )}
+                <div className="lesson-answer-cta">
+                  <Link href="/heat" className="primary-btn">
+                    Practice on HEAT canvas
+                  </Link>
+                  {labHref ? (
+                    <Link href={labHref} className="ghost-btn">
+                      Run in Lab
+                    </Link>
+                  ) : null}
+                </div>
               </section>
             );
           case "diagram":
             return (
-              <figure key={i} className="diagram-callout panel">
+              <figure key={i} id={sectionId} className="diagram-callout panel lesson-section scroll-mt-28">
                 <div className="diagram-callout-head">
                   <span className="diagram-callout-badge">Visual anchor</span>
                   {block.title && <h3>{block.title}</h3>}

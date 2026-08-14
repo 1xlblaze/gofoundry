@@ -16,6 +16,14 @@ export function HeaderChrome({
 }) {
   const [open, setOpen] = useState(false);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [solid, setSolid] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setSolid(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const refresh = () => {
@@ -35,7 +43,7 @@ export function HeaderChrome({
   }, [totalLessons]);
 
   return (
-    <header className="site-header">
+    <header className={`site-header${solid ? " site-header-solid" : ""}`}>
       <div className="shell site-header-inner">
         <div onClick={() => setOpen(false)}>{brand}</div>
         <NavLinks />
