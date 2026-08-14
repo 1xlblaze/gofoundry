@@ -1267,4 +1267,465 @@ func singleNumber(nums []int) int {
       },
     ],
   },
+  {
+    slug: "shortest-paths-dijkstra",
+    track: "dsa",
+    title: "Shortest Paths: Dijkstra, Bellman-Ford, Floyd-Warshall",
+    subtitle: "Weighted graph algorithms and when each one is the right tool.",
+    difficulty: "advanced",
+    minutes: 38,
+    tags: ["graphs", "dijkstra", "shortest-path"],
+    prerequisites: ["graphs-advanced"],
+    blocks: [
+      {
+        type: "diagram",
+        kind: "heap-shape",
+        title: "Priority queue etch",
+        caption: "Dijkstra pops the smallest tentative distance from a min-heap each step.",
+      },
+      {
+        type: "think",
+        clarify: [
+          "Are there negative edge weights? Negative cycles?",
+          "Single source or all-pairs?",
+          "How dense is the graph (V, E)?",
+        ],
+        model: [
+          "Non-negative weights, single source → Dijkstra with a min-heap",
+          "Negative weights allowed, single source → Bellman-Ford (detects negative cycles)",
+          "All-pairs, small V → Floyd-Warshall O(V³)",
+        ],
+      },
+      {
+        type: "code",
+        title: "Dijkstra with container/heap",
+        language: "go",
+        code: `type edge struct{ to, weight int }
+type item struct{ node, dist int }
+type pq []item
+
+func (h pq) Len() int            { return len(h) }
+func (h pq) Less(i, j int) bool  { return h[i].dist < h[j].dist }
+func (h pq) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }
+func (h *pq) Push(x interface{}) { *h = append(*h, x.(item)) }
+func (h *pq) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[:n-1]
+	return x
+}
+
+func dijkstra(graph map[int][]edge, src, n int) []int {
+	const inf = int(1e18)
+	dist := make([]int, n)
+	for i := range dist {
+		dist[i] = inf
+	}
+	dist[src] = 0
+	h := &pq{{src, 0}}
+	for h.Len() > 0 {
+		cur := heap.Pop(h).(item)
+		if cur.dist > dist[cur.node] {
+			continue // stale entry
+		}
+		for _, e := range graph[cur.node] {
+			nd := cur.dist + e.weight
+			if nd < dist[e.to] {
+				dist[e.to] = nd
+				heap.Push(h, item{e.to, nd})
+			}
+		}
+	}
+	return dist
+}`,
+      },
+      {
+        type: "code",
+        title: "Bellman-Ford (handles negative weights)",
+        language: "go",
+        code: `func bellmanFord(edges [][3]int, n, src int) ([]int, bool) {
+	const inf = int(1e18)
+	dist := make([]int, n)
+	for i := range dist {
+		dist[i] = inf
+	}
+	dist[src] = 0
+	for i := 0; i < n-1; i++ {
+		for _, e := range edges {
+			u, v, w := e[0], e[1], e[2]
+			if dist[u] != inf && dist[u]+w < dist[v] {
+				dist[v] = dist[u] + w
+			}
+		}
+	}
+	// one more pass: if anything still relaxes, there's a negative cycle
+	for _, e := range edges {
+		u, v, w := e[0], e[1], e[2]
+		if dist[u] != inf && dist[u]+w < dist[v] {
+			return nil, false
+		}
+	}
+	return dist, true
+}`,
+      },
+      {
+        type: "complexity",
+        time: "Dijkstra O((V+E) log V) with a binary heap; Bellman-Ford O(VE); Floyd-Warshall O(V³)",
+        space: "O(V) for Dijkstra/Bellman-Ford dist arrays; O(V²) for Floyd-Warshall",
+      },
+      {
+        type: "answer",
+        opening: "I'd ask about negative weights first — that decides Dijkstra vs Bellman-Ford.",
+        beats: [
+          "Confirm non-negative weights → propose Dijkstra with a heap.",
+          "Draw the relaxation step on one edge before coding.",
+          "State complexity, then handle the 'stale heap entry' edge case explicitly.",
+        ],
+      },
+    ],
+    quiz: [
+      {
+        id: "sp1",
+        prompt: "Why does Dijkstra fail with negative edge weights?",
+        options: [
+          "It's a Go-specific limitation",
+          "Once a node is finalized with the smallest distance seen so far, a later negative edge could still improve it, breaking the greedy assumption",
+          "Heaps cannot store negative numbers",
+          "It only works on trees",
+        ],
+        answerIndex: 1,
+        explanation: "Dijkstra assumes the first time you pop a node, its distance is final — negative edges violate that.",
+      },
+    ],
+  },
+  {
+    slug: "greedy-algorithms",
+    track: "dsa",
+    title: "Greedy Algorithms",
+    subtitle: "When the locally optimal choice provably leads to a global optimum.",
+    difficulty: "advanced",
+    minutes: 30,
+    tags: ["greedy"],
+    blocks: [
+      {
+        type: "think",
+        title: "HEAT · Hear",
+        clarify: [
+          "Can you prove an exchange argument (swapping choices never helps)?",
+          "Does sorting by some key expose the greedy order?",
+        ],
+        model: [
+          "Interval scheduling: sort by end time, take non-overlapping",
+          "Huffman-style: always combine two smallest",
+          "If greedy fails on a counterexample, fall back to DP",
+        ],
+        pitfalls: [
+          "Assuming greedy works without a proof or counterexample check",
+          "Confusing 'greedy looks simple' with 'greedy is correct'",
+        ],
+      },
+      {
+        type: "code",
+        title: "Activity selection + jump game (greedy reach)",
+        language: "go",
+        code: `type Interval struct{ Start, End int }
+
+func maxActivities(intervals []Interval) int {
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i].End < intervals[j].End
+	})
+	count, lastEnd := 0, math.MinInt
+	for _, iv := range intervals {
+		if iv.Start >= lastEnd {
+			count++
+			lastEnd = iv.End
+		}
+	}
+	return count
+}
+
+func canJump(nums []int) bool {
+	reach := 0
+	for i, v := range nums {
+		if i > reach {
+			return false
+		}
+		if i+v > reach {
+			reach = i + v
+		}
+	}
+	return true
+}`,
+      },
+      {
+        type: "callout",
+        tone: "tip",
+        body: "Sorting by end time (not start time or length) is the key insight for interval scheduling — it maximizes room for future picks.",
+      },
+      {
+        type: "complexity",
+        time: "O(n log n) for sort-then-scan greedy patterns",
+        space: "O(1) extra beyond the sort",
+      },
+    ],
+    quiz: [
+      {
+        id: "greedy1",
+        prompt: "In activity selection, why sort by end time?",
+        options: [
+          "It's arbitrary — any order works",
+          "Finishing earliest leaves the most room for subsequent activities",
+          "Go requires ascending order",
+          "It minimizes memory usage only",
+        ],
+        answerIndex: 1,
+        explanation: "Picking the activity that frees up time soonest is the classic exchange-argument proof.",
+      },
+    ],
+  },
+  {
+    slug: "intervals-and-math",
+    track: "dsa",
+    title: "Intervals & Number Theory Essentials",
+    subtitle: "Merge intervals, meeting rooms, GCD/LCM, primes, and modular arithmetic.",
+    difficulty: "intermediate",
+    minutes: 28,
+    tags: ["intervals", "math", "number-theory"],
+    blocks: [
+      {
+        type: "prose",
+        title: "Intervals: sort, then sweep",
+        body: "Almost every interval problem starts with sorting by start (merge, insert) or by end (scheduling). Meeting-room-style counting problems become a line sweep over +1/-1 events at start/end times.",
+      },
+      {
+        type: "code",
+        title: "Merge intervals + min meeting rooms",
+        language: "go",
+        code: `func merge(intervals [][]int) [][]int {
+	sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })
+	out := [][]int{}
+	for _, iv := range intervals {
+		n := len(out)
+		if n > 0 && iv[0] <= out[n-1][1] {
+			if iv[1] > out[n-1][1] {
+				out[n-1][1] = iv[1]
+			}
+		} else {
+			out = append(out, iv)
+		}
+	}
+	return out
+}
+
+func minMeetingRooms(intervals [][]int) int {
+	starts := make([]int, len(intervals))
+	ends := make([]int, len(intervals))
+	for i, iv := range intervals {
+		starts[i], ends[i] = iv[0], iv[1]
+	}
+	sort.Ints(starts)
+	sort.Ints(ends)
+	rooms, maxRooms, e := 0, 0, 0
+	for _, s := range starts {
+		for e < len(ends) && ends[e] <= s {
+			rooms--
+			e++
+		}
+		rooms++
+		if rooms > maxRooms {
+			maxRooms = rooms
+		}
+	}
+	return maxRooms
+}`,
+      },
+      {
+        type: "code",
+        title: "GCD/LCM and fast modular exponentiation",
+        language: "go",
+        code: `func gcd(a, b int) int {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+func lcm(a, b int) int {
+	return a / gcd(a, b) * b
+}
+
+// (base^exp) % mod, O(log exp)
+func modPow(base, exp, mod int) int {
+	result := 1
+	base %= mod
+	for exp > 0 {
+		if exp&1 == 1 {
+			result = result * base % mod
+		}
+		exp >>= 1
+		base = base * base % mod
+	}
+	return result
+}
+
+// Sieve of Eratosthenes — all primes up to n
+func sieve(n int) []int {
+	isComposite := make([]bool, n+1)
+	var primes []int
+	for i := 2; i <= n; i++ {
+		if !isComposite[i] {
+			primes = append(primes, i)
+			for j := i * i; j <= n; j += i {
+				isComposite[j] = true
+			}
+		}
+	}
+	return primes
+}`,
+      },
+      {
+        type: "complexity",
+        time: "Merge/meeting rooms O(n log n); sieve O(n log log n); modPow O(log exp)",
+        space: "O(n) for sieve; O(1) for gcd/modPow",
+      },
+    ],
+    quiz: [
+      {
+        id: "im1",
+        prompt: "Why does the meeting-rooms sweep sort starts and ends separately?",
+        options: [
+          "It's a mistake — should sort intervals as pairs",
+          "It lets you compare 'has anything ended yet' independently of which meeting it was, since only counts matter",
+          "Go requires two separate sorts",
+          "To use less memory",
+        ],
+        answerIndex: 1,
+        explanation: "Since we only need concurrent-meeting counts, separating starts and ends and sweeping both sorted lists is sufficient and simpler.",
+      },
+    ],
+  },
+  {
+    slug: "string-algorithms",
+    track: "dsa",
+    title: "String Algorithms: KMP & Rabin-Karp",
+    subtitle: "Linear-time pattern matching beyond the naive O(nm) scan.",
+    difficulty: "advanced",
+    minutes: 32,
+    tags: ["strings", "kmp", "rabin-karp"],
+    blocks: [
+      {
+        type: "think",
+        clarify: [
+          "Single pattern or many patterns against one text?",
+          "Need all matches or just the first?",
+        ],
+        model: [
+          "KMP: precompute failure function, never re-examine text characters",
+          "Rabin-Karp: rolling hash, compare hashes then verify on collision",
+        ],
+      },
+      {
+        type: "code",
+        title: "KMP failure function + search",
+        language: "go",
+        code: `func buildLPS(pattern string) []int {
+	lps := make([]int, len(pattern))
+	length := 0
+	for i := 1; i < len(pattern); {
+		if pattern[i] == pattern[length] {
+			length++
+			lps[i] = length
+			i++
+		} else if length != 0 {
+			length = lps[length-1]
+		} else {
+			lps[i] = 0
+			i++
+		}
+	}
+	return lps
+}
+
+func kmpSearch(text, pattern string) []int {
+	if len(pattern) == 0 {
+		return nil
+	}
+	lps := buildLPS(pattern)
+	var matches []int
+	i, j := 0, 0
+	for i < len(text) {
+		if text[i] == pattern[j] {
+			i++
+			j++
+			if j == len(pattern) {
+				matches = append(matches, i-j)
+				j = lps[j-1]
+			}
+		} else if j != 0 {
+			j = lps[j-1]
+		} else {
+			i++
+		}
+	}
+	return matches
+}`,
+      },
+      {
+        type: "code",
+        title: "Rabin-Karp rolling hash",
+        language: "go",
+        code: `func rabinKarp(text, pattern string) []int {
+	const base, mod = 256, 1_000_000_007
+	n, m := len(text), len(pattern)
+	if m > n {
+		return nil
+	}
+	var patHash, curHash, pow int64 = 0, 0, 1
+	for i := 0; i < m-1; i++ {
+		pow = pow * base % mod
+	}
+	for i := 0; i < m; i++ {
+		patHash = (patHash*base + int64(pattern[i])) % mod
+		curHash = (curHash*base + int64(text[i])) % mod
+	}
+	var matches []int
+	for i := 0; ; i++ {
+		if curHash == patHash && text[i:i+m] == pattern {
+			matches = append(matches, i)
+		}
+		if i+m >= n {
+			break
+		}
+		curHash = ((curHash-int64(text[i])*pow%mod+int64(mod)*int64(base))%mod*base + int64(text[i+m])) % mod
+	}
+	return matches
+}`,
+      },
+      {
+        type: "complexity",
+        time: "KMP O(n+m); Rabin-Karp average O(n+m), worst O(nm) on adversarial hash collisions",
+        space: "O(m) for the LPS table",
+      },
+      {
+        type: "callout",
+        tone: "tip",
+        body: "Always verify the actual substring on a Rabin-Karp hash match — hash collisions are rare but real, and skipping verification is a correctness bug, not just a style choice.",
+      },
+    ],
+    quiz: [
+      {
+        id: "kmp1",
+        prompt: "The KMP failure function (LPS array) encodes…",
+        options: [
+          "Random precomputed noise",
+          "The longest proper prefix of the pattern that is also a suffix, up to each position",
+          "The ASCII sum of the pattern",
+          "The reverse of the pattern",
+        ],
+        answerIndex: 1,
+        explanation: "LPS lets KMP skip re-comparing characters it already knows match, achieving linear time.",
+      },
+    ],
+  },
 ]

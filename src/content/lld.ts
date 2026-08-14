@@ -485,4 +485,351 @@ func (d *Dispatcher) Dispatch(ctx context.Context, n Notification) error {
       },
     ],
   },
+  {
+    slug: "elevator-system-lld",
+    track: "lld",
+    title: "LLD: Elevator System",
+    subtitle: "Requests, direction state machine, and dispatch strategy.",
+    difficulty: "advanced",
+    minutes: 34,
+    tags: ["ood", "state-machine"],
+    blocks: [
+      {
+        type: "think",
+        title: "HEAT · Hear",
+        clarify: [
+          "How many elevators, how many floors?",
+          "External hall calls (up/down buttons) vs internal cabin requests?",
+          "Optimize for wait time, or simplest correct dispatch?",
+        ],
+        model: [
+          "Elevator = state machine: Idle, MovingUp, MovingDown, DoorsOpen",
+          "SCAN-like algorithm: keep moving one direction, serve requests along the way",
+          "Dispatcher picks the best elevator per hall call (nearest, same-direction)",
+        ],
+      },
+      {
+        type: "code",
+        title: "Core types and SCAN dispatch",
+        language: "go",
+        code: `type Direction int
+
+const (
+	Idle Direction = iota
+	Up
+	Down
+)
+
+type Elevator struct {
+	ID           int
+	CurrentFloor int
+	Dir          Direction
+	Requests     map[int]bool // floors requested, either hall or cabin
+}
+
+func (e *Elevator) Step() {
+	switch e.Dir {
+	case Up:
+		e.CurrentFloor++
+	case Down:
+		e.CurrentFloor--
+	}
+	if e.Requests[e.CurrentFloor] {
+		delete(e.Requests, e.CurrentFloor) // doors open, serve
+	}
+	if !e.hasRequestsAhead() {
+		e.Dir = e.nextDirectionOrIdle()
+	}
+}
+
+type Dispatcher struct{ elevators []*Elevator }
+
+func (d *Dispatcher) Assign(floor int, dir Direction) *Elevator {
+	best, bestCost := (*Elevator)(nil), math.MaxInt
+	for _, e := range d.elevators {
+		cost := abs(e.CurrentFloor - floor)
+		if e.Dir != Idle && e.Dir != dir {
+			cost += 1000 // heavy penalty for wrong-direction elevators
+		}
+		if cost < bestCost {
+			best, bestCost = e, cost
+		}
+	}
+	best.Requests[floor] = true
+	return best
+}`,
+      },
+      {
+        type: "answer",
+        opening: "I'd model each elevator as a state machine and dispatch hall calls by minimal cost.",
+        beats: [
+          "Draw the Idle/Up/Down/DoorsOpen states and transitions.",
+          "Explain SCAN: continue one direction, serving requests, before reversing.",
+          "Discuss dispatch cost function (distance + direction penalty).",
+          "Extensions: capacity limits, VIP floors, out-of-service elevators.",
+        ],
+      },
+    ],
+    quiz: [
+      {
+        id: "elev1",
+        prompt: "Why does SCAN avoid reversing direction mid-way if requests remain ahead?",
+        options: [
+          "It's arbitrary",
+          "Continuing one direction until no more requests lie ahead reduces total direction changes and average wait",
+          "Elevators cannot reverse physically",
+          "It only works with one elevator",
+        ],
+        answerIndex: 1,
+        explanation: "SCAN (elevator algorithm) minimizes costly direction reversals, similar to disk-arm scheduling.",
+      },
+    ],
+  },
+  {
+    slug: "tic-tac-toe-lld",
+    track: "lld",
+    title: "LLD: Tic-Tac-Toe (Generalized N×N)",
+    subtitle: "Extensible board games, win detection in O(1) per move, and player abstraction.",
+    difficulty: "beginner",
+    minutes: 22,
+    tags: ["ood", "games"],
+    blocks: [
+      {
+        type: "prose",
+        title: "The interview trap",
+        body: "Most candidates check all rows/columns/diagonals after every move — O(n) per move. Interviewers reward tracking running counts per row, column, and both diagonals, updated incrementally in O(1) per move, generalized to N×N.",
+      },
+      {
+        type: "code",
+        title: "O(1) win detection with running counts",
+        language: "go",
+        code: `type Board struct {
+	n           int
+	rows, cols  []int // signed sum: +1 per X, -1 per O
+	diag, anti  int
+}
+
+func NewBoard(n int) *Board {
+	return &Board{n: n, rows: make([]int, n), cols: make([]int, n)}
+}
+
+// player: +1 for X, -1 for O
+func (b *Board) Move(row, col, player int) (winner bool) {
+	b.rows[row] += player
+	b.cols[col] += player
+	if row == col {
+		b.diag += player
+	}
+	if row+col == b.n-1 {
+		b.anti += player
+	}
+	target := player * b.n
+	return b.rows[row] == target || b.cols[col] == target ||
+		b.diag == target || b.anti == target
+}`,
+      },
+      {
+        type: "complexity",
+        time: "O(1) per move for win check, vs O(n) naive",
+        space: "O(n) for row/col counters",
+      },
+      {
+        type: "steps",
+        title: "Extensibility to discuss",
+        items: [
+          "Player interface for human vs AI (minimax) vs remote",
+          "Undo/redo via a move stack",
+          "Generalize to Connect-4-style gravity boards",
+        ],
+      },
+    ],
+    quiz: [
+      {
+        id: "ttt1",
+        prompt: "Why use signed running sums instead of storing 'X'/'O' and scanning?",
+        options: [
+          "It's a stylistic preference only",
+          "It turns win detection into an O(1) arithmetic check per move instead of O(n) per move",
+          "Go cannot store characters in arrays",
+          "It reduces the board size",
+        ],
+        answerIndex: 1,
+        explanation: "Incrementally maintained counts avoid re-scanning the board on every move.",
+      },
+    ],
+  },
+  {
+    slug: "vending-machine-lld",
+    track: "lld",
+    title: "LLD: Vending Machine",
+    subtitle: "State machine for coins, selection, dispensing, and change.",
+    difficulty: "intermediate",
+    minutes: 26,
+    tags: ["ood", "state-machine"],
+    blocks: [
+      {
+        type: "diagram",
+        kind: "heat-cycle",
+        title: "State machine etch (relabel for this domain)",
+        caption: "Idle → HasMoney → Dispensing → ReturnChange, looping back to Idle.",
+      },
+      {
+        type: "prose",
+        title: "State pattern in Go without a class hierarchy",
+        body: "Model states as an interface with methods like InsertCoin, SelectItem, Dispense — each concrete state implements only the transitions valid from it, returning the next state. This avoids a giant switch statement scattered with flags.",
+      },
+      {
+        type: "code",
+        title: "State interface + machine",
+        language: "go",
+        code: `type State interface {
+	InsertCoin(m *Machine, cents int) State
+	SelectItem(m *Machine, code string) State
+	Dispense(m *Machine) State
+}
+
+type idleState struct{}
+
+func (idleState) InsertCoin(m *Machine, cents int) State {
+	m.balance += cents
+	return hasMoneyState{}
+}
+func (idleState) SelectItem(m *Machine, code string) State { return idleState{} } // no-op
+func (idleState) Dispense(m *Machine) State                { return idleState{} }
+
+type hasMoneyState struct{}
+
+func (hasMoneyState) InsertCoin(m *Machine, cents int) State {
+	m.balance += cents
+	return hasMoneyState{}
+}
+func (s hasMoneyState) SelectItem(m *Machine, code string) State {
+	item, ok := m.inventory[code]
+	if !ok || item.Price > m.balance {
+		return s
+	}
+	m.selected = code
+	return dispensingState{}
+}
+func (hasMoneyState) Dispense(m *Machine) State { return hasMoneyState{} }
+
+type Machine struct {
+	state     State
+	balance   int
+	inventory map[string]Item
+	selected  string
+}`,
+      },
+      {
+        type: "callout",
+        tone: "tip",
+        body: "The State pattern shines here: adding a 'Maintenance' or 'OutOfStock' state means adding one new type, not editing a central conditional.",
+      },
+    ],
+    quiz: [
+      {
+        id: "vm1",
+        prompt: "Main benefit of the State pattern over a status enum + switch?",
+        options: [
+          "It runs faster at the CPU level",
+          "Each state owns its own valid transitions, so invalid transitions can't silently fall through",
+          "It removes the need for structs",
+          "It requires less code always",
+        ],
+        answerIndex: 1,
+        explanation: "Encapsulating transition logic per state avoids a sprawling, error-prone switch with implicit invariants.",
+      },
+    ],
+  },
+  {
+    slug: "library-management-lld",
+    track: "lld",
+    title: "LLD: Library Management System",
+    subtitle: "Book/copy modeling, holds, fines, and search — a classic OOD warm-up.",
+    difficulty: "intermediate",
+    minutes: 28,
+    tags: ["ood"],
+    blocks: [
+      {
+        type: "prose",
+        title: "Separate the abstract Book from physical BookCopy",
+        body: "A Book (title, author, ISBN) can have many BookCopy instances (physical items), each with its own status (Available, CheckedOut, Reserved, Lost). This mirrors reality and avoids conflating catalog metadata with inventory state.",
+      },
+      {
+        type: "code",
+        title: "Core domain and checkout flow",
+        language: "go",
+        code: `type CopyStatus int
+
+const (
+	Available CopyStatus = iota
+	CheckedOut
+	Reserved
+	Lost
+)
+
+type BookCopy struct {
+	ID     string
+	ISBN   string
+	Status CopyStatus
+	DueAt  time.Time
+}
+
+type Library struct {
+	mu    sync.Mutex
+	copies map[string]*BookCopy
+	loans  map[string]string // copyID -> memberID
+}
+
+func (l *Library) Checkout(copyID, memberID string) error {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	c, ok := l.copies[copyID]
+	if !ok || c.Status != Available {
+		return fmt.Errorf("copy %s not available", copyID)
+	}
+	c.Status = CheckedOut
+	c.DueAt = time.Now().AddDate(0, 0, 14)
+	l.loans[copyID] = memberID
+	return nil
+}
+
+func (l *Library) Return(copyID string) (fineCents int) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	c := l.copies[copyID]
+	if time.Now().After(c.DueAt) {
+		days := int(time.Since(c.DueAt).Hours() / 24)
+		fineCents = days * 25
+	}
+	c.Status = Available
+	delete(l.loans, copyID)
+	return fineCents
+}`,
+      },
+      {
+        type: "steps",
+        title: "Extension points to raise in an interview",
+        items: [
+          "Reservation queue when all copies are checked out",
+          "Search index (by title/author/ISBN) — separate read-optimized store",
+          "Notification service for due-date reminders (reuse the Notification LLD)",
+        ],
+      },
+    ],
+    quiz: [
+      {
+        id: "lib1",
+        prompt: "Why separate Book (catalog) from BookCopy (inventory)?",
+        options: [
+          "It's unnecessary complexity",
+          "A title can have multiple physical copies with independent availability and condition",
+          "Go requires two types for every entity",
+          "To avoid using maps",
+        ],
+        answerIndex: 1,
+        explanation: "Modeling cardinality correctly (one Book, many BookCopies) avoids awkward state on a single entity.",
+      },
+    ],
+  },
 ];

@@ -5,6 +5,8 @@ import { conceptsLessons } from "./concepts";
 import { internalsLessons } from "./internals";
 import { lldLessons } from "./lld";
 import { hldLessons } from "./hld";
+import { stdlibLessons } from "./stdlib";
+import { webLessons } from "./web";
 
 export const tracks: TrackMeta[] = [
   {
@@ -30,6 +32,22 @@ export const tracks: TrackMeta[] = [
     description:
       "Interfaces, concurrency, context, errors, generics, and performance habits.",
     accent: "var(--accent-concepts)",
+  },
+  {
+    id: "stdlib",
+    title: "Standard Library",
+    short: "Stdlib",
+    description:
+      "fmt, strings, time, io, json, net/http, errors/slog, slices/maps, and testing.",
+    accent: "var(--accent-stdlib)",
+  },
+  {
+    id: "web",
+    title: "Web & APIs",
+    short: "Web",
+    description:
+      "REST design, middleware, auth (JWT/OAuth), gRPC, WebSockets, and deployment.",
+    accent: "var(--accent-web)",
   },
   {
     id: "internals",
@@ -61,6 +79,8 @@ export const allLessons: Lesson[] = [
   ...methodLessons,
   ...dsaLessons,
   ...conceptsLessons,
+  ...stdlibLessons,
+  ...webLessons,
   ...internalsLessons,
   ...lldLessons,
   ...hldLessons,

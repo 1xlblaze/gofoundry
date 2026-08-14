@@ -446,4 +446,222 @@ func GetUser(ctx context.Context, id string) (*User, error) {
       },
     ],
   },
+  {
+    slug: "video-streaming-hld",
+    track: "hld",
+    title: "HLD: Video Streaming Platform",
+    subtitle: "Upload pipeline, transcoding, adaptive bitrate, and CDN delivery.",
+    difficulty: "advanced",
+    minutes: 42,
+    tags: ["case-study", "video", "cdn"],
+    blocks: [
+      {
+        type: "prose",
+        title: "Two very different paths: upload vs watch",
+        body: "Upload path: client → upload service → object storage (raw) → async transcoding pipeline (multiple resolutions/bitrates, thumbnail extraction) → manifest generation (HLS/DASH) → CDN origin. Watch path: client requests a manifest, then fetches video segments from the nearest CDN edge — the origin (your servers) is barely touched after the first cache fill.",
+      },
+      {
+        type: "steps",
+        title: "Transcoding pipeline",
+        items: [
+          "Raw upload lands in object storage, triggers an event (S3 event / Pub/Sub)",
+          "Worker fleet pulls transcoding jobs from a queue — parallelize per resolution",
+          "Adaptive bitrate: produce 240p/480p/720p/1080p renditions + an HLS/DASH manifest",
+          "Store renditions in object storage behind a CDN; original stays in cold storage",
+        ],
+      },
+      {
+        type: "prose",
+        title: "Adaptive bitrate streaming",
+        body: "The player periodically measures throughput and switches renditions (segment-by-segment) via the manifest — this is why a slow connection shows lower quality instead of buffering. Segments are typically 2-10 seconds so switches are fast and cache-friendly.",
+      },
+      {
+        type: "steps",
+        title: "Deep dives interviewers probe",
+        items: [
+          "Why CDN pull vs push for cold content, and origin shielding for thundering herd",
+          "Resumable/chunked uploads for large files (avoid re-uploading on failure)",
+          "View count / analytics as an async, eventually-consistent pipeline",
+          "DRM / signed URLs for access control on premium content",
+        ],
+      },
+    ],
+    quiz: [
+      {
+        id: "vs1",
+        prompt: "Why does the watch path rarely hit your origin servers after the first request?",
+        options: [
+          "Videos are small",
+          "CDN edge caches serve subsequent viewers directly, only pulling from origin on cache miss",
+          "Origin servers auto-scale to infinity",
+          "Video is never cached",
+        ],
+        answerIndex: 1,
+        explanation: "CDN caching is the entire point — origin only pays the cost once per edge per file.",
+      },
+    ],
+  },
+  {
+    slug: "ride-sharing-hld",
+    track: "hld",
+    title: "HLD: Ride-Sharing Dispatch",
+    subtitle: "Geospatial indexing, real-time matching, and surge pricing signals.",
+    difficulty: "advanced",
+    minutes: 40,
+    tags: ["case-study", "geospatial"],
+    blocks: [
+      {
+        type: "prose",
+        title: "Core problem: match riders to nearby drivers, fast",
+        body: "Drivers stream location updates every few seconds over a persistent connection. The location service indexes drivers with a geospatial structure (geohash or quadtree/Redis GEO) so 'nearest available driver' queries run in milliseconds instead of scanning the whole fleet.",
+      },
+      {
+        type: "steps",
+        title: "Core components",
+        items: [
+          "Location ingestion service — high write throughput, short-lived data",
+          "Geospatial index (Redis GEO / quadtree) for nearest-driver queries",
+          "Matching service — assigns driver, handles accept/reject/timeout",
+          "Trip service — durable state machine (Requested → Matched → InProgress → Completed)",
+          "Pricing service — surge multiplier from live supply/demand ratio per zone",
+        ],
+      },
+      {
+        type: "prose",
+        title: "Why geohash / quadtree over a plain SQL query",
+        body: "A naive 'find drivers within 2km' with a SQL WHERE on lat/lng requires scanning many rows or a poor B-tree fit. Geohashing buckets nearby coordinates into shared prefixes so a range query on the geohash string approximates a radius search; Redis GEO commands do this natively with sorted sets under the hood.",
+      },
+      {
+        type: "answer",
+        opening: "I'd split location writes (high volume, ephemeral) from trip state (durable, low volume) into different stores.",
+        beats: [
+          "Draw driver location stream → geospatial index → matcher.",
+          "Discuss race condition: two riders matched to the same driver — need atomic claim (Lua script / conditional write).",
+          "Surge pricing as a derived, eventually-consistent signal, not blocking the matching path.",
+        ],
+      },
+    ],
+    quiz: [
+      {
+        id: "rs1",
+        prompt: "Why must driver-claim during matching be atomic?",
+        options: [
+          "It's not important",
+          "Two concurrent match attempts could otherwise assign the same driver to two riders",
+          "Atomicity only matters for payments",
+          "Drivers can serve multiple riders simultaneously",
+        ],
+        answerIndex: 1,
+        explanation: "A race between two match attempts needs a single atomic claim (e.g. conditional update) to avoid double-booking.",
+      },
+    ],
+  },
+  {
+    slug: "payment-system-hld",
+    track: "hld",
+    title: "HLD: Payment Processing System",
+    subtitle: "Idempotency, double-entry ledgers, and reconciliation with external processors.",
+    difficulty: "advanced",
+    minutes: 40,
+    tags: ["case-study", "payments"],
+    blocks: [
+      {
+        type: "prose",
+        title: "Money demands idempotency and auditability above all",
+        body: "Every payment mutation carries a client-generated idempotency key so retried requests (network blips, client retries) never double-charge. Internally, balances are derived from an append-only, double-entry ledger — never mutate a balance column directly; every movement is a pair of debit/credit ledger rows that must sum to zero.",
+      },
+      {
+        type: "diagram",
+        kind: "outbox",
+        title: "Ledger write + async settlement etch",
+        caption: "Write the ledger entry and outbox event in one DB transaction, then relay to the payment processor.",
+      },
+      {
+        type: "steps",
+        title: "Core flow",
+        items: [
+          "Client sends charge request with Idempotency-Key header",
+          "API checks: has this key been seen? If so, return the stored result — don't reprocess",
+          "Write a pending ledger entry + outbox event in one transaction",
+          "Worker calls the external processor (Stripe/etc.), then updates ledger to settled/failed",
+          "Reconciliation job compares your ledger against the processor's statement nightly",
+        ],
+      },
+      {
+        type: "callout",
+        tone: "warn",
+        body: "Never trust a synchronous HTTP response alone for payment state — the request can succeed but the response can be lost. Webhooks from the processor plus reconciliation are the source of truth.",
+      },
+      {
+        type: "prose",
+        title: "Why double-entry",
+        body: "Every transaction records at least two ledger rows (e.g. debit user wallet, credit platform revenue) that net to zero. This makes the total system balance auditable at any point in time and makes bugs visible immediately (the ledger stops summing to zero) rather than silently drifting.",
+      },
+    ],
+    quiz: [
+      {
+        id: "pay1",
+        prompt: "An idempotency key primarily protects against…",
+        options: [
+          "SQL injection",
+          "Duplicate processing when a client retries the same logical request",
+          "Currency conversion errors",
+          "Slow database queries",
+        ],
+        answerIndex: 1,
+        explanation: "Idempotency keys let the server recognize and safely no-op a retried request instead of double-charging.",
+      },
+    ],
+  },
+  {
+    slug: "search-autocomplete-hld",
+    track: "hld",
+    title: "HLD: Search Autocomplete",
+    subtitle: "Trie/FST-backed suggestions, ranking, and low-latency serving at the edge.",
+    difficulty: "intermediate",
+    minutes: 34,
+    tags: ["case-study", "search"],
+    prerequisites: ["tries-and-bitmask"],
+    blocks: [
+      {
+        type: "prose",
+        title: "Precompute, don't compute per keystroke",
+        body: "Autocomplete must respond in single-digit milliseconds on every keystroke. The serving structure is a trie (or a compressed FST) built offline from query logs, with each node caching its top-K most frequent completions — so a lookup is O(prefix length), not a live ranking computation.",
+      },
+      {
+        type: "steps",
+        title: "Pipeline",
+        items: [
+          "Offline: aggregate query logs, compute frequency/recency-weighted scores per query",
+          "Build a trie where each node stores precomputed top-K children by score",
+          "Serve the trie from in-memory replicas behind a load balancer — read-only, easy to scale horizontally",
+          "Periodically rebuild and hot-swap the trie (e.g. hourly) without downtime",
+        ],
+      },
+      {
+        type: "prose",
+        title: "Personalization without blowing up latency",
+        body: "Global top-K suggestions come from the shared trie. A thin personalization layer (recent searches, location) re-ranks or blends in a handful of candidates client-side or in a fast in-memory per-user cache — heavy personalization models run offline, not on the critical path.",
+      },
+      {
+        type: "callout",
+        tone: "tip",
+        body: "Debounce client-side keystroke requests (e.g. 100-150ms) to avoid firing a request per character and overwhelming the service under normal typing speed.",
+      },
+    ],
+    quiz: [
+      {
+        id: "ac1",
+        prompt: "Why precompute top-K suggestions per trie node instead of ranking at request time?",
+        options: [
+          "Precomputation is always more accurate",
+          "It turns a request into O(prefix length) lookup instead of scanning and ranking candidates live, which is required for single-digit-ms latency",
+          "Tries cannot store scores",
+          "It removes the need for a trie",
+        ],
+        answerIndex: 1,
+        explanation: "Autocomplete's latency budget rules out any live ranking computation over many candidates per keystroke.",
+      },
+    ],
+  },
 ];

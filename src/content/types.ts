@@ -4,7 +4,9 @@ export type TrackId =
   | "internals"
   | "lld"
   | "hld"
-  | "method";
+  | "method"
+  | "stdlib"
+  | "web";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
