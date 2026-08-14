@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
+import { getRedisBackend, isRedisConfigured, pingRedis } from "@/lib/platform/queue";
 import { getSupabaseConfig } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -70,6 +71,8 @@ export async function GET() {
     tables.heat_submissions &&
     tables.diagnostic_jobs;
 
+  const redisStatus = await pingRedis();
+
   return NextResponse.json({
     supabase: {
       configured: supabaseConfigured,
@@ -81,6 +84,11 @@ export async function GET() {
       status: database,
       tables,
       platformReady,
+    },
+    redis: {
+      configured: isRedisConfigured(),
+      backend: getRedisBackend(),
+      status: redisStatus,
     },
     overall:
       supabaseRest === "ok" && platformReady

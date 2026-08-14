@@ -59,14 +59,18 @@ DATABASE_URL='postgresql://...' npx tsx scripts/seed-problems.mjs
 
 ## 2. Free Redis (Upstash)
 
-Vercel cannot run Redis. Use **Upstash Redis** (free tier: 10k commands/day).
+Vercel cannot run Redis locally. Use **Upstash Redis** (free tier: 10k commands/day).
 
 1. Create an account at [upstash.com](https://upstash.com)
 2. **Create Redis database** → region close to your Vercel deployment
-3. Copy the **Redis URL** (`rediss://...`)
-4. Add to Vercel as `REDIS_URL`
+3. Copy **REST URL** and **REST TOKEN** from the database details page
+4. Add to Vercel:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
 
-Without `REDIS_URL`, diagnostics still work — the app falls back to an in-memory queue (fine for low traffic; not durable across serverless instances).
+Alternatively, use the TCP URL as `REDIS_URL` (`rediss://...`) for Docker/local worker clusters.
+
+Without Redis env vars, diagnostics still work — the app falls back to an in-memory queue (fine for low traffic; not durable across serverless instances).
 
 ---
 
@@ -130,7 +134,9 @@ Set `SANDBOX_WORKER_URL=http://localhost:8081` in `.env.local`.
 | `GOOGLE_CLIENT_ID` / `SECRET` | For login | Google Cloud Console |
 | `SETUP_SECRET` | For migrate | Random string on Vercel |
 | `SANDBOX_WORKER_URL` | Recommended | Render/Fly/Railway worker URL |
-| `REDIS_URL` | Optional | Upstash free Redis |
+| `REDIS_URL` | Optional | Local/docker TCP Redis |
+| `UPSTASH_REDIS_REST_URL` | Recommended | Upstash REST endpoint |
+| `UPSTASH_REDIS_REST_TOKEN` | Recommended | Upstash REST token |
 | `STRIPE_*` | Not live yet | Skip until paid plans launch |
 
 ---
