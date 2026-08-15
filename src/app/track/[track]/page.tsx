@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTrack, lessonsForTrack, tracks } from "@/content";
-import { MotionRoot } from "@/components/MotionRoot";
+import { AnimatedCard, ScrollReveal } from "@/components/ui";
 import { TrackLessonGrid } from "@/components/TrackLessonGrid";
 import type { TrackId } from "@/content/types";
 import type { Metadata } from "next";
@@ -25,7 +25,7 @@ export default async function TrackPage({ params }: Props) {
   const lessons = lessonsForTrack(track.id);
 
   return (
-    <MotionRoot>
+    <ScrollReveal>
       <div className="shell track-page" style={{ padding: "2.5rem 0 3.5rem" }}>
         <div className="page-hero reveal">
           <p className="kicker" style={{ color: track.accent }}>
@@ -37,6 +37,6 @@ export default async function TrackPage({ params }: Props) {
 
         <TrackLessonGrid track={track} lessons={lessons} />
       </div>
-    </MotionRoot>
+    </ScrollReveal>
   );
 }

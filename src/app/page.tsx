@@ -3,7 +3,7 @@ import { allLessons, freeLessons, getTrack, tracks } from "@/content";
 import { HeroSnippet } from "@/components/HeroSnippet";
 import { BenchmarkHero } from "@/components/BenchmarkHero";
 import { HeroVisual } from "@/components/HeroVisual";
-import { MotionRoot } from "@/components/MotionRoot";
+import { AnimatedCard, DifficultyChip, ScrollReveal, StatusChip } from "@/components/ui";
 import { pillars } from "@/content/pillars";
 
 const heat = [
@@ -15,7 +15,7 @@ const heat = [
 
 export default function HomePage() {
   return (
-    <MotionRoot>
+    <ScrollReveal>
       <section className="hero-bleed">
         <div className="hero-bleed-visual" aria-hidden>
           <HeroVisual />
@@ -65,26 +65,26 @@ export default function HomePage() {
           {freeLessons.map((lesson) => {
             const track = getTrack(lesson.track);
             return (
-              <Link
+              <AnimatedCard
                 key={lesson.slug}
                 href={`/lesson/${lesson.slug}`}
                 className="teaser-card"
-                data-motion
+                accent={track.accent}
               >
                 <div className="teaser-card-top">
-                  <span className="teaser-chip teaser-chip-free">Free</span>
+                  <StatusChip status="free" />
                   <span className="teaser-chip">{track.short}</span>
                 </div>
                 <h3>{lesson.title}</h3>
                 <p>{lesson.subtitle}</p>
                 <div className="teaser-card-meta">
-                  <span>{lesson.difficulty}</span>
+                  <DifficultyChip level={lesson.difficulty} />
                   <span>{lesson.minutes} min</span>
                   <strong>
                     Read lesson <span aria-hidden>→</span>
                   </strong>
                 </div>
-              </Link>
+              </AnimatedCard>
             );
           })}
         </div>
@@ -103,12 +103,12 @@ export default function HomePage() {
         </div>
         <div className="grid-tracks">
           {pillars.map((pillar) => (
-            <Link
+            <AnimatedCard
               key={pillar.id}
               href={pillar.href}
               className="track-card"
+              accent={pillar.accent}
               style={{ borderTopColor: pillar.accent }}
-              data-motion
             >
               <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.55rem" }}>
                 {pillar.trackIds.map((trackId) => (
@@ -134,7 +134,7 @@ export default function HomePage() {
                   </span>
                 ))}
               </div>
-            </Link>
+            </AnimatedCard>
           ))}
         </div>
       </section>
@@ -176,7 +176,12 @@ export default function HomePage() {
         </div>
         <div className="grid-tracks">
           {tracks.map((t) => (
-            <Link key={t.id} href={`/track/${t.id}`} className="track-card" data-motion>
+            <AnimatedCard
+              key={t.id}
+              href={`/track/${t.id}`}
+              className="track-card"
+              accent={t.accent}
+            >
               <div className="meta-row" style={{ marginTop: 0, marginBottom: "0.55rem" }}>
                 <span
                   className="chip chip-brand"
@@ -187,10 +192,10 @@ export default function HomePage() {
               </div>
               <h3>{t.title}</h3>
               <p>{t.description}</p>
-            </Link>
+            </AnimatedCard>
           ))}
         </div>
       </section>
-    </MotionRoot>
+    </ScrollReveal>
   );
 }

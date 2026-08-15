@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MotionRoot } from "@/components/MotionRoot";
+import { ScrollReveal } from "@/components/ui";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { auth } from "@/auth";
@@ -56,7 +56,7 @@ export default async function PricingPage() {
   const billingLive = isStripeConfigured();
 
   return (
-    <MotionRoot>
+    <ScrollReveal>
       <div className="price-page">
         <section className="shell page-hero price-hero">
           <p className="kicker" data-motion>
@@ -149,6 +149,6 @@ export default async function PricingPage() {
           <WaitlistForm tier="lifetime" source="lifetime" buttonLabel="Register interest" />
         </section>
       </div>
-    </MotionRoot>
+    </ScrollReveal>
   );
 }
