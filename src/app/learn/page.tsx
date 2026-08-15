@@ -13,7 +13,6 @@ import {
 } from "@/components/ui";
 import { loadProgress, type ProgressState } from "@/lib/progress";
 import { getContinueLesson } from "@/lib/continueLesson";
-import { MotionDiagram } from "@/components/MotionDiagram";
 
 export default function LearnPage() {
   const [progress, setProgress] = useState<ProgressState>({
@@ -82,53 +81,42 @@ export default function LearnPage() {
           </p>
         </div>
 
-        <MotionDiagram
-          kicker="Too long to scan? Start on the map"
-          title="Eight tracks, one path"
-          caption="Pick a track instead of scrolling 101 lessons. The list below is the full catalog."
-          layout="orbit"
-          nodes={tracks.map((track) => ({
-            id: track.id,
-            label: track.short,
-            sub: track.title,
-            href: `#track-${track.id}`,
-            accent: track.accent.startsWith("var(") ? undefined : track.accent,
-          }))}
-        />
-
-        <div className="progress-dashboard" data-motion>
-          <StatCard value={done} suffix={` / ${total}`} label="Lessons complete" />
-          <StatCard value={pct} suffix="%" label="Overall progress" />
-          <StatCard
-            value={Object.keys(progress.quizScores).length}
-            label="Quizzes scored"
-          />
-        </div>
-
-        <div className="progress-bar" style={{ marginBottom: "1.5rem" }} data-motion>
-          <span style={{ width: `${pct}%` }} />
-        </div>
-
-        {continueLesson ? (
-          <div className="progress-streak-banner" data-motion>
-            <div>
-              <p className="type-label">Your journey</p>
-              <p style={{ margin: 0, fontWeight: 650 }}>
-                {done === 0
-                  ? "Start with your first lesson — pick any track on the map."
-                  : `Continue with ${continueLesson.title}`}
-              </p>
-            </div>
-            <Link href={`/lesson/${continueLesson.slug}`} className="primary-btn">
-              {done === 0 ? "Start learning" : "Continue →"}
-            </Link>
-          </div>
-        ) : null}
-
         <div className="learn-layout-grid">
-          <LearnTrackNav activeTrack={activeTrack} trackProgress={trackProgress} />
+          <aside className="learn-sidebar" data-motion>
+            <div className="progress-dashboard learn-sidebar-stats">
+              <StatCard value={done} suffix={` / ${total}`} label="Lessons complete" />
+              <StatCard value={pct} suffix="%" label="Overall progress" />
+              <StatCard
+                value={Object.keys(progress.quizScores).length}
+                label="Quizzes scored"
+              />
+            </div>
 
-          <div className="space-y-16">
+            <div className="progress-bar learn-sidebar-bar">
+              <span style={{ width: `${pct}%` }} />
+            </div>
+
+            <LearnTrackNav activeTrack={activeTrack} trackProgress={trackProgress} />
+          </aside>
+
+          <div className="learn-main">
+            {continueLesson ? (
+              <div className="progress-streak-banner" data-motion>
+                <div>
+                  <p className="type-label">Your journey</p>
+                  <p style={{ margin: 0, fontWeight: 650 }}>
+                    {done === 0
+                      ? "Start with your first lesson — pick a track in the sidebar."
+                      : `Continue with ${continueLesson.title}`}
+                  </p>
+                </div>
+                <Link href={`/lesson/${continueLesson.slug}`} className="primary-btn">
+                  {done === 0 ? "Start learning" : "Continue →"}
+                </Link>
+              </div>
+            ) : null}
+
+            <div className="space-y-16">
             {tracks.map((track) => {
               const lessons = lessonsForTrack(track.id);
               const trackDone = trackProgress[track.id]?.done ?? 0;
@@ -213,6 +201,7 @@ export default function LearnPage() {
                 </section>
               );
             })}
+            </div>
           </div>
         </div>
       </div>

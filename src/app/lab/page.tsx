@@ -73,8 +73,9 @@ export default function LabPage() {
         <MotionDiagram
           kicker="Lab map"
           title="See it, change it, follow the alloc, then prove it"
-          caption="Dense tools live below. The diagram is the table of contents."
+          caption="Jump to the section you need instead of scrolling every tool."
           nodes={labPathNodes}
+          compact
         />
 
         <section className="lab-section lab-section-reveal" aria-labelledby="visualizer-title" data-motion>
