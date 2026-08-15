@@ -27,6 +27,7 @@ export default function HeatPage() {
         title="Four moves, then code"
         caption="Fill the canvas in order. Skip ahead only after the previous box is honest."
         nodes={heatFlowNodes}
+        compact
       />
       <HeatCanvas />
     </div>

@@ -19,6 +19,7 @@ type MotionDiagramProps = {
   /** Compact row for dense pages; orbit for track maps. */
   layout?: "flow" | "orbit";
   headingLevel?: "h2" | "p";
+  compact?: boolean;
 };
 
 export function MotionDiagram({
@@ -28,11 +29,19 @@ export function MotionDiagram({
   nodes,
   layout = "flow",
   headingLevel = "h2",
+  compact = false,
 }: MotionDiagramProps) {
   const TitleTag = headingLevel;
   const uid = useId().replace(/:/g, "");
+  const classes = [
+    "motion-diagram",
+    `motion-diagram-${layout}`,
+    compact ? "motion-diagram-compact" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   return (
-    <figure className={`motion-diagram motion-diagram-${layout}`}>
+    <figure className={classes}>
       <figcaption className="motion-diagram-cap">
         {kicker ? <p className="type-label">{kicker}</p> : null}
         <TitleTag className={headingLevel === "p" ? "type-title" : undefined}>{title}</TitleTag>
