@@ -5,6 +5,13 @@ import Link from "next/link";
 import { allLessons, getTrack, tracks } from "@/content";
 import type { TrackId } from "@/content/types";
 import {
+  DifficultyChip,
+  EmptyState,
+  ScrollReveal,
+  StatCard,
+  StatusChip,
+} from "@/components/ui";
+import {
   loadProgress,
   resetAllProgress,
   resetLesson,
@@ -69,6 +76,13 @@ export default function ProgressPage() {
   const doneCount = progress.completed.length;
   const total = allLessons.length;
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
+  const quizCount = Object.keys(progress.quizScores).length;
+  const streakDays = useMemo(() => {
+    const dates = Object.values(progress.completedAt)
+      .map((iso) => iso.slice(0, 10))
+      .filter(Boolean);
+    return new Set(dates).size;
+  }, [progress.completedAt]);
 
   function onResetLesson(slug: string, title: string) {
     if (confirm(`Reset “${title}”? Completion and quiz score will be cleared.`)) {
@@ -77,205 +91,220 @@ export default function ProgressPage() {
   }
 
   return (
-    <div className="shell" style={{ padding: "2.5rem 0 3.5rem" }}>
-      <div className="page-hero reveal">
-        <h1>Progress</h1>
-        <p>
-          Track every lesson in one ledger. Reset a single lesson to practice fresh,
-          or wipe the board and start the forge again.
-        </p>
-      </div>
-
-      <div className="stat-row reveal-delay-1" style={{ marginBottom: "1rem" }}>
-        <div className="stat">
-          <strong>
-            {doneCount}
-            <span style={{ fontSize: "1rem", color: "var(--muted)" }}> / {total}</span>
-          </strong>
-          <span>Completed</span>
+    <ScrollReveal>
+      <div className="shell" style={{ padding: "2.5rem 0 3.5rem" }}>
+        <div className="page-hero reveal" data-motion>
+          <h1>Progress</h1>
+          <p>
+            Track every lesson in one ledger. Reset a single lesson to practice fresh,
+            or wipe the board and start the forge again.
+          </p>
         </div>
-        <div className="stat">
-          <strong>{pct}%</strong>
-          <span>Completion</span>
-        </div>
-        <div className="stat">
-          <strong>{Object.keys(progress.quizScores).length}</strong>
-          <span>Quizzes scored</span>
-        </div>
-      </div>
 
-      <div className="progress-bar" style={{ marginBottom: "1.5rem" }}>
-        <span style={{ width: `${pct}%` }} />
-      </div>
+        <div className="progress-dashboard" data-motion>
+          <StatCard value={doneCount} suffix={` / ${total}`} label="Lessons complete" />
+          <StatCard value={pct} suffix="%" label="Completion" />
+          <StatCard value={quizCount} label="Quizzes scored" />
+        </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.85rem",
-          justifyContent: "space-between",
-          alignItems: "end",
-          marginBottom: "1.25rem",
-        }}
-      >
-        <div className="filters" style={{ marginBottom: 0 }}>
-          <button
-            type="button"
-            className={`filter-btn ${trackFilter === "all" ? "active" : ""}`}
-            onClick={() => setTrackFilter("all")}
-          >
-            All tracks
-          </button>
-          {tracks.map((t) => (
+        {doneCount === 0 ? (
+          <EmptyState
+            title="Your forge is ready"
+            description="Complete a lesson or mark one done to start building your progress dashboard. Every track counts toward staff-grade mastery."
+            actionHref="/learn"
+            actionLabel="Browse curriculum →"
+            icon="⚒"
+          />
+        ) : (
+          <div className="progress-streak-banner" data-motion>
+            <div>
+              <p className="type-label">Active days</p>
+              <p style={{ margin: 0, fontWeight: 650 }}>
+                {streakDays} day{streakDays === 1 ? "" : "s"} with completed lessons
+              </p>
+            </div>
+            <Link href="/learn" className="ghost-btn">
+              Continue learning →
+            </Link>
+          </div>
+        )}
+
+        <div className="progress-bar" style={{ marginBottom: "1.5rem" }} data-motion>
+          <span style={{ width: `${pct}%` }} />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.85rem",
+            justifyContent: "space-between",
+            alignItems: "end",
+            marginBottom: "1.25rem",
+          }}
+          data-motion
+        >
+          <div className="filters" style={{ marginBottom: 0 }}>
             <button
-              key={t.id}
               type="button"
-              className={`filter-btn ${trackFilter === t.id ? "active" : ""}`}
-              onClick={() => setTrackFilter(t.id)}
+              className={`filter-btn ${trackFilter === "all" ? "active" : ""}`}
+              onClick={() => setTrackFilter("all")}
             >
-              {t.short}
+              All tracks
             </button>
-          ))}
-        </div>
-        <div className="filters" style={{ marginBottom: 0 }}>
-          {(["all", "done", "todo"] as const).map((s) => (
-            <button
-              key={s}
-              type="button"
-              className={`filter-btn ${statusFilter === s ? "active" : ""}`}
-              onClick={() => setStatusFilter(s)}
-            >
-              {s === "all" ? "All" : s === "done" ? "Done" : "Todo"}
-            </button>
-          ))}
-          <button
-            type="button"
-            className="ghost-btn danger-btn"
-            onClick={() => {
-              if (
-                confirm(
-                  "Reset ALL progress? Every lesson and quiz score will be cleared.",
-                )
-              ) {
-                setProgress(resetAllProgress());
-              }
-            }}
-          >
-            Reset all
-          </button>
-        </div>
-      </div>
-
-      <div className="table-wrap progress-desktop">
-        <table className="progress-table">
-          <thead>
-            <tr>
-              <th>Lesson</th>
-              <th>Track</th>
-              <th>Level</th>
-              <th>Status</th>
-              <th>Quiz</th>
-              <th>Completed</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.slug}>
-                <td>
-                  <Link href={`/lesson/${row.slug}`}>{row.title}</Link>
-                  <div style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 2 }}>
-                    {row.subtitle}
-                  </div>
-                </td>
-                <td>
-                  <span className="chip chip-brand" style={{ color: row.trackMeta.accent }}>
-                    {row.trackMeta.short}
-                  </span>
-                </td>
-                <td style={{ textTransform: "capitalize" }}>{row.difficulty}</td>
-                <td>
-                  <span className={`status-pill ${row.done ? "done" : "open"}`}>
-                    {row.done ? "Done" : "Todo"}
-                  </span>
-                </td>
-                <td>
-                  {row.score === undefined ? (
-                    "—"
-                  ) : (
-                    <span className="status-pill quiz">{Math.round(row.score * 100)}%</span>
-                  )}
-                </td>
-                <td>{formatDate(row.completedAt)}</td>
-                <td>
-                  <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
-                    <Link href={`/lesson/${row.slug}`}>Open</Link>
-                    {(row.done || row.score !== undefined) && (
-                      <button
-                        type="button"
-                        className="ghost-btn danger-btn"
-                        style={{ padding: "0.25rem 0.65rem", fontSize: "0.75rem" }}
-                        onClick={() => onResetLesson(row.slug, row.title)}
-                      >
-                        Reset
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
+            {tracks.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`filter-btn ${trackFilter === t.id ? "active" : ""}`}
+                onClick={() => setTrackFilter(t.id)}
+              >
+                {t.short}
+              </button>
             ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={7} className="empty">
-                  No lessons match these filters.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+          <div className="filters" style={{ marginBottom: 0 }}>
+            {(["all", "done", "todo"] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={`filter-btn ${statusFilter === s ? "active" : ""}`}
+                onClick={() => setStatusFilter(s)}
+              >
+                {s === "all" ? "All" : s === "done" ? "Done" : "Todo"}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="ghost-btn danger-btn"
+              onClick={() => {
+                if (
+                  confirm(
+                    "Reset ALL progress? Every lesson and quiz score will be cleared.",
+                  )
+                ) {
+                  setProgress(resetAllProgress());
+                }
+              }}
+            >
+              Reset all
+            </button>
+          </div>
+        </div>
 
-      <div className="progress-mobile">
-        {rows.map((row) => (
-          <div key={row.slug} className="progress-mobile-card">
-            <div className="row">
-              <Link href={`/lesson/${row.slug}`} style={{ fontWeight: 700 }}>
-                {row.title}
-              </Link>
-              <span className={`status-pill ${row.done ? "done" : "open"}`}>
-                {row.done ? "Done" : "Todo"}
-              </span>
-            </div>
-            <div className="row" style={{ color: "var(--muted)", fontSize: "0.82rem" }}>
-              <span>{row.trackMeta.short} · {row.difficulty}</span>
-              <span>
-                {row.score === undefined ? "No quiz" : `${Math.round(row.score * 100)}% quiz`}
-              </span>
-            </div>
-            <div className="row">
-              <span style={{ fontSize: "0.78rem", color: "var(--muted)" }}>
-                {formatDate(row.completedAt)}
-              </span>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <Link href={`/lesson/${row.slug}`} className="ghost-btn" style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}>
-                  Open
+        <div className="table-wrap progress-desktop" data-motion>
+          <table className="progress-table">
+            <thead>
+              <tr>
+                <th>Lesson</th>
+                <th>Track</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Quiz</th>
+                <th>Completed</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.slug}>
+                  <td>
+                    <Link href={`/lesson/${row.slug}`}>{row.title}</Link>
+                    <div style={{ color: "var(--muted)", fontSize: "0.78rem", marginTop: 2 }}>
+                      {row.subtitle}
+                    </div>
+                  </td>
+                  <td>
+                    <StatusChip
+                      status="staff"
+                      label={row.trackMeta.short}
+                      className="ds-track-chip"
+                    />
+                  </td>
+                  <td>
+                    <DifficultyChip level={row.difficulty} />
+                  </td>
+                  <td>
+                    <StatusChip status={row.done ? "done" : "todo"} />
+                  </td>
+                  <td>
+                    {row.score === undefined ? (
+                      "—"
+                    ) : (
+                      <StatusChip status="quiz" label={`${Math.round(row.score * 100)}%`} />
+                    )}
+                  </td>
+                  <td>{formatDate(row.completedAt)}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
+                      <Link href={`/lesson/${row.slug}`}>Open</Link>
+                      {(row.done || row.score !== undefined) && (
+                        <button
+                          type="button"
+                          className="ghost-btn danger-btn"
+                          style={{ padding: "0.25rem 0.65rem", fontSize: "0.75rem" }}
+                          onClick={() => onResetLesson(row.slug, row.title)}
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="empty">
+                    No lessons match these filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="progress-mobile" data-motion>
+          {rows.map((row) => (
+            <div key={row.slug} className="progress-mobile-card animated-card">
+              <div className="row">
+                <Link href={`/lesson/${row.slug}`} style={{ fontWeight: 700 }}>
+                  {row.title}
                 </Link>
-                {(row.done || row.score !== undefined) && (
-                  <button
-                    type="button"
-                    className="ghost-btn danger-btn"
-                    style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}
-                    onClick={() => onResetLesson(row.slug, row.title)}
-                  >
-                    Reset
-                  </button>
-                )}
+                <StatusChip status={row.done ? "done" : "todo"} />
+              </div>
+              <div className="row" style={{ color: "var(--muted)", fontSize: "0.82rem" }}>
+                <span>
+                  {row.trackMeta.short} · <DifficultyChip level={row.difficulty} />
+                </span>
+                <span>
+                  {row.score === undefined ? "No quiz" : `${Math.round(row.score * 100)}% quiz`}
+                </span>
+              </div>
+              <div className="row">
+                <span style={{ fontSize: "0.78rem", color: "var(--muted)" }}>
+                  {formatDate(row.completedAt)}
+                </span>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <Link href={`/lesson/${row.slug}`} className="ghost-btn" style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}>
+                    Open
+                  </Link>
+                  {(row.done || row.score !== undefined) && (
+                    <button
+                      type="button"
+                      className="ghost-btn danger-btn"
+                      style={{ padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}
+                      onClick={() => onResetLesson(row.slug, row.title)}
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-        {rows.length === 0 && <div className="empty">No lessons match these filters.</div>}
+          ))}
+          {rows.length === 0 && <div className="empty">No lessons match these filters.</div>}
+        </div>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { ScrollReveal } from "@/components/ui";
 import {
   diagnosticPillars,
   diagnosticQuestions,
@@ -156,8 +157,9 @@ export default function DiagnosticPage() {
           : "Core concepts to sharpen";
 
     return (
+      <ScrollReveal>
       <div className="shell diag-page" id="diagnostic-results">
-        <header className="page-hero diag-hero">
+        <header className="page-hero diag-hero" data-motion>
           <span className="kicker">Staff Go Readiness · Results</span>
           <h1>Your readiness map</h1>
           <p>
@@ -305,12 +307,14 @@ export default function DiagnosticPage() {
           </div>
         </details>
       </div>
+      </ScrollReveal>
     );
   }
 
   return (
+    <ScrollReveal>
     <div className="shell diag-page">
-      <header className="page-hero diag-hero">
+      <header className="page-hero diag-hero" data-motion>
         <span className="kicker">Staff Go Readiness · ~15 min</span>
         <h1>Find the gaps before the interview does.</h1>
         <p>
@@ -324,7 +328,7 @@ export default function DiagnosticPage() {
         ) : null}
       </header>
 
-      <section className="panel diag-quiz" aria-labelledby="diag-question-title">
+      <section className="panel diag-quiz" aria-labelledby="diag-question-title" data-motion>
         <div className="diag-quiz-topline">
           <div>
             <span className="type-label">
@@ -340,7 +344,7 @@ export default function DiagnosticPage() {
         </div>
 
         <div className="diag-question-progress" aria-hidden="true">
-          <span style={{ width: `${questionProgress}%` }} />
+          <span className="diagnostic-progress-fill" style={{ width: `${questionProgress}%` }} />
         </div>
 
         <fieldset className="diag-fieldset">
@@ -350,7 +354,7 @@ export default function DiagnosticPage() {
               const selected = currentAnswer === optionIndex;
               return (
                 <button
-                  className={`diag-option${selected ? " diag-option-selected" : ""}`}
+                  className={`diag-option diagnostic-option${selected ? " diag-option-selected is-selected" : ""}`}
                   type="button"
                   aria-pressed={selected}
                   key={option}
@@ -411,5 +415,6 @@ export default function DiagnosticPage() {
         Take your time—the clock is only a pacing cue and never locks the assessment.
       </p>
     </div>
+    </ScrollReveal>
   );
 }

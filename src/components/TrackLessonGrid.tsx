@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Lesson, TrackMeta } from "@/content/types";
+import { DifficultyChip, StatusChip } from "@/components/ui";
 import { loadProgress } from "@/lib/progress";
 
 export function TrackLessonGrid({
@@ -74,8 +75,9 @@ export function TrackLessonGrid({
             <Link
               key={lesson.slug}
               href={`/lesson/${lesson.slug}`}
-              className={`lesson-card${isComplete ? " lesson-card-complete" : ""}`}
+              className={`lesson-card animated-card${isComplete ? " lesson-card-complete" : ""}`}
               data-motion
+              style={{ "--card-accent": track.accent } as React.CSSProperties}
             >
               <div className="lesson-card-top">
                 <span
@@ -85,19 +87,17 @@ export function TrackLessonGrid({
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 {lesson.free ? (
-                  <span className="chip chip-brand">Free</span>
+                  <StatusChip status="free" />
                 ) : (
-                  <span className="chip chip-muted">Staff-grade</span>
+                  <StatusChip status="staff" />
                 )}
-                {isComplete ? <span className="chip chip-complete">Done</span> : null}
+                {isComplete ? <StatusChip status="done" /> : null}
               </div>
               <h3>{lesson.title}</h3>
               <p>{lesson.subtitle}</p>
               <div className="lesson-card-meta">
                 <span className="chip">{lesson.minutes} min</span>
-                <span className="chip chip-brand" style={{ textTransform: "capitalize" }}>
-                  {lesson.difficulty}
-                </span>
+                <DifficultyChip level={lesson.difficulty} />
               </div>
             </Link>
           );
