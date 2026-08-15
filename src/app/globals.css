@@ -17,6 +17,14 @@
   --brand-glow: rgba(15, 118, 110, 0.18);
   --accent: #ea580c;
   --accent-soft: #ffedd5;
+  --accent-method: #0f766e;
+  --accent-dsa: #2563eb;
+  --accent-concepts: #7c3aed;
+  --accent-stdlib: #475569;
+  --accent-web: #0891b2;
+  --accent-internals: #1e40af;
+  --accent-lld: #d97706;
+  --accent-hld: #dc2626;
   --ok: #059669;
   --warn: #d97706;
   --danger: #dc2626;
