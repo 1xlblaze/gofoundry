@@ -3,20 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+export type NavLinkItem = {
+  href: string;
+  label: string;
+  sub?: string;
+};
+
 /** Primary nav follows the HEAT sequence: Hear → Etch → Anchor → Temper */
-export const primaryLinks = [
-  { href: "/learn", label: "Hear" },
-  { href: "/heat", label: "Etch" },
-  { href: "/problems", label: "Anchor" },
-  { href: "/lab", label: "Temper" },
+export const primaryLinks: NavLinkItem[] = [
+  { href: "/learn", label: "Hear", sub: "Curriculum" },
+  { href: "/heat", label: "Etch", sub: "HEAT canvas" },
+  { href: "/problems", label: "Anchor", sub: "Staff practice" },
+  { href: "/lab", label: "Temper", sub: "Go Lab" },
 ];
 
-export const moreLinks = [
-  { href: "/diagnostic", label: "Assess" },
-  { href: "/progress", label: "Progress" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/blog", label: "Blog" },
-  { href: "/cheatsheets", label: "Cheatsheets" },
+export const moreLinks: NavLinkItem[] = [
+  { href: "/diagnostic", label: "Assess", sub: "Readiness quiz" },
+  { href: "/progress", label: "Progress", sub: "Your ledger" },
+  { href: "/pricing", label: "Pricing", sub: "Free in beta" },
+  { href: "/blog", label: "Blog", sub: "Deep dives" },
+  { href: "/cheatsheets", label: "Cheatsheets", sub: "Quick recall" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -35,9 +41,10 @@ export function NavLinks({ mobile = false }: { mobile?: boolean }) {
           <Link
             key={l.href}
             href={l.href}
-            className={isActive(pathname, l.href) ? "active" : undefined}
+            className={`mobile-nav-link${isActive(pathname, l.href) ? " active" : ""}`}
           >
-            {l.label}
+            <span className="mobile-nav-link-label">{l.label}</span>
+            {l.sub ? <span className="mobile-nav-link-sub">{l.sub}</span> : null}
           </Link>
         ))}
       </>
@@ -51,6 +58,7 @@ export function NavLinks({ mobile = false }: { mobile?: boolean }) {
           key={l.href}
           href={l.href}
           className={isActive(pathname, l.href) ? "active" : undefined}
+          title={l.sub ? `${l.label} — ${l.sub}` : l.label}
         >
           {l.label}
         </Link>

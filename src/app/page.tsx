@@ -18,34 +18,44 @@ export default function HomePage() {
         <div className="hero-bleed-visual" aria-hidden>
           <HeroVisual />
         </div>
-        <div className="shell hero-bleed-copy">
-          <p className="kicker reveal" data-motion>
-            Staff-Grade Go Mastery
-          </p>
-          <p className="brand-hero reveal" data-motion>
-            GoFoundry
-          </p>
-          <h1 className="hero-line reveal-delay-1" data-motion>
-            Master concurrency, runtime internals, and cloud-native Go.
-          </h1>
-          <p className="lede reveal-delay-2" data-motion>
-            Follow HEAT: hear the constraints, etch a diagram, anchor a pattern, then temper it
-            in the Lab. The full curriculum is free during public beta.
-          </p>
-          <div className="hero-actions hero-actions-heat reveal-delay-3" data-motion>
-            <Link href="/learn" className="primary-btn hero-primary-cta">
-              Hear — start curriculum
-            </Link>
-            <nav className="hero-heat-steps" aria-label="HEAT steps">
-              {heatSteps.slice(1).map((item) => (
-                <Link key={item.step} href={item.href} className="hero-heat-step">
-                  <strong>{item.step}</strong>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
+        <div className="shell hero-bleed-inner">
+          <div className="hero-bleed-copy">
+            <p className="kicker reveal" data-motion>
+              Staff-Grade Go Mastery
+            </p>
+            <p className="brand-hero reveal" data-motion>
+              GoFoundry
+            </p>
+            <h1 className="hero-line reveal-delay-1" data-motion>
+              Master concurrency, runtime internals, and cloud-native Go.
+            </h1>
+            <p className="lede reveal-delay-2" data-motion>
+              Follow HEAT: hear the constraints, etch a diagram, anchor a pattern, then temper it
+              in the Lab. Everything is free during public beta.
+            </p>
+            <ul className="hero-trust-strip reveal-delay-2" data-motion aria-label="Platform highlights">
+              <li>{allLessons.length} lessons</li>
+              <li>Free public beta</li>
+              <li>4-gate diagnostics</li>
+              <li>HEAT method</li>
+            </ul>
+            <div className="hero-actions hero-actions-heat reveal-delay-3" data-motion>
+              <Link href="/learn" className="primary-btn hero-primary-cta">
+                Hear — start curriculum
+              </Link>
+              <nav className="hero-heat-steps" aria-label="Next HEAT steps">
+                {heatSteps.slice(1).map((item) => (
+                  <Link key={item.step} href={item.href} className="hero-heat-step">
+                    <strong>{item.step}</strong>
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
+            </div>
           </div>
-          <HeroSnippet />
+          <div className="hero-lab-bleed reveal-delay-3" data-motion>
+            <HeroSnippet />
+          </div>
         </div>
       </section>
 
@@ -55,8 +65,8 @@ export default function HomePage() {
             <p className="kicker">Start learning</p>
             <h2>Free deep dives + eight tracks</h2>
             <p>
-              {allLessons.length} staff-grade lessons across runtime internals, DSA, LLD, and HLD.
-              Open any free sample below or browse the full map.
+              Staff-grade lessons across runtime internals, DSA, LLD, and HLD. Open a free sample
+              below or map the full curriculum.
             </p>
           </div>
           <Link href="/learn" className="ghost-btn">

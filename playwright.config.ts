@@ -26,5 +26,10 @@ export default defineConfig({
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 240_000,
+        env: {
+          ...process.env,
+          AUTH_SECRET:
+            process.env.AUTH_SECRET ?? "gofoundry-playwright-auth-secret-min-32-chars",
+        },
       },
 });

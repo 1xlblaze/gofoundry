@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { NavLinks, moreLinks, primaryLinks } from "@/components/NavLinks";
+import { NavLinks, moreLinks } from "@/components/NavLinks";
 import { loadProgress } from "@/lib/progress";
 
 export function HeaderChrome({
@@ -121,12 +121,15 @@ export function HeaderChrome({
 
       {open ? (
         <div className="mobile-nav" onClick={() => setOpen(false)}>
-          {[...primaryLinks, ...moreLinks, { href: "/search", label: "Search" }].map((link) => (
-            <Link key={link.href} href={link.href}>
-              {link.label}
-            </Link>
-          ))}
-          <Link href="/login">Account</Link>
+          <NavLinks mobile />
+          <Link href="/search" className="mobile-nav-link">
+            <span className="mobile-nav-link-label">Search</span>
+            <span className="mobile-nav-link-sub">Find any lesson</span>
+          </Link>
+          <Link href="/login" className="mobile-nav-link">
+            <span className="mobile-nav-link-label">Account</span>
+            <span className="mobile-nav-link-sub">Sign in to sync progress</span>
+          </Link>
         </div>
       ) : null}
     </header>

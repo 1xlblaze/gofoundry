@@ -31,6 +31,11 @@ if (
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
+  secret:
+    process.env.AUTH_SECRET ??
+    (process.env.NODE_ENV === "development"
+      ? "gofoundry-local-dev-auth-secret-min-32-chars"
+      : undefined),
   pages: {
     signIn: "/login",
   },
