@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { HeatCanvas } from "@/components/HeatCanvas";
+import { heatFlowNodes, MotionDiagram } from "@/components/MotionDiagram";
+import { ScrollReveal } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "HEAT Canvas",
@@ -9,6 +11,7 @@ export const metadata: Metadata = {
 
 export default function HeatPage() {
   return (
+    <ScrollReveal>
     <div className="shell heat-canvas-page">
       <header className="page-hero heat-canvas-hero">
         <span className="kicker">Hear · Etch · Anchor · Temper</span>
@@ -19,7 +22,14 @@ export default function HeatPage() {
           executable Go.
         </p>
       </header>
+      <MotionDiagram
+        kicker="When the prompt is a wall of text"
+        title="Four moves, then code"
+        caption="Fill the canvas in order. Skip ahead only after the previous box is honest."
+        nodes={heatFlowNodes}
+      />
       <HeatCanvas />
     </div>
+    </ScrollReveal>
   );
 }

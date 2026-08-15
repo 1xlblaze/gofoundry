@@ -85,24 +85,22 @@ export function LessonContentShell({
       </aside>
 
       {!dismissed && gateOpen ? (
-        <div className="lesson-gate" role="dialog" aria-labelledby="lesson-gate-title">
-          <div className="lesson-gate-card panel">
-            <p className="type-label">Keep your place</p>
-            <h2 id="lesson-gate-title">Finish this lesson + 100 more — sign up free</h2>
-            <p>
-              Create a free account to save progress across tracks, sync quiz scores, and pick up
-              where you left off on any device.
-            </p>
-            <div className="lesson-gate-actions">
-              <Link href="/login" className="primary-btn">
-                Create free account
-              </Link>
-              <button type="button" className="ghost-btn" onClick={dismissGate}>
-                Keep reading as guest
-              </button>
-            </div>
+        <aside className="lesson-save-banner panel" aria-labelledby="lesson-gate-title">
+          <p className="type-label">Optional account</p>
+          <h2 id="lesson-gate-title">Keep reading — sign in only if you want sync</h2>
+          <p>
+            All lessons stay free in public beta. Progress is already saved in this browser.
+            Sign in if you want the same place on another device.
+          </p>
+          <div className="lesson-gate-actions">
+            <Link href="/login" className="secondary-btn">
+              Sign in
+            </Link>
+            <button type="button" className="ghost-btn" onClick={dismissGate}>
+              Keep reading as guest
+            </button>
           </div>
-        </div>
+        </aside>
       ) : null}
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 const snippets = {
   leaky: {
@@ -125,6 +125,15 @@ export function HeroSnippet() {
   const [output, setOutput] = useState("");
   const [hasRun, setHasRun] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const [expanded, setExpanded] = useState(true);
+
+  useEffect(() => {
+    const compact = window.matchMedia("(max-width: 719px)");
+    const sync = () => setExpanded(!compact.matches);
+    sync();
+    compact.addEventListener("change", sync);
+    return () => compact.removeEventListener("change", sync);
+  }, []);
 
   function selectSnippet(next: SnippetKey) {
     setActive(next);
@@ -160,7 +169,7 @@ export function HeroSnippet() {
   }
 
   return (
-    <div className="hero-lab-card" data-motion>
+    <div className={`hero-lab-card${expanded ? "" : " hero-lab-collapsed"}`} data-motion>
       <div className="hero-lab-heading">
         <div>
           <p className="hero-lab-kicker">Run the proof</p>
@@ -170,6 +179,19 @@ export function HeroSnippet() {
           Open full Lab <span aria-hidden>→</span>
         </Link>
       </div>
+
+      {!expanded ? (
+        <LeakMotionPreview />
+      ) : null}
+
+      <button
+        type="button"
+        className="ghost-btn hero-lab-toggle"
+        aria-expanded={expanded}
+        onClick={() => setExpanded((value) => !value)}
+      >
+        {expanded ? "Hide interactive lab" : "Open interactive lab"}
+      </button>
 
       <div className="hero-lab-tabs" role="tablist" aria-label="Code example">
         {(Object.keys(snippets) as SnippetKey[]).map((key) => (
@@ -203,7 +225,7 @@ export function HeroSnippet() {
             setCodes((current) => ({ ...current, [active]: event.target.value }))
           }
           spellCheck={false}
-          rows={12}
+          rows={8}
         />
         <div className="hero-lab-controls">
           <button
@@ -228,5 +250,48 @@ export function HeroSnippet() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LeakMotionPreview() {
+  return (
+    <svg
+      className="motion-diagram-svg"
+      viewBox="0 0 640 150"
+      role="img"
+      aria-label="Leaky workers stay blocked; cancelled workers shut down."
+    >
+      <defs>
+        <linearGradient id="leak-preview-stroke" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#dc2626" />
+          <stop offset="100%" stopColor="#0f766e" />
+        </linearGradient>
+      </defs>
+      <path
+        className="motion-diagram-path"
+        d="M 40 75 H 600"
+        fill="none"
+        stroke="url(#leak-preview-stroke)"
+        strokeWidth="3"
+      />
+      <g>
+        <rect x="36" y="28" width="200" height="94" rx="14" fill="white" stroke="#dc2626" strokeWidth="2.5" />
+        <text x="136" y="68" textAnchor="middle" fontWeight="800" fontSize="16" fill="#0b1220">
+          Leak
+        </text>
+        <text x="136" y="92" textAnchor="middle" fontSize="12" fill="#64748b">
+          channel never closes
+        </text>
+      </g>
+      <g>
+        <rect x="404" y="28" width="200" height="94" rx="14" fill="white" stroke="#0f766e" strokeWidth="2.5" />
+        <text x="504" y="68" textAnchor="middle" fontWeight="800" fontSize="16" fill="#0b1220">
+          Shutdown
+        </text>
+        <text x="504" y="92" textAnchor="middle" fontSize="12" fill="#64748b">
+          context + WaitGroup
+        </text>
+      </g>
+    </svg>
   );
 }

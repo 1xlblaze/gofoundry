@@ -18,6 +18,12 @@ const staticPages = [
 ];
 
 test.describe("Core pages smoke", () => {
+  test("homepage exposes a learning-loop diagram", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: /Read → diagram → prove → recall/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Skip to content/i })).toHaveCount(1);
+  });
+
   for (const pageInfo of staticPages) {
     test(`${pageInfo.path} renders`, async ({ page }) => {
       const response = await page.goto(pageInfo.path);
@@ -82,7 +88,7 @@ test.describe("Interactive workspaces", () => {
       timeout: 15_000,
     });
     await expect(page.getByText(/Draw the movement before the code/i)).toBeVisible();
-    await expect(page.getByRole("link", { name: /Etch/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Etch Architecture sketch/i })).toBeVisible();
   });
 
   test("LLD problem workspace navigates HEAT stages", async ({ page }) => {

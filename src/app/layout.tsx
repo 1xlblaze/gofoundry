@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
+import Link from "next/link";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
@@ -38,16 +39,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="ambient-host flex min-h-full flex-col">
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
         <AmbientBackground />
         <SiteHeader />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">
+          {children}
+        </main>
         <footer className="footer">
           <div
             className="shell"
             style={{
               display: "flex",
               flexWrap: "wrap",
-              gap: "1rem",
+              gap: "1.25rem",
               justifyContent: "space-between",
               alignItems: "end",
             }}
@@ -57,20 +63,26 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 GoFoundry
               </p>
               <p style={{ margin: "0.4rem 0 0", maxWidth: "22rem" }}>
-                Think · diagram · trade off · ship — interview-ready Go.
+                Read, diagram, prove, and recall — staff-grade Go.
               </p>
             </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              HEAT method · 8 tracks
-            </p>
+            <ul className="footer-links">
+              <li>
+                <Link href="/learn">Curriculum</Link>
+              </li>
+              <li>
+                <Link href="/lab">Lab</Link>
+              </li>
+              <li>
+                <Link href="/pricing">Pricing</Link>
+              </li>
+              <li>
+                <Link href="/cheatsheets">Cheatsheets</Link>
+              </li>
+              <li>
+                <Link href="/login">Sign in</Link>
+              </li>
+            </ul>
           </div>
         </footer>
       </body>

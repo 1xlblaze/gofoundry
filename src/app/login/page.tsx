@@ -14,23 +14,27 @@ export default async function LoginPage() {
         <p className="kicker" style={{ marginBottom: "0.85rem" }}>Account</p>
         <h1>Sign in</h1>
         <p>
-          Google Sign-In by default. Keycloak works when{" "}
-          <code style={{ fontFamily: "var(--font-mono)", fontSize: "0.85em" }}>KEYCLOAK_*</code>{" "}
-          env vars are set.
+          Optional. You can learn as a guest — progress stays in this browser. Sign in with
+          Google if you want the same place on another device.
         </p>
 
         {!authConfigured ? (
           <div className="callout warn">
-            <div className="callout-title">Providers not configured</div>
+            <div className="callout-title">Sign-in is paused on this preview</div>
             <p style={{ margin: 0 }}>
-              Set AUTH_SECRET, GOOGLE_CLIENT_ID, and GOOGLE_CLIENT_SECRET on Vercel.
+              You can still open every lesson, the Lab, and practice problems without an account.
             </p>
             <Link href="/learn" className="secondary-btn" style={{ marginTop: "1rem" }}>
               Continue as guest
             </Link>
           </div>
         ) : (
-          <AuthButtons mode="login" />
+          <>
+            <AuthButtons mode="login" />
+            <Link href="/learn" className="ghost-btn" style={{ marginTop: "1rem" }}>
+              Continue as guest
+            </Link>
+          </>
         )}
       </div>
     </div>

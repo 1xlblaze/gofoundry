@@ -17,6 +17,7 @@ import {
   resetLesson,
   type ProgressState,
 } from "@/lib/progress";
+import { getContinueLesson } from "@/lib/continueLesson";
 
 function formatDate(iso?: string) {
   if (!iso) return "—";
@@ -84,6 +85,8 @@ export default function ProgressPage() {
     return new Set(dates).size;
   }, [progress.completedAt]);
 
+  const continueLesson = getContinueLesson(progress);
+
   function onResetLesson(slug: string, title: string) {
     if (confirm(`Reset “${title}”? Completion and quiz score will be cleared.`)) {
       setProgress(resetLesson(slug));
@@ -109,10 +112,10 @@ export default function ProgressPage() {
 
         {doneCount === 0 ? (
           <EmptyState
-            title="Your forge is ready"
-            description="Complete a lesson or mark one done to start building your progress dashboard. Every track counts toward staff-grade mastery."
-            actionHref="/learn"
-            actionLabel="Browse curriculum →"
+            title="Nothing tracked yet"
+            description="Open any lesson to start a ledger in this browser. Sign in later if you want the same progress on another device."
+            actionHref={continueLesson ? `/lesson/${continueLesson.slug}` : "/learn"}
+            actionLabel={continueLesson ? `Start ${continueLesson.title}` : "Browse curriculum →"}
             icon="⚒"
           />
         ) : (
@@ -123,7 +126,10 @@ export default function ProgressPage() {
                 {streakDays} day{streakDays === 1 ? "" : "s"} with completed lessons
               </p>
             </div>
-            <Link href="/learn" className="ghost-btn">
+            <Link
+              href={continueLesson ? `/lesson/${continueLesson.slug}` : "/learn"}
+              className="ghost-btn"
+            >
               Continue learning →
             </Link>
           </div>

@@ -130,10 +130,9 @@ export default async function PricingPage() {
 
         <section className="shell price-roadmap" data-motion>
           <p>
-            The diagnostic pipeline runs <code>go vet</code>, escape analysis,{" "}
-            <code>-race</code>, goleak, and benchmark allocs/op. Deploy locally with{" "}
-            <code>docker-compose up</code> or use the free-tier guides in{" "}
-            <code>docs/DEPLOYMENT.md</code>.
+            Public beta includes the curriculum, Lab, HEAT canvas, and the 4-gate diagnostic
+            pipeline at no cost. Paid plans are listed so you can see what is coming — nothing
+            extra is required to start learning today.
           </p>
         </section>
 
