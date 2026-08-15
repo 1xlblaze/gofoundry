@@ -115,6 +115,17 @@ test.describe("UI quality — lesson content", () => {
     await expect(page.getByLabel("Lesson roadmap")).toBeVisible();
     await expect(page.locator(".content-stack").first()).toBeVisible();
   });
+
+  test("mobile lesson uses collapsible section navigator", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/lesson/embed-fs-templates");
+    const toggle = page.getByRole("button", { name: /Section \d+ of/i });
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(page.locator("#lesson-toc-panel.is-open")).toBeVisible();
+    await expect(page.getByLabel("Lesson roadmap")).toBeVisible();
+    await assertNoHorizontalOverflow(page);
+  });
 });
 
 test.describe("UI quality — auth session health", () => {

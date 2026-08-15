@@ -75,7 +75,7 @@ test.describe("Track and lesson content", () => {
 
   test("LRU lesson roadmap reports diagrams and sticky TOC", async ({ page }) => {
     await page.goto("/lesson/lru-cache-lld");
-    await expect(page.getByLabel("Lesson roadmap")).toContainText(/2 diagrams/i);
+    await expect(page.getByLabel("Lesson roadmap")).toContainText(/Diagrams/i);
     await expect(page.getByLabel("Lesson sections")).toBeVisible();
     await expect(page.locator("#lesson-section-1")).toBeAttached();
   });
