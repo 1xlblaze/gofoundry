@@ -4569,6 +4569,17 @@ a.brand-mark {
   color: white;
 }
 
+.hero-lab-preview {
+  padding: 0 0.85rem 0.35rem;
+}
+
+.hero-lab-preview-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 9rem;
+}
+
 .hero-lab-tabs {
   display: flex;
   gap: 0.2rem;
@@ -7191,10 +7202,6 @@ a.motion-diagram-node:hover {
   margin-bottom: 0.45rem;
 }
 
-.hero-lab-toggle {
-  margin-top: 0.75rem;
-}
-
 @media (min-width: 900px) {
   .nav-links { display: flex; }
   .menu-toggle { display: none !important; }
@@ -7208,16 +7215,4 @@ a.motion-diagram-node:hover {
 @keyframes diagramPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
-}
-
-@media (max-width: 719px) {
-  .hero-lab-collapsed .hero-lab-panel,
-  .hero-lab-collapsed .hero-lab-tabs {
-    display: none;
-  }
-}
-
-.hero-lab-collapsed .hero-lab-panel,
-.hero-lab-collapsed .hero-lab-tabs {
-  display: none;
 }

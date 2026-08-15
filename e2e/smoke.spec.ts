@@ -80,6 +80,18 @@ test.describe("Track and lesson content", () => {
   });
 });
 
+test.describe("Homepage hero lab", () => {
+  test("mobile shows code editor without collapsing", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: /Can you spot the goroutine leak/i })).toBeVisible();
+    await expect(page.locator(".hero-lab-editor")).toBeVisible();
+    await expect(page.locator(".hero-lab-editor")).toContainText("package main");
+    await expect(page.getByRole("button", { name: /Run Go/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Open interactive lab/i })).toHaveCount(0);
+  });
+});
+
 test.describe("Interactive workspaces", () => {
   test("HEAT canvas exposes four stages", async ({ page }) => {
     await page.goto("/heat");
