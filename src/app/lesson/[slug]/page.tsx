@@ -10,6 +10,7 @@ import {
 import { LessonBlocks } from "@/components/LessonBlocks";
 import { LessonQuiz } from "@/components/LessonQuiz";
 import { CompleteButton } from "@/components/CompleteButton";
+import { ProgressSaveCue } from "@/components/ProgressSaveCue";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { LessonRoadmap } from "@/components/LessonRoadmap";
 import { LessonEtchPad } from "@/components/LessonEtchPad";
@@ -79,6 +80,8 @@ export default async function LessonPage({ params }: Props) {
               </div>
             </div>
           </div>
+
+          <ProgressSaveCue className="lesson-progress-save-cue" />
 
           {lesson.prerequisites && lesson.prerequisites.length > 0 && (
             <p className="lesson-prereq">

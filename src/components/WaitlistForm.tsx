@@ -2,10 +2,16 @@
 
 import { useId, useState, type FormEvent } from "react";
 
+type WaitlistTierOption = {
+  id: string;
+  label: string;
+};
+
 type WaitlistFormProps = {
   tier?: string;
   source?: string;
   buttonLabel?: string;
+  tierOptions?: WaitlistTierOption[];
 };
 
 type WaitlistResponse = {
@@ -14,11 +20,15 @@ type WaitlistResponse = {
 };
 
 export function WaitlistForm({
-  tier,
+  tier: defaultTier,
   source,
   buttonLabel = "Join waitlist",
+  tierOptions,
 }: WaitlistFormProps) {
   const inputId = useId();
+  const tierSelectId = useId();
+  const initialTier = defaultTier ?? tierOptions?.[0]?.id ?? "team";
+  const [tier, setTier] = useState(initialTier);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -51,6 +61,22 @@ export function WaitlistForm({
 
   return (
     <form className="price-waitlist-form" onSubmit={handleSubmit}>
+      {tierOptions && tierOptions.length > 1 ? (
+        <label className="price-waitlist-tier-label" htmlFor={tierSelectId}>
+          <span>I’m interested in</span>
+          <select
+            id={tierSelectId}
+            className="price-waitlist-tier-select"
+            value={tier}
+            onChange={(event) => setTier(event.target.value)}
+            disabled={status === "submitting"}
+          >
+            {tierOptions.map((option) => (
+              <option key={option.id} value={option.id}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="price-visually-hidden" htmlFor={inputId}>
         Work email
       </label>

@@ -50,6 +50,11 @@ const tiers = [
   },
 ];
 
+const waitlistTierOptions = [
+  { id: "team", label: "Team plan (per seat/year)" },
+  { id: "lifetime", label: "Lifetime pass (early-bird)" },
+];
+
 export default async function PricingPage() {
   const session = await auth();
   const userTier = session?.user?.tier ?? "free";
@@ -117,11 +122,9 @@ export default async function PricingPage() {
                     </Link>
                   )
                 ) : (
-                  <WaitlistForm
-                    tier={tier.id}
-                    source="pricing"
-                    buttonLabel="Join Team waitlist"
-                  />
+                  <Link href="#pricing-waitlist" className="secondary-btn price-full-button">
+                    Join waitlist below
+                  </Link>
                 )}
               </div>
             </article>
@@ -136,16 +139,20 @@ export default async function PricingPage() {
           </p>
         </section>
 
-        <section className="shell price-lifetime panel" data-motion>
+        <section id="pricing-waitlist" className="shell price-lifetime panel" data-motion>
           <div>
-            <p className="kicker">Early-bird access</p>
-            <h2>Interested in a lifetime pass?</h2>
+            <p className="kicker">Coming soon</p>
+            <h2>Team & lifetime waitlist</h2>
             <p>
-              Tell us where to send launch details. Early members will be first in line for
-              limited lifetime pricing when paid plans go live.
+              One form for organization seats or a limited lifetime pass. Tell us where to send
+              launch details — early members get first access when paid plans go live.
             </p>
           </div>
-          <WaitlistForm tier="lifetime" source="lifetime" buttonLabel="Register interest" />
+          <WaitlistForm
+            source="pricing"
+            buttonLabel="Join waitlist"
+            tierOptions={waitlistTierOptions}
+          />
         </section>
       </div>
     </ScrollReveal>
