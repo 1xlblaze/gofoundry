@@ -34,14 +34,18 @@ type EtchCanvasProps = {
 };
 
 function buildInitialData(scene: EtchScene, compact: boolean) {
+  const background =
+    typeof scene.appState?.viewBackgroundColor === "string"
+      ? scene.appState.viewBackgroundColor
+      : "#faf8f5";
+
   return {
     elements: scene.elements as never[],
     appState: {
-      viewBackgroundColor: "#faf8f5",
+      viewBackgroundColor: background,
       currentItemStrokeColor: "#0f766e",
       currentItemBackgroundColor: "transparent",
       zenModeEnabled: compact,
-      ...(scene.appState ?? {}),
     },
     scrollToContent: true,
   };

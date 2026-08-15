@@ -349,14 +349,14 @@ export function HeatCanvas() {
           >
             {draft.operational.hearLocked
               ? "Constraints locked ✓"
-              : "Lock constraints & unlock editor"}
+              : "Lock constraints & unlock Temper"}
           </button>
         </div>
       </section>
 
       <section
         id="heat-diagram"
-        className={`heat-canvas-section panel ${!editorUnlocked ? "heat-stage-locked" : ""}`}
+        className="heat-canvas-section panel"
         aria-labelledby="heat-etch-title"
       >
         <div className="heat-canvas-section-head">
@@ -385,7 +385,7 @@ export function HeatCanvas() {
 
       <section
         id="heat-pattern"
-        className={`heat-canvas-section panel ${!editorUnlocked ? "heat-stage-locked" : ""}`}
+        className="heat-canvas-section panel"
         aria-labelledby="heat-anchor-title"
       >
         <div className="heat-canvas-section-head">
@@ -467,14 +467,16 @@ export function HeatCanvas() {
         {editorUnlocked && !anchorComplete && (
           <p className="heat-stage-hint">Select pattern and complexity in Anchor to unlock the editor.</p>
         )}
-        <GoWorkbench
-          key={workbenchKey}
-          initialCode={draft.code}
-          title="HEAT implementation"
-          onCodeChange={(code) =>
-            setDraft((current) => ({ ...current, code }))
-          }
-        />
+        {editorUnlocked && anchorComplete ? (
+          <GoWorkbench
+            key={workbenchKey}
+            initialCode={draft.code}
+            title="HEAT implementation"
+            onCodeChange={(code) =>
+              setDraft((current) => ({ ...current, code }))
+            }
+          />
+        ) : null}
         {editorUnlocked && anchorComplete && (
           <DiagnosticPanel
             problemId="dsa-sliding-window-maximum"
