@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { WorkspaceAction } from "@/components/LessonWorkspace";
 import { loadProgress } from "@/lib/progress";
 
 const GATE_STORAGE = "gofoundry-lesson-gate-dismissed";
@@ -70,17 +71,22 @@ export function LessonContentShell({
         </p>
         <div className="lesson-inline-cta-actions">
           {labHref ? (
-            <Link href={labHref} className="primary-btn">
+            <WorkspaceAction
+              action="lab"
+              problemId={labHref.split("/").pop()}
+              fullPageHref={labHref}
+              className="primary-btn"
+            >
               Open in Lab
-            </Link>
+            </WorkspaceAction>
           ) : (
-            <Link href="/problems" className="primary-btn">
+            <WorkspaceAction action="lab" fullPageHref="/problems" className="primary-btn">
               Browse Lab problems
-            </Link>
+            </WorkspaceAction>
           )}
-          <Link href="/heat" className="ghost-btn">
+          <WorkspaceAction action="etch" className="ghost-btn">
             HEAT canvas
-          </Link>
+          </WorkspaceAction>
         </div>
       </aside>
 

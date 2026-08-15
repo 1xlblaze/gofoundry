@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ContentBlock } from "@/content/types";
 import { Diagram } from "@/components/Diagram";
 import { CodeBlock } from "@/components/CodeBlock";
+import { WorkspaceAction } from "@/components/LessonWorkspace";
 import { lessonSectionId } from "@/lib/lesson-sections";
 
 export function LessonBlocks({
@@ -39,6 +40,7 @@ export function LessonBlocks({
                   language={block.language}
                   code={block.code}
                   labHref={labHref}
+                  problemId={labHref?.split("/").pop()}
                 />
               </div>
             );
@@ -196,13 +198,18 @@ export function LessonBlocks({
                   </p>
                 )}
                 <div className="lesson-answer-cta">
-                  <Link href="/heat" className="primary-btn">
+                  <WorkspaceAction action="etch" className="primary-btn">
                     Practice on HEAT canvas
-                  </Link>
+                  </WorkspaceAction>
                   {labHref ? (
-                    <Link href={labHref} className="ghost-btn">
+                    <WorkspaceAction
+                      action="lab"
+                      problemId={labHref.split("/").pop()}
+                      fullPageHref={labHref}
+                      className="ghost-btn"
+                    >
                       Run in Lab
-                    </Link>
+                    </WorkspaceAction>
                   ) : null}
                 </div>
               </section>

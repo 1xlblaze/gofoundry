@@ -32,4 +32,5 @@ export function persistTheme(theme: Theme) {
     // localStorage may be blocked
   }
   applyTheme(theme);
+  window.dispatchEvent(new CustomEvent("gofoundry-theme", { detail: { theme } }));
 }
