@@ -925,10 +925,40 @@ body:has(.heat-canvas-page) .site-header {
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.mobile-nav a:hover, .mobile-nav a.active {
+.mobile-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: white;
+  border: 1px solid var(--line);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.mobile-nav-link-label {
+  font-weight: 750;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.mobile-nav-link-sub {
+  font-size: 0.78rem;
+  font-weight: 550;
+  color: var(--muted);
+}
+
+.mobile-nav a:hover,
+.mobile-nav a.active,
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
   border-color: var(--brand);
   color: var(--brand-deep);
   transform: translateX(3px);
+}
+
+.mobile-nav-link.active .mobile-nav-link-label {
+  color: var(--brand-deep);
 }
 
 .usp-banner {
@@ -1751,7 +1781,60 @@ a.brand-mark {
   position: relative;
   z-index: 1;
   max-width: 40rem;
+  padding-bottom: 0.5rem;
+}
+
+.hero-bleed-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.5rem;
   padding-bottom: 1rem;
+}
+
+.hero-lab-bleed {
+  width: 100%;
+  min-width: 0;
+}
+
+.hero-trust-strip {
+  list-style: none;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.hero-trust-strip li {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--brand-deep);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 719px) {
+  .hero-bleed {
+    min-height: auto;
+    padding: 2.25rem 0 2rem;
+  }
+
+  .hero-bleed-visual {
+    opacity: 0.45;
+    mask-image: linear-gradient(180deg, black 0%, transparent 85%);
+    -webkit-mask-image: linear-gradient(180deg, black 0%, transparent 85%);
+  }
+}
+
+@media (min-width: 900px) {
+  .hero-bleed-inner {
+    gap: 2rem;
+  }
 }
 
 .brand-hero {
@@ -2313,8 +2396,10 @@ a.brand-mark {
 }
 
 .sheet-star {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
   padding: 0;
   border: 0;
   border-radius: 999px;
@@ -2679,7 +2764,8 @@ a.brand-mark {
 
 .viz-picker-btn {
   flex: 1 0 auto;
-  padding: 0.5rem 0.9rem;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.9rem;
   border: 1px solid transparent;
   border-radius: 999px;
   color: var(--ink-soft);
@@ -7320,6 +7406,27 @@ a.motion-diagram-node:hover {
   padding: 1.25rem;
   display: grid;
   gap: 0.65rem;
+}
+
+.learn-filter-row {
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 719px) {
+  .learn-filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 0.25rem;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .learn-filter-row .filter-btn {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
 }
 
 .learn-progress-save-cue,

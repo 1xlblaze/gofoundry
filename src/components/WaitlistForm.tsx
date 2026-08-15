@@ -63,10 +63,11 @@ export function WaitlistForm({
     <form className="price-waitlist-form" onSubmit={handleSubmit}>
       {tierOptions && tierOptions.length > 1 ? (
         <label className="price-waitlist-tier-label" htmlFor={tierSelectId}>
-          <span>I’m interested in</span>
+          <span id={`${tierSelectId}-label`}>I&apos;m interested in</span>
           <select
             id={tierSelectId}
             className="price-waitlist-tier-select"
+            aria-labelledby={`${tierSelectId}-label`}
             value={tier}
             onChange={(event) => setTier(event.target.value)}
             disabled={status === "submitting"}
