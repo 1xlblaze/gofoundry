@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { allLessons, freeLessons, getTrack, tracks } from "@/content";
+import { allLessons, freeLessons, getTrack } from "@/content";
 import { HeroSnippet } from "@/components/HeroSnippet";
 import { HeroVisual } from "@/components/HeroVisual";
+import { HomeTrackMap } from "@/components/HomeTrackMap";
 import { AnimatedCard, DifficultyChip, ScrollReveal, StatusChip } from "@/components/ui";
 
 const heatSteps = [
@@ -33,7 +34,11 @@ export default function HomePage() {
               Follow HEAT: hear the constraints, etch a diagram, anchor a pattern, then temper it
               in the Lab. Everything is free during public beta.
             </p>
-            <ul className="hero-trust-strip reveal-delay-2" data-motion aria-label="Platform highlights">
+            <ul
+              className="hero-trust-strip reveal-delay-2"
+              data-motion
+              aria-label="Platform highlights"
+            >
               <li>{allLessons.length} lessons</li>
               <li>Free public beta</li>
               <li>4-gate diagnostics</li>
@@ -59,22 +64,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="shell section home-explore-section">
+      <section className="shell section home-samples-section">
         <div className="section-head" data-motion>
           <div>
             <p className="kicker">Start learning</p>
-            <h2>Free deep dives + eight tracks</h2>
+            <h2>Free deep dives — no paywall</h2>
             <p>
-              Staff-grade lessons across runtime internals, DSA, LLD, and HLD. Open a free sample
-              below or map the full curriculum.
+              Four staff-grade samples across concepts, internals, and design. Read one today, then
+              map the full curriculum below.
             </p>
           </div>
-          <Link href="/learn" className="ghost-btn">
-            Full curriculum →
-          </Link>
         </div>
 
-        <div className="teaser-grid" data-motion>
+        <div className="teaser-grid home-samples-grid" data-motion>
           {freeLessons.map((lesson) => {
             const track = getTrack(lesson.track);
             return (
@@ -101,23 +103,9 @@ export default function HomePage() {
             );
           })}
         </div>
-
-        <div className="home-track-strip panel" data-motion>
-          <p className="type-label">Eight tracks</p>
-          <ul className="home-track-strip-list">
-            {tracks.map((track) => (
-              <li key={track.id}>
-                <Link href={`/track/${track.id}`} className="home-track-strip-link">
-                  <span className="home-track-strip-short" style={{ color: track.accent }}>
-                    {track.short}
-                  </span>
-                  <span>{track.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
       </section>
+
+      <HomeTrackMap />
     </ScrollReveal>
   );
 }

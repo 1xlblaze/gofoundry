@@ -54,6 +54,15 @@ test.describe("UI quality — navigation & hero", () => {
     expect(labWidth).toBeGreaterThan(300);
   });
 
+  test("homepage track map shows styled curriculum cards", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: /Eight tracks/i })).toBeVisible();
+    const cards = page.locator(".home-track-card");
+    await expect(cards).toHaveCount(8);
+    await expect(cards.first()).toContainText(/lessons/i);
+    await expect(page.locator(".home-tracks-grid")).toBeVisible();
+  });
+
   test("mobile menu exposes HEAT steps with descriptions", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
