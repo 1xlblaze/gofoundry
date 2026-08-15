@@ -12,96 +12,140 @@ export function LessonQuiz({
   questions: QuizQuestion[];
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
   useEffect(() => {
     setAnswers({});
+    setRevealed({});
     setSubmitted(false);
     setScore(0);
   }, [slug]);
 
   if (!questions.length) return null;
 
-  function onSubmit() {
+  const answeredCount = Object.keys(answers).length;
+  const allAnswered = answeredCount >= questions.length;
+
+  function grade() {
     let correct = 0;
     for (const q of questions) {
       if (answers[q.id] === q.answerIndex) correct++;
     }
-    const ratio = correct / questions.length;
+    return correct / questions.length;
+  }
+
+  function onSubmit() {
+    const ratio = grade();
     setScore(ratio);
     setSubmitted(true);
     saveQuizScore(slug, ratio);
   }
 
+  function onSelect(questionId: string, optionIndex: number) {
+    if (submitted) return;
+    setAnswers((prev) => ({ ...prev, [questionId]: optionIndex }));
+    setRevealed((prev) => ({ ...prev, [questionId]: true }));
+
+    const nextAnswers = { ...answers, [questionId]: optionIndex };
+    if (Object.keys(nextAnswers).length >= questions.length) {
+      let correct = 0;
+      for (const q of questions) {
+        if (nextAnswers[q.id] === q.answerIndex) correct++;
+      }
+      const ratio = correct / questions.length;
+      window.setTimeout(() => {
+        setScore(ratio);
+        setSubmitted(true);
+        saveQuizScore(slug, ratio);
+      }, 600);
+    }
+  }
+
+  function optionClass(question: QuizQuestion, optionIndex: number, selected: boolean) {
+    const showResult = submitted || revealed[question.id];
+    let state = "lesson-quiz-option";
+
+    if (showResult) {
+      if (optionIndex === question.answerIndex) state += " lesson-quiz-option-correct";
+      else if (selected) state += " lesson-quiz-option-wrong";
+    } else if (selected) {
+      state += " lesson-quiz-option-selected";
+    }
+
+    return state;
+  }
+
   return (
-    <section className="mt-16 border-t border-[var(--line)] pt-12">
-      <p className="type-label">Quiz</p>
-      <h2 className="type-title mt-2 text-[var(--text-h2)] text-ink">
+    <section className="lesson-quiz" aria-labelledby="lesson-quiz-title">
+      <p className="type-label">Comprehension check</p>
+      <h2 id="lesson-quiz-title" className="lesson-quiz-heading">
         Check your understanding
       </h2>
-      <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-        Answer all questions, then submit. A perfect score marks the lesson complete.
+      <p className="lesson-quiz-lead">
+        Tap an answer for instant feedback. A perfect score marks the lesson complete.
       </p>
-      <div className="mt-10 space-y-10">
+      <p className="lesson-quiz-progress" aria-live="polite">
+        {answeredCount} of {questions.length} answered
+      </p>
+
+      <div className="lesson-quiz-list">
         {questions.map((q, qi) => (
-          <fieldset key={q.id}>
-            <legend className="type-title text-[1.05rem] text-ink">
-              <span className="mr-2 font-mono text-sm text-ink-faint">
-                {String(qi + 1).padStart(2, "0")}
-              </span>
+          <fieldset key={q.id} className="lesson-quiz-fieldset">
+            <legend className="lesson-quiz-legend">
+              <span className="lesson-quiz-index">{String(qi + 1).padStart(2, "0")}</span>
               {q.prompt}
             </legend>
-            <div className="mt-4 space-y-2">
+            <div className="lesson-quiz-options">
               {q.options.map((opt, oi) => {
                 const selected = answers[q.id] === oi;
-                let ring = "border-[var(--line)] bg-foam/40";
-                if (submitted) {
-                  if (oi === q.answerIndex) ring = "border-teal bg-mint/20";
-                  else if (selected) ring = "border-copper bg-copper/10";
-                } else if (selected) {
-                  ring = "border-teal bg-foam";
-                }
                 return (
-                  <label
-                    key={oi}
-                    className={`flex cursor-pointer items-start gap-3 border px-4 py-3.5 text-sm leading-relaxed transition ${ring}`}
-                  >
+                  <label key={oi} className={optionClass(q, oi, selected)}>
                     <input
                       type="radio"
-                      className="mt-1 accent-[var(--signal)]"
+                      className="lesson-quiz-radio"
                       name={q.id}
                       checked={selected}
                       disabled={submitted}
-                      onChange={() =>
-                        setAnswers((prev) => ({ ...prev, [q.id]: oi }))
-                      }
+                      onChange={() => onSelect(q.id, oi)}
                     />
-                    <span className="text-ink-soft">{opt}</span>
+                    <span className="lesson-quiz-option-text">{opt}</span>
+                    {selected && !submitted && !revealed[q.id] ? (
+                      <span className="lesson-quiz-pending" aria-hidden>…</span>
+                    ) : null}
+                    {(submitted || revealed[q.id]) && oi === q.answerIndex ? (
+                      <span className="lesson-quiz-mark lesson-quiz-mark-ok" aria-hidden>✓</span>
+                    ) : null}
+                    {(submitted || revealed[q.id]) && selected && oi !== q.answerIndex ? (
+                      <span className="lesson-quiz-mark lesson-quiz-mark-bad" aria-hidden>✕</span>
+                    ) : null}
                   </label>
                 );
               })}
             </div>
-            {submitted && (
-              <p className="mt-3 text-sm text-ink-soft">{q.explanation}</p>
+            {(submitted || revealed[q.id]) && (
+              <p className="lesson-quiz-explanation">{q.explanation}</p>
             )}
           </fieldset>
         ))}
       </div>
-      {!submitted ? (
+
+      {submitted ? (
+        <p className="lesson-quiz-score" role="status">
+          Score {Math.round(score * 100)}% · {Math.round(score * questions.length)}/
+          {questions.length}
+          {score === 1 ? " · Lesson marked complete" : ""}
+        </p>
+      ) : (
         <button
           type="button"
           onClick={onSubmit}
-          disabled={Object.keys(answers).length < questions.length}
-          className="primary-btn mt-10 disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!allAnswered}
+          className="primary-btn lesson-quiz-submit"
         >
           Submit quiz
         </button>
-      ) : (
-        <p className="mt-10 font-mono text-sm text-ink">
-          Score {Math.round(score * 100)}% · {Math.round(score * questions.length)}/
-          {questions.length}
-        </p>
       )}
     </section>
   );

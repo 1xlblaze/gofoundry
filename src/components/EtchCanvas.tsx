@@ -84,7 +84,12 @@ export function EtchCanvas({
       lastSerializedRef.current = serialized;
       elementCountRef.current = next.elements.length;
 
-      if (storageKey) saveStoredEtch(storageKey, next);
+      if (storageKey) {
+        saveStoredEtch(storageKey, next);
+        window.dispatchEvent(
+          new CustomEvent("gofoundry-etch-save", { detail: { key: storageKey } }),
+        );
+      }
       onChangeRef.current?.(next);
     },
     [storageKey],

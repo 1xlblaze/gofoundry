@@ -41,6 +41,23 @@ export function loadStoredEtch(key: string): EtchScene | null {
 export function saveStoredEtch(key: string, scene: EtchScene) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(key, serializeEtchScene(scene));
+  try {
+    window.localStorage.setItem(`${key}-saved-at`, String(Date.now()));
+  } catch {
+    // localStorage may be blocked
+  }
+}
+
+export function etchSavedAt(key: string): number | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(`${key}-saved-at`);
+    if (!raw) return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : null;
+  } catch {
+    return null;
+  }
 }
 
 export const ETCH_PRESET_HINTS: Record<EtchPreset, string[]> = {

@@ -3,6 +3,7 @@ import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { SiteHeader } from "@/components/SiteHeader";
+import { ThemeScript } from "@/components/ThemeScript";
 import "./globals.css";
 
 const display = Outfit({
@@ -37,9 +38,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="ambient-host flex min-h-full flex-col">
+        <ThemeScript />
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>

@@ -20,7 +20,11 @@ export function LessonBlocks({
         switch (block.type) {
           case "prose":
             return (
-              <div key={i} id={sectionId} className="panel prose-block lesson-section scroll-mt-28">
+              <div
+                key={i}
+                id={sectionId}
+                className="panel prose-block lesson-section lesson-zone lesson-zone-read scroll-mt-28"
+              >
                 {block.title && <h3>{block.title}</h3>}
                 {block.body.split("\n\n").map((p, j) => (
                   <p key={j}>{p}</p>
@@ -29,7 +33,7 @@ export function LessonBlocks({
             );
           case "code":
             return (
-              <div key={i} id={sectionId} className="lesson-section scroll-mt-28">
+              <div key={i} id={sectionId} className="lesson-section lesson-zone lesson-zone-code scroll-mt-28">
                 <CodeBlock
                   title={block.title}
                   language={block.language}
@@ -41,7 +45,11 @@ export function LessonBlocks({
           case "callout": {
             const tone = block.tone === "warn" ? "warn" : block.tone === "tip" ? "tip" : "info";
             return (
-              <aside key={i} id={sectionId} className={`callout ${tone} lesson-section scroll-mt-28`}>
+              <aside
+                key={i}
+                id={sectionId}
+                className={`callout ${tone} lesson-section lesson-zone lesson-zone-callout scroll-mt-28`}
+              >
                 <div className="callout-title">{block.tone}</div>
                 <p style={{ margin: 0 }}>{block.body}</p>
               </aside>
@@ -49,7 +57,7 @@ export function LessonBlocks({
           }
           case "complexity":
             return (
-              <div key={i} id={sectionId} className="complexity-grid lesson-section scroll-mt-28">
+              <div key={i} id={sectionId} className="complexity-grid lesson-section lesson-zone lesson-zone-callout scroll-mt-28">
                 <div className="complexity-item">
                   <span>Time</span>
                   <strong>{block.time}</strong>
@@ -131,7 +139,7 @@ export function LessonBlocks({
             );
           case "think":
             return (
-              <section key={i} id={sectionId} className="think-panel lesson-section scroll-mt-28">
+              <section key={i} id={sectionId} className="think-panel lesson-section lesson-zone lesson-zone-think scroll-mt-28">
                 <h3>{block.title ?? "How to think"}</h3>
                 <div style={{ display: "grid", gap: "1rem" }}>
                   <div>
@@ -174,7 +182,7 @@ export function LessonBlocks({
             );
           case "answer":
             return (
-              <section key={i} id={sectionId} className="answer-panel lesson-section scroll-mt-28">
+              <section key={i} id={sectionId} className="answer-panel lesson-section lesson-zone lesson-zone-practice scroll-mt-28">
                 <h3>{block.title ?? "How to answer"}</h3>
                 <p className="answer-opening">“{block.opening}”</p>
                 <ol>
@@ -201,12 +209,16 @@ export function LessonBlocks({
             );
           case "diagram":
             return (
-              <figure key={i} id={sectionId} className="diagram-callout panel lesson-section scroll-mt-28">
+              <figure
+                key={i}
+                id={sectionId}
+                className="diagram-callout panel lesson-section lesson-zone lesson-zone-diagram scroll-mt-28"
+              >
                 <div className="diagram-callout-head">
                   <span className="diagram-callout-badge">Visual anchor</span>
                   {block.title && <h3>{block.title}</h3>}
                 </div>
-                <Diagram kind={block.kind} caption={block.caption} />
+                <Diagram kind={block.kind} title={block.title} caption={block.caption} />
                 {block.caption && <figcaption>{block.caption}</figcaption>}
               </figure>
             );
