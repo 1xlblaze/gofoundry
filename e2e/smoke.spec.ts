@@ -88,7 +88,7 @@ test.describe("Interactive workspaces", () => {
       timeout: 15_000,
     });
     await expect(page.getByText(/Draw the movement before the code/i)).toBeVisible();
-    await expect(page.getByRole("link", { name: /Etch/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Etch Architecture sketch/i })).toBeVisible();
   });
 
   test("LLD problem workspace navigates HEAT stages", async ({ page }) => {

@@ -173,10 +173,10 @@ export const learningLoopNodes: MotionDiagramNode[] = [
 ];
 
 export const heatFlowNodes: MotionDiagramNode[] = [
-  { id: "h", label: "Hear", sub: "Constraints & Go costs", href: "/heat", accent: "#0f766e" },
-  { id: "e", label: "Etch", sub: "Architecture sketch", href: "/heat", accent: "#2563eb" },
-  { id: "a", label: "Anchor", sub: "Pattern + complexity", href: "/heat", accent: "#d97706" },
-  { id: "t", label: "Temper", sub: "Idiomatic Go + proof", href: "/heat", accent: "#ea580c" },
+  { id: "h", label: "Hear", sub: "Constraints & Go costs", href: "/heat#heat-constraints", accent: "#0f766e" },
+  { id: "e", label: "Etch", sub: "Architecture sketch", href: "/heat#heat-diagram", accent: "#2563eb" },
+  { id: "a", label: "Anchor", sub: "Pattern + complexity", href: "/heat#heat-pattern", accent: "#d97706" },
+  { id: "t", label: "Temper", sub: "Idiomatic Go + proof", href: "/heat#heat-implementation", accent: "#ea580c" },
 ];
 
 export const diagnosticGateNodes: MotionDiagramNode[] = [
