@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -283,6 +283,18 @@ export function GoWorkbench({
   const [metrics, setMetrics] = useState<AllocationMetrics | null>(null);
   const [hasRun, setHasRun] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = window.sessionStorage.getItem("gofoundry-playground-code");
+      if (stored?.trim()) {
+        setRunSource(stored);
+        window.sessionStorage.removeItem("gofoundry-playground-code");
+      }
+    } catch {
+      // sessionStorage may be blocked
+    }
+  }, []);
   const code = mode === "run" ? runSource : measureCode;
 
   function resetResult() {

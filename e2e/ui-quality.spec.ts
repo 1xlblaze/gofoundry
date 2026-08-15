@@ -137,6 +137,21 @@ test.describe("UI quality — lesson content", () => {
     const after = await page.locator("html").getAttribute("data-theme");
     expect(before).not.toEqual(after);
   });
+
+  test("inline workspace drawer opens from Run in Lab", async ({ page }) => {
+    await page.goto("/lesson/lru-cache-lld");
+    await page.getByRole("button", { name: /Run in Lab/i }).first().click();
+    await expect(page.locator(".lesson-workspace-drawer.is-open")).toBeVisible();
+    await expect(page.getByRole("dialog", { name: /Inline learning workspace/i })).toBeVisible();
+  });
+
+  test("diagram step-through controls appear on LRU lesson", async ({ page }) => {
+    await page.goto("/lesson/lru-cache-lld");
+    const stepper = page.getByRole("group", { name: "lru-cache-structure walkthrough" });
+    await expect(stepper).toBeVisible();
+    await stepper.getByRole("button", { name: "Next step" }).click();
+    await expect(stepper.locator(".diagram-stepper-text")).toContainText(/map/i);
+  });
 });
 
 test.describe("UI quality — auth session health", () => {

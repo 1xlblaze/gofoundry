@@ -2,20 +2,24 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { WorkspaceAction } from "@/components/LessonWorkspace";
 
 export function CodeBlock({
   title,
   language,
   code,
   labHref,
+  problemId,
 }: {
   title?: string;
   language: string;
   code: string;
   labHref?: string;
+  problemId?: string;
 }) {
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(true);
+  const [showLineNumbers, setShowLineNumbers] = useState(true);
   const lines = useMemo(() => code.split("\n"), [code]);
   const collapsible = lines.length > 22;
 
@@ -29,6 +33,14 @@ export function CodeBlock({
     }
   }
 
+  function openInLabPage() {
+    try {
+      window.sessionStorage.setItem("gofoundry-playground-code", code);
+    } catch {
+      // sessionStorage may be blocked
+    }
+  }
+
   return (
     <div className="code-wrap" role="region" aria-label={title ?? "Code example"}>
       <div className="code-toolbar">
@@ -36,11 +48,37 @@ export function CodeBlock({
           {title ?? "Example"} · {language}
         </span>
         <div className="code-toolbar-actions">
-          {labHref ? (
-            <Link href={labHref} className="code-run-btn">
+          {labHref || problemId ? (
+            <WorkspaceAction
+              action="lab"
+              problemId={problemId}
+              code={code}
+              fullPageHref={labHref}
+              className="code-run-btn"
+            >
               Run in Lab
-            </Link>
-          ) : null}
+            </WorkspaceAction>
+          ) : (
+            <WorkspaceAction action="playground" code={code} className="code-run-btn">
+              Run snippet
+            </WorkspaceAction>
+          )}
+          <Link
+            href="/lab"
+            className="copy-btn"
+            onClick={openInLabPage}
+            title="Open in full Lab editor"
+          >
+            Open in Lab
+          </Link>
+          <button
+            type="button"
+            className="copy-btn"
+            onClick={() => setShowLineNumbers((value) => !value)}
+            aria-pressed={showLineNumbers}
+          >
+            {showLineNumbers ? "Hide lines" : "Show lines"}
+          </button>
           {collapsible ? (
             <button
               type="button"
@@ -57,17 +95,22 @@ export function CodeBlock({
             onClick={onCopy}
             aria-label={copied ? "Copied to clipboard" : "Copy code to clipboard"}
           >
-            {copied ? "Copied" : "Copy"}
+            {copied ? "Copied ✓" : "Copy"}
           </button>
         </div>
       </div>
-      <pre className={expanded ? "" : "code-collapsed"} tabIndex={0}>
+      <pre
+        className={`${expanded ? "" : "code-collapsed"}${showLineNumbers ? "" : " code-no-lines"}`}
+        tabIndex={0}
+      >
         <code>
           {lines.map((line, index) => (
             <span key={index} className="code-line">
-              <span className="code-ln" aria-hidden="true">
-                {index + 1}
-              </span>
+              {showLineNumbers ? (
+                <span className="code-ln" aria-hidden="true">
+                  {index + 1}
+                </span>
+              ) : null}
               <span className="code-text">{line || " "}</span>
               {"\n"}
             </span>

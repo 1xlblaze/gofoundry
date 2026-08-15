@@ -8068,3 +8068,248 @@ a.motion-diagram-node:hover {
 [data-theme="dark"] body:has(#lesson-article) .site-header {
   background: rgba(11, 18, 32, 0.96);
 }
+
+/* Diagram palette */
+:root {
+  --diagram-bg: #ecf5f3;
+  --diagram-ink: #0c1a1f;
+  --diagram-signal: #0f766e;
+  --diagram-foam: #f4fbf9;
+  --diagram-soft: #5b6b73;
+  --diagram-ember: #c2410c;
+  --diagram-line: #94a3a8;
+  --diagram-highlight: #ccfbf1;
+  --diagram-warn: #ffedd5;
+  --diagram-muted: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  --diagram-bg: #1e293b;
+  --diagram-ink: #f1f5f9;
+  --diagram-signal: #2dd4bf;
+  --diagram-foam: #0f172a;
+  --diagram-soft: #94a3b8;
+  --diagram-ember: #fb923c;
+  --diagram-line: #475569;
+  --diagram-highlight: rgba(45, 212, 191, 0.22);
+  --diagram-warn: rgba(251, 146, 60, 0.22);
+  --diagram-muted: #334155;
+}
+
+/* Inline lesson workspace drawer */
+.lesson-workspace-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(3px);
+}
+
+.lesson-workspace-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 60;
+  width: min(100%, 34rem);
+  height: 100%;
+  max-height: 100dvh;
+  transform: translateX(104%);
+  transition: transform 0.32s var(--ease-out);
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--line);
+  box-shadow: -12px 0 40px rgba(15, 23, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-workspace-drawer.is-open {
+  transform: translateX(0);
+}
+
+.lesson-workspace-drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.lesson-workspace-drawer-title {
+  margin: 0.2rem 0 0;
+  font-size: 1.1rem;
+  font-family: var(--font-display), sans-serif;
+}
+
+.lesson-workspace-drawer-body {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.lesson-workspace-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.lesson-workspace-full-link {
+  margin-top: 0.75rem;
+}
+
+body.lesson-workspace-open {
+  overflow: hidden;
+}
+
+.inline-lab-runner {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.inline-lab-runner-head h3 {
+  margin: 0.2rem 0 0.25rem;
+  font-size: 1.05rem;
+}
+
+.inline-lab-runner-sub {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.inline-lab-editor {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.inline-lab-runner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.inline-lab-output pre {
+  margin: 0.35rem 0 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-height: 12rem;
+  overflow: auto;
+}
+
+/* Split-screen etch */
+.lesson-etch-split-slot {
+  display: none;
+}
+
+.lesson-etch-pad-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+body.lesson-etch-split-active .lesson-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1100px) {
+  body.lesson-etch-split-active .lesson-layout {
+    grid-template-columns: 220px minmax(0, 1fr) minmax(280px, 34vw);
+    align-items: start;
+  }
+
+  body.lesson-etch-split-active .lesson-etch-split-slot {
+    display: block;
+    position: sticky;
+    top: calc(var(--header-h) + 0.75rem);
+    min-height: 28rem;
+    padding: 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    box-shadow: var(--shadow);
+  }
+}
+
+/* Diagram step-through */
+.diagram-interactive {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.diagram-stepper {
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--brand) 5%, var(--bg-elevated));
+}
+
+.diagram-stepper-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.diagram-stepper-index {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.diagram-stepper-dots {
+  display: flex;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+}
+
+.diagram-stepper-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-muted);
+  cursor: pointer;
+  padding: 0;
+}
+
+.diagram-stepper-dot.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.diagram-stepper-dot.is-done {
+  background: color-mix(in srgb, var(--brand) 45%, white);
+}
+
+.diagram-stepper-text {
+  margin: 0.65rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.diagram-stepper-btn {
+  font-size: 0.78rem !important;
+  padding: 0.35rem 0.65rem !important;
+}
+
+.code-no-lines .code-ln {
+  display: none;
+}
+
+.code-no-lines .code-line {
+  grid-template-columns: minmax(0, 1fr);
+}

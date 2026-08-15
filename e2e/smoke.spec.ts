@@ -59,7 +59,7 @@ test.describe("Track and lesson content", () => {
     const lesson = allLessons.find((item) => item.track === "hld");
     test.skip(!lesson, "No HLD lesson found");
     await page.goto(`/lesson/${lesson!.slug}`);
-    await expect(page.getByRole("button", { name: /Open sketch pad/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Split-screen sketch/i })).toBeVisible();
   });
 
   test("HLD track cards are fully visible after motion reveal", async ({ page }) => {

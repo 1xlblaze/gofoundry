@@ -1,7 +1,9 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import type { DiagramKind } from "@/content/types";
+import { DiagramStepper } from "@/components/DiagramStepper";
+import { diagramSteps } from "@/lib/diagram-steps";
 
 type Props = {
   kind: DiagramKind;
@@ -9,12 +11,51 @@ type Props = {
   caption?: string;
 };
 
-const ink = "#0c1a1f";
-const signal = "#0f766e";
-const foam = "#f4fbf9";
-const soft = "#5b6b73";
-const ember = "#c2410c";
-const line = "#94a3a8";
+const ink = "var(--diagram-ink)";
+const signal = "var(--diagram-signal)";
+const foam = "var(--diagram-foam)";
+const soft = "var(--diagram-soft)";
+const ember = "var(--diagram-ember)";
+const line = "var(--diagram-line)";
+const diagramBg = "var(--diagram-bg)";
+const diagramHighlight = "var(--diagram-highlight)";
+const diagramWarn = "var(--diagram-warn)";
+const diagramMuted = "var(--diagram-muted)";
+
+const DiagramStepContext = createContext(0);
+
+function useDiagramStep() {
+  return useContext(DiagramStepContext);
+}
+
+function DiagramInteractiveShell({
+  kind,
+  children,
+}: {
+  kind: DiagramKind;
+  children: ReactNode;
+}) {
+  const steps = diagramSteps[kind];
+  const [step, setStep] = useState(0);
+
+  if (!steps?.length) {
+    return <>{children}</>;
+  }
+
+  return (
+    <DiagramStepContext.Provider value={step}>
+      <div className="diagram-interactive">
+        {children}
+        <DiagramStepper
+          steps={steps}
+          step={step}
+          onStep={setStep}
+          title={`${kind} walkthrough`}
+        />
+      </div>
+    </DiagramStepContext.Provider>
+  );
+}
 
 function Frame({
   title,
@@ -163,7 +204,7 @@ function HeatCycle() {
   ];
   return (
     <Frame title="Foundry HEAT" caption="Unique GoFoundry operating system">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       {steps.map((s, i) => {
         const x = 36 + i * 150;
         return (
@@ -173,7 +214,7 @@ function HeatCycle() {
               x={x + 50}
               y={118}
               textAnchor="middle"
-              fill="#f4fbf9"
+              fill={foam}
               fontSize="28"
               fontFamily="var(--font-display), sans-serif"
               fontWeight="800"
@@ -222,7 +263,7 @@ function HeatCycle() {
 function TwoPointers() {
   return (
     <Frame title="Two pointers" caption="Same array · left / right converge">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       {[10, 20, 30, 40, 50, 60].map((v, i) => (
         <g key={v}>
           <rect
@@ -265,7 +306,7 @@ function TwoPointers() {
 function SlidingWindow() {
   return (
     <Frame title="Sliding window" caption="Expand right · shrink left while invalid">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       {"ABCDEB".split("").map((c, i) => (
         <g key={i}>
           <rect
@@ -274,7 +315,7 @@ function SlidingWindow() {
             width="70"
             height="70"
             rx="8"
-            fill={i >= 1 && i <= 4 ? "#ccfbf1" : foam}
+            fill={i >= 1 && i <= 4 ? diagramHighlight : foam}
             stroke={i >= 1 && i <= 4 ? signal : ink}
             strokeWidth="2"
           />
@@ -311,7 +352,7 @@ function SlidingWindow() {
 function LinkedListReverse() {
   return (
     <Frame title="Reverse list" caption="prev · curr · next rewiring">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       {[
         { x: 80, l: "1" },
         { x: 230, l: "2" },
@@ -370,7 +411,7 @@ function LinkedListReverse() {
 function BfsLevels() {
   return (
     <Frame title="BFS layers" caption="Queue owns the frontier">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       <NodeBox x={270} y={30} w={100} h={48} label="A" sub="level 0" />
       <NodeBox x={140} y={120} w={100} h={48} label="B" sub="level 1" />
       <NodeBox x={400} y={120} w={100} h={48} label="C" sub="level 1" />
@@ -389,7 +430,7 @@ function BfsLevels() {
 function TreeDfs() {
   return (
     <Frame title="DFS recursion tree" caption="Pre / in / post = when you visit">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       <NodeBox x={270} y={24} w={100} h={44} label="root" />
       <NodeBox x={120} y={120} w={100} h={44} label="left" />
       <NodeBox x={420} y={120} w={100} h={44} label="right" />
@@ -415,8 +456,8 @@ function TreeDfs() {
 function HeapShape() {
   return (
     <Frame title="Binary heap" caption="Array layout · parent i → 2i+1, 2i+2">
-      <rect width="640" height="320" fill="#ecf5f3" />
-      <NodeBox x={280} y={20} w={80} h={40} label="0" fill="#ccfbf1" />
+      <rect width="640" height="320" fill={diagramBg} />
+      <NodeBox x={280} y={20} w={80} h={40} label="0" fill={diagramHighlight} />
       <NodeBox x={160} y={100} w={80} h={40} label="1" />
       <NodeBox x={400} y={100} w={80} h={40} label="2" />
       <NodeBox x={90} y={190} w={70} h={36} label="3" />
@@ -439,9 +480,9 @@ function HeapShape() {
 function TokenBucket() {
   return (
     <Frame title="Token bucket" caption="Refill rate · capacity · Allow()">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       <NodeBox x={60} y={100} w={140} h={70} label="Refill" sub="r tokens/sec" />
-      <NodeBox x={250} y={80} w={160} h={110} label="Bucket" sub="tokens ≤ capacity" fill="#ccfbf1" />
+      <NodeBox x={250} y={80} w={160} h={110} label="Bucket" sub="tokens ≤ capacity" fill={diagramHighlight} />
       <NodeBox x={460} y={100} w={140} h={70} label="Request" sub="costs 1 token" />
       <Arrow x1={200} y1={135} x2={245} y2={135} />
       <Arrow x1={410} y1={135} x2={455} y2={135} />
@@ -455,9 +496,9 @@ function TokenBucket() {
 function Outbox() {
   return (
     <Frame title="Transactional outbox" caption="DB txn then async publish">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       <NodeBox x={40} y={110} w={120} h={60} label="API" />
-      <NodeBox x={200} y={80} w={160} h={120} label="DB txn" sub="row + outbox" fill="#ccfbf1" />
+      <NodeBox x={200} y={80} w={160} h={120} label="DB txn" sub="row + outbox" fill={diagramHighlight} />
       <NodeBox x={400} y={40} w={180} h={60} label="Publisher" sub="relay worker" />
       <NodeBox x={400} y={160} w={180} h={60} label="Broker" sub="Kafka / SQS" />
       <Arrow x1={160} y1={140} x2={195} y2={140} />
@@ -470,9 +511,9 @@ function Outbox() {
 function GpmScheduler() {
   return (
     <Frame title="G · M · P" caption="Go scheduler triad">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       <NodeBox x={40} y={120} w={100} h={70} label="G" sub="goroutine" />
-      <NodeBox x={200} y={120} w={100} h={70} label="P" sub="logical proc" fill="#ccfbf1" />
+      <NodeBox x={200} y={120} w={100} h={70} label="P" sub="logical proc" fill={diagramHighlight} />
       <NodeBox x={360} y={120} w={100} h={70} label="M" sub="OS thread" />
       <NodeBox x={500} y={120} w={110} h={70} label="CPU" sub="hardware" />
       <Arrow x1={140} y1={155} x2={195} y2={155} />
@@ -488,10 +529,10 @@ function GpmScheduler() {
 function HashMapBuckets() {
   return (
     <Frame title="Map buckets" caption="hash → bucket · overflow chain">
-      <rect width="640" height="320" fill="#ecf5f3" />
+      <rect width="640" height="320" fill={diagramBg} />
       <NodeBox x={40} y={120} w={110} h={60} label="key" sub="hash()" />
       <NodeBox x={200} y={40} w={120} h={50} label="bkt 0" />
-      <NodeBox x={200} y={120} w={120} h={50} label="bkt 1" fill="#ccfbf1" />
+      <NodeBox x={200} y={120} w={120} h={50} label="bkt 1" fill={diagramHighlight} />
       <NodeBox x={200} y={200} w={120} h={50} label="bkt 2" />
       <NodeBox x={380} y={120} w={120} h={50} label="overflow" sub="chain" />
       <NodeBox x={540} y={120} w={70} h={50} label="…" />
@@ -509,7 +550,7 @@ function UrlShortenerArch() {
       caption="Solid arrows = read path · dashed = write path"
       viewBox="0 0 800 420"
     >
-      <rect width="800" height="420" fill="#ecf5f3" />
+      <rect width="800" height="420" fill={diagramBg} />
       <text x="40" y="36" fill={signal} fontSize="11" fontWeight="700" fontFamily="var(--font-body), sans-serif">
         READ PATH (redirect)
       </text>
@@ -517,9 +558,9 @@ function UrlShortenerArch() {
         WRITE PATH (shorten)
       </text>
       <NodeBox x={30} y={52} w={90} h={44} label="User" />
-      <NodeBox x={140} y={52} w={100} h={44} label="CDN" sub="edge cache" fill="#ccfbf1" />
+      <NodeBox x={140} y={52} w={100} h={44} label="CDN" sub="edge cache" fill={diagramHighlight} />
       <NodeBox x={270} y={52} w={110} h={44} label="Redirect" sub="svc" />
-      <NodeBox x={420} y={52} w={100} h={44} label="Redis" sub="hot codes" fill="#ccfbf1" />
+      <NodeBox x={420} y={52} w={100} h={44} label="Redis" sub="hot codes" fill={diagramHighlight} />
       <NodeBox x={540} y={52} w={120} h={44} label="DB shard" sub="by code hash" />
       <NodeBox x={690} y={52} w={90} h={44} label="Long URL" sub="302/301" />
       <Arrow x1={120} y1={74} x2={135} y2={74} />
@@ -530,7 +571,7 @@ function UrlShortenerArch() {
       <NodeBox x={30} y={248} w={90} h={44} label="Client" />
       <NodeBox x={140} y={248} w={100} h={44} label="API LB" />
       <NodeBox x={270} y={248} w={110} h={44} label="API svc" sub="POST" />
-      <NodeBox x={420} y={248} w={100} h={44} label="ID svc" sub="Snowflake" fill="#ccfbf1" />
+      <NodeBox x={420} y={248} w={100} h={44} label="ID svc" sub="Snowflake" fill={diagramHighlight} />
       <NodeBox x={540} y={248} w={120} h={44} label="DB shard" sub="insert" />
       <NodeBox x={30} y={330} w={130} h={44} label="Analytics" sub="queue → DW" />
       <path d="M 325 292 L 355 292 L 355 352 L 100 352" fill="none" stroke={ember} strokeWidth="2" strokeDasharray="6 5" />
@@ -548,12 +589,12 @@ function UrlShortenerArch() {
 function ChatArch() {
   return (
     <Frame title="Chat / messaging — HLD" caption="Gateway holds sockets · pub/sub bridges servers" viewBox="0 0 800 380">
-      <rect width="800" height="380" fill="#ecf5f3" />
+      <rect width="800" height="380" fill={diagramBg} />
       <NodeBox x={30} y={40} w={100} h={44} label="Client A" />
       <NodeBox x={30} y={120} w={100} h={44} label="Client B" />
-      <NodeBox x={180} y={70} w={120} h={60} label="WS Gateway" sub="sticky / registry" fill="#ccfbf1" />
+      <NodeBox x={180} y={70} w={120} h={60} label="WS Gateway" sub="sticky / registry" fill={diagramHighlight} />
       <NodeBox x={360} y={40} w={120} h={50} label="Pub/Sub" sub="Redis/NATS" />
-      <NodeBox x={360} y={120} w={120} h={50} label="Msg svc" sub="persist" fill="#ccfbf1" />
+      <NodeBox x={360} y={120} w={120} h={50} label="Msg svc" sub="persist" fill={diagramHighlight} />
       <NodeBox x={540} y={80} w={120} h={50} label="Store" sub="messages" />
       <NodeBox x={540} y={180} w={120} h={50} label="Push" sub="offline" />
       <NodeBox x={180} y={220} w={120} h={50} label="Presence" sub="online set" />
@@ -573,17 +614,17 @@ function ChatArch() {
 function VideoArch() {
   return (
     <Frame title="Video streaming — HLD" caption="Upload → transcode → CDN · watch path is edge-heavy" viewBox="0 0 800 400">
-      <rect width="800" height="400" fill="#ecf5f3" />
+      <rect width="800" height="400" fill={diagramBg} />
       <text x="40" y="32" fill={ember} fontSize="11" fontWeight="700">UPLOAD</text>
       <text x="40" y="210" fill={signal} fontSize="11" fontWeight="700">WATCH</text>
       <NodeBox x={30} y={48} w={90} h={40} label="Creator" />
       <NodeBox x={140} y={48} w={100} h={40} label="Upload" />
-      <NodeBox x={270} y={48} w={110} h={40} label="Object store" sub="raw" fill="#ccfbf1" />
+      <NodeBox x={270} y={48} w={110} h={40} label="Object store" sub="raw" fill={diagramHighlight} />
       <NodeBox x={410} y={48} w={110} h={40} label="Queue" />
       <NodeBox x={550} y={48} w={120} h={40} label="Transcoder" sub="ABR ladder" />
-      <NodeBox x={690} y={48} w={90} h={40} label="Origin" sub="HLS" fill="#ccfbf1" />
+      <NodeBox x={690} y={48} w={90} h={40} label="Origin" sub="HLS" fill={diagramHighlight} />
       <NodeBox x={30} y={230} w={90} h={40} label="Viewer" />
-      <NodeBox x={150} y={230} w={120} h={40} label="CDN edge" fill="#ccfbf1" />
+      <NodeBox x={150} y={230} w={120} h={40} label="CDN edge" fill={diagramHighlight} />
       <NodeBox x={310} y={230} w={120} h={40} label="Player" sub="ABR switch" />
       <Arrow x1={120} y1={68} x2={135} y2={68} color={ember} />
       <Arrow x1={240} y1={68} x2={265} y2={68} color={ember} />
@@ -603,12 +644,12 @@ function VideoArch() {
 function RideArch() {
   return (
     <Frame title="Ride-sharing dispatch — HLD" caption="Location stream → geo index → atomic match" viewBox="0 0 800 380">
-      <rect width="800" height="380" fill="#ecf5f3" />
+      <rect width="800" height="380" fill={diagramBg} />
       <NodeBox x={30} y={60} w={100} h={44} label="Driver" sub="GPS stream" />
       <NodeBox x={30} y={160} w={100} h={44} label="Rider" />
-      <NodeBox x={180} y={100} w={120} h={50} label="Location" sub="ingest" fill="#ccfbf1" />
+      <NodeBox x={180} y={100} w={120} h={50} label="Location" sub="ingest" fill={diagramHighlight} />
       <NodeBox x={350} y={60} w={130} h={50} label="Geo index" sub="Redis GEO" />
-      <NodeBox x={350} y={160} w={130} h={50} label="Matcher" sub="atomic claim" fill="#ccfbf1" />
+      <NodeBox x={350} y={160} w={130} h={50} label="Matcher" sub="atomic claim" fill={diagramHighlight} />
       <NodeBox x={540} y={110} w={120} h={50} label="Trip svc" sub="state machine" />
       <NodeBox x={690} y={110} w={90} h={50} label="Pricing" sub="surge" />
       <Arrow x1={130} y1={82} x2={175} y2={115} />
@@ -628,10 +669,10 @@ function RideArch() {
 function PaymentArch() {
   return (
     <Frame title="Payments — HLD" caption="Idempotency key · ledger txn · async settlement" viewBox="0 0 800 380">
-      <rect width="800" height="380" fill="#ecf5f3" />
+      <rect width="800" height="380" fill={diagramBg} />
       <NodeBox x={30} y={100} w={100} h={50} label="Client" sub="Idem-Key" />
       <NodeBox x={160} y={100} w={110} h={50} label="API" />
-      <NodeBox x={300} y={70} w={150} h={110} label="DB txn" sub="ledger + outbox" fill="#ccfbf1" />
+      <NodeBox x={300} y={70} w={150} h={110} label="DB txn" sub="ledger + outbox" fill={diagramHighlight} />
       <NodeBox x={500} y={40} w={130} h={50} label="Worker" />
       <NodeBox x={500} y={140} w={130} h={50} label="Processor" sub="Stripe/etc" />
       <NodeBox x={670} y={90} w={100} h={50} label="Webhook" />
@@ -651,11 +692,11 @@ function PaymentArch() {
 function FeedArch() {
   return (
     <Frame title="News feed — HLD" caption="Hybrid fan-out: push for normals · pull for celebrities" viewBox="0 0 800 380">
-      <rect width="800" height="380" fill="#ecf5f3" />
+      <rect width="800" height="380" fill={diagramBg} />
       <NodeBox x={30} y={120} w={100} h={50} label="Poster" />
       <NodeBox x={160} y={120} w={110} h={50} label="Post svc" />
-      <NodeBox x={310} y={40} w={140} h={50} label="Fan-out worker" sub="small graphs" fill="#ccfbf1" />
-      <NodeBox x={310} y={200} w={140} h={50} label="Pull path" sub="celebrity" fill="#ccfbf1" />
+      <NodeBox x={310} y={40} w={140} h={50} label="Fan-out worker" sub="small graphs" fill={diagramHighlight} />
+      <NodeBox x={310} y={200} w={140} h={50} label="Pull path" sub="celebrity" fill={diagramHighlight} />
       <NodeBox x={500} y={40} w={130} h={50} label="Feed store" sub="timelines" />
       <NodeBox x={500} y={200} w={130} h={50} label="Content" sub="posts" />
       <NodeBox x={670} y={120} w={100} h={50} label="Reader" />
@@ -674,84 +715,90 @@ function FeedArch() {
 }
 
 function LruCacheStructure() {
+  const step = useDiagramStep();
+
   return (
     <Frame
       title="LRU cache structure"
       caption="Map[key] → node pointer · list order = recency"
       viewBox="0 0 720 340"
     >
-      <rect width="720" height="340" fill="#ecf5f3" />
-      <text x="36" y="36" fill={signal} fontSize="11" fontWeight="700">
-        DOUBLY LINKED LIST (MRU → LRU)
-      </text>
-      <rect x="36" y="52" width="56" height="44" rx="8" fill="#e2e8f0" stroke={line} strokeWidth="2" />
-      <text x="64" y="79" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
-        root
-      </text>
-      {[
-        { x: 120, key: "A", mru: true },
-        { x: 220, key: "C", mru: false },
-        { x: 320, key: "B", mru: false },
-        { x: 420, key: "D", lru: true },
-      ].map((node, i, arr) => (
-        <g key={node.key}>
-          <rect
-            x={node.x}
-            y={52}
-            width="70"
-            height="44"
-            rx="8"
-            fill={node.mru ? "#ccfbf1" : node.lru ? "#ffedd5" : foam}
-            stroke={node.mru ? signal : node.lru ? ember : ink}
-            strokeWidth="2"
-          />
-          <text
-            x={node.x + 35}
-            y={79}
-            textAnchor="middle"
-            fill={ink}
-            fontSize="14"
-            fontFamily="var(--font-mono), monospace"
-            fontWeight="700"
-          >
-            {node.key}
-          </text>
-          {i < arr.length - 1 && (
-            <Arrow x1={node.x + 72} y1={74} x2={arr[i + 1].x - 4} y2={74} />
-          )}
-        </g>
-      ))}
-      <rect x="520" y="52" width="56" height="44" rx="8" fill="#e2e8f0" stroke={line} strokeWidth="2" />
-      <text x="548" y="79" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
-        root
-      </text>
-      <Arrow x1={492} y1={74} x2={516} y2={74} />
-      <text x="120" y="118" fill={signal} fontSize="11" fontWeight="700">
-        MRU
-      </text>
-      <text x="448" y="118" fill={ember} fontSize="11" fontWeight="700">
-        LRU
-      </text>
-      <text x="36" y="168" fill={signal} fontSize="11" fontWeight="700">
-        MAP (O(1) LOOKUP)
-      </text>
-      {[
-        { y: 188, key: "A", ptr: "→ node A" },
-        { y: 228, key: "B", ptr: "→ node B" },
-        { y: 268, key: "C", ptr: "→ node C" },
-        { y: 308, key: "D", ptr: "→ node D" },
-      ].map((row) => (
-        <g key={row.key}>
-          <rect x={36} y={row.y} width="90" height="34" rx="8" fill={foam} stroke={ink} strokeWidth="2" />
-          <text x={81} y={row.y + 22} textAnchor="middle" fill={ink} fontSize="13" fontFamily="var(--font-mono), monospace">
-            {row.key}
-          </text>
-          <text x={140} y={row.y + 22} fill={soft} fontSize="12" fontFamily="var(--font-mono), monospace">
-            {row.ptr}
-          </text>
-        </g>
-      ))}
-      <text x="360" y="320" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+      <rect width="720" height="340" fill={diagramBg} />
+      <g opacity={step >= 0 ? 1 : 0.2}>
+        <text x="36" y="36" fill={signal} fontSize="11" fontWeight="700">
+          DOUBLY LINKED LIST (MRU → LRU)
+        </text>
+        <rect x="36" y="52" width="56" height="44" rx="8" fill={diagramMuted} stroke={line} strokeWidth="2" />
+        <text x="64" y="79" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+          root
+        </text>
+        {[
+          { x: 120, key: "A", mru: true },
+          { x: 220, key: "C", mru: false },
+          { x: 320, key: "B", mru: false },
+          { x: 420, key: "D", lru: true },
+        ].map((node, i, arr) => (
+          <g key={node.key}>
+            <rect
+              x={node.x}
+              y={52}
+              width="70"
+              height="44"
+              rx="8"
+              fill={node.mru ? diagramHighlight : node.lru ? diagramWarn : foam}
+              stroke={node.mru ? signal : node.lru ? ember : ink}
+              strokeWidth={step >= 2 && node.mru ? 3 : 2}
+            />
+            <text
+              x={node.x + 35}
+              y={79}
+              textAnchor="middle"
+              fill={ink}
+              fontSize="14"
+              fontFamily="var(--font-mono), monospace"
+              fontWeight="700"
+            >
+              {node.key}
+            </text>
+            {i < arr.length - 1 && (
+              <Arrow x1={node.x + 72} y1={74} x2={arr[i + 1].x - 4} y2={74} />
+            )}
+          </g>
+        ))}
+        <rect x="520" y="52" width="56" height="44" rx="8" fill={diagramMuted} stroke={line} strokeWidth="2" />
+        <text x="548" y="79" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+          root
+        </text>
+        <Arrow x1={492} y1={74} x2={516} y2={74} />
+        <text x="120" y="118" fill={signal} fontSize="11" fontWeight="700">
+          MRU
+        </text>
+        <text x="448" y="118" fill={ember} fontSize="11" fontWeight="700">
+          LRU
+        </text>
+      </g>
+      <g opacity={step >= 1 ? 1 : 0.15}>
+        <text x="36" y="168" fill={signal} fontSize="11" fontWeight="700">
+          MAP (O(1) LOOKUP)
+        </text>
+        {[
+          { y: 188, key: "A", ptr: "→ node A" },
+          { y: 228, key: "B", ptr: "→ node B" },
+          { y: 268, key: "C", ptr: "→ node C" },
+          { y: 308, key: "D", ptr: "→ node D" },
+        ].map((row) => (
+          <g key={row.key}>
+            <rect x={36} y={row.y} width="90" height="34" rx="8" fill={foam} stroke={ink} strokeWidth="2" />
+            <text x={81} y={row.y + 22} textAnchor="middle" fill={ink} fontSize="13" fontFamily="var(--font-mono), monospace">
+              {row.key}
+            </text>
+            <text x={140} y={row.y + 22} fill={soft} fontSize="12" fontFamily="var(--font-mono), monospace">
+              {row.ptr}
+            </text>
+          </g>
+        ))}
+      </g>
+      <text x="360" y="320" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace" opacity={step >= 2 ? 1 : 0.35}>
         Get hit: unlink node · pushFront · sizes must stay equal
       </text>
     </Frame>
@@ -759,38 +806,49 @@ function LruCacheStructure() {
 }
 
 function SingleflightTimeline() {
+  const step = useDiagramStep();
+
   return (
     <Frame
       title="Singleflight on cache miss"
       caption="One loader · many waiters · double-check after lock"
       viewBox="0 0 720 320"
     >
-      <rect width="720" height="320" fill="#ecf5f3" />
-      {["G1", "G2", "G3", "G4"].map((g, i) => (
-        <NodeBox key={g} x={36 + i * 110} y={36} w={80} h={40} label={g} sub="miss E" />
-      ))}
-      <Arrow x1={76} y1={76} x2={76} y2={108} />
-      <Arrow x1={186} y1={76} x2={186} y2={108} />
-      <Arrow x1={296} y1={76} x2={296} y2={108} />
-      <Arrow x1={406} y1={76} x2={406} y2={108} />
-      <NodeBox x={250} y={118} w={220} h={54} label="singleflight.Group" sub="Do(key)" fill="#ccfbf1" />
-      <text x="360" y="196" textAnchor="middle" fill={signal} fontSize="12" fontWeight="700">
-        G1 loads · G2–G4 await shared result
-      </text>
-      <NodeBox x={120} y={214} w={140} h={48} label="Loader" sub="fetch E" />
-      <NodeBox x={460} y={214} w={140} h={48} label="Cache.Put" sub="TTL + weight" fill="#ccfbf1" />
-      <Arrow x1={260} y1={238} x2={455} y2={238} />
-      <Arrow x1={186} y1={130} x2={248} y2={145} />
-      <Arrow x1={296} y1={130} x2={320} y2={145} />
-      <Arrow x1={406} y1={130} x2={420} y2={145} />
-      <text x="360" y="296" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace">
+      <rect width="720" height="320" fill={diagramBg} />
+      <g opacity={step >= 0 ? 1 : 0.2}>
+        {["G1", "G2", "G3", "G4"].map((g, i) => (
+          <NodeBox key={g} x={36 + i * 110} y={36} w={80} h={40} label={g} sub="miss E" />
+        ))}
+        <Arrow x1={76} y1={76} x2={76} y2={108} />
+        <Arrow x1={186} y1={76} x2={186} y2={108} />
+        <Arrow x1={296} y1={76} x2={296} y2={108} />
+        <Arrow x1={406} y1={76} x2={406} y2={108} />
+      </g>
+      <g opacity={step >= 1 ? 1 : 0.15}>
+        <NodeBox x={250} y={118} w={220} h={54} label="singleflight.Group" sub="Do(key)" fill={diagramHighlight} />
+        <text x="360" y="196" textAnchor="middle" fill={signal} fontSize="12" fontWeight="700">
+          G1 loads · G2–G4 await shared result
+        </text>
+        <Arrow x1={186} y1={130} x2={248} y2={145} />
+        <Arrow x1={296} y1={130} x2={320} y2={145} />
+        <Arrow x1={406} y1={130} x2={420} y2={145} />
+      </g>
+      <g opacity={step >= 2 ? 1 : 0.15}>
+        <NodeBox x={120} y={214} w={140} h={48} label="Loader" sub="fetch E" />
+        <Arrow x1={76} y1={76} x2={76} y2={108} />
+      </g>
+      <g opacity={step >= 3 ? 1 : 0.15}>
+        <NodeBox x={460} y={214} w={140} h={48} label="Cache.Put" sub="TTL + weight" fill={diagramHighlight} />
+        <Arrow x1={260} y1={238} x2={455} y2={238} />
+      </g>
+      <text x="360" y="296" textAnchor="middle" fill={soft} fontSize="11" fontFamily="var(--font-mono), monospace" opacity={step >= 3 ? 1 : 0.35}>
         leader double-checks cache before load · peers receive immutable copy
       </text>
     </Frame>
   );
 }
 
-export function Diagram({ kind, title, caption }: Props) {
+function renderDiagram(kind: DiagramKind, title?: string, caption?: string) {
   switch (kind) {
     case "heat-cycle":
       return <HeatCycle />;
@@ -833,4 +891,12 @@ export function Diagram({ kind, title, caption }: Props) {
     default:
       return null;
   }
+}
+
+export function Diagram({ kind, title, caption }: Props) {
+  return (
+    <DiagramInteractiveShell kind={kind}>
+      {renderDiagram(kind, title, caption)}
+    </DiagramInteractiveShell>
+  );
 }

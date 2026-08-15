@@ -16,6 +16,7 @@ import { LessonRoadmap } from "@/components/LessonRoadmap";
 import { LessonEtchPad } from "@/components/LessonEtchPad";
 import { LessonTableOfContents } from "@/components/LessonTableOfContents";
 import { LessonContentShell } from "@/components/LessonContentShell";
+import { LessonWorkspaceProvider } from "@/components/LessonWorkspace";
 import { LessonVisitTracker } from "@/components/LessonVisitTracker";
 import { sectionsFromBlocks } from "@/lib/lesson-sections";
 
@@ -43,7 +44,8 @@ export default async function LessonPage({ params }: Props) {
     lesson.slug === "lru-cache-lld" ? "/problems/lld-01-lru-cache" : undefined;
 
   return (
-    <article id="lesson-article" className="shell lesson-reading">
+    <LessonWorkspaceProvider lessonSlug={lesson.slug} trackId={track.id}>
+      <article id="lesson-article" className="shell lesson-reading">
       <LessonVisitTracker slug={lesson.slug} />
       <ReadingProgress articleId="lesson-article" />
       <div className="lesson-breadcrumb reveal">
@@ -167,7 +169,9 @@ export default async function LessonPage({ params }: Props) {
             </aside>
           ) : null}
         </div>
+        <div id="lesson-etch-split-slot" className="lesson-etch-split-slot" aria-label="Split-screen sketch pad" />
       </div>
     </article>
+    </LessonWorkspaceProvider>
   );
 }
