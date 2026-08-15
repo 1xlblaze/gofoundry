@@ -57,31 +57,34 @@ export default async function LessonPage({ params }: Props) {
 
         <div className="lesson-main">
           <div className="lesson-header panel reveal-delay-1">
-            <p className="type-label" style={{ color: track.accent, margin: 0 }}>
-              {track.title}
-            </p>
+            <div className="lesson-header-top">
+              <p className="type-label lesson-header-track" style={{ color: track.accent }}>
+                {track.title}
+              </p>
+              <div className="lesson-header-actions">
+                <CompleteButton slug={lesson.slug} />
+              </div>
+            </div>
             <h1>{lesson.title}</h1>
-            <p>{lesson.subtitle}</p>
-            <div className="meta-row">
+            <p className="lesson-header-subtitle">{lesson.subtitle}</p>
+            <div className="lesson-header-meta">
               {lesson.free && (
                 <span className="chip chip-brand">Open lesson · Staff-grade sample</span>
               )}
               <span className="chip">{lesson.minutes} min</span>
-              <span className="chip chip-brand" style={{ textTransform: "capitalize" }}>
+              <span className="chip chip-brand lesson-header-difficulty">
                 {lesson.difficulty}
               </span>
-              {lesson.tags.map((t) => (
-                <span key={t} className="chip">
+              {lesson.tags.slice(0, 4).map((t) => (
+                <span key={t} className="chip lesson-header-tag">
                   #{t}
                 </span>
               ))}
-              <div style={{ marginLeft: "auto" }}>
-                <CompleteButton slug={lesson.slug} />
-              </div>
+              {lesson.tags.length > 4 ? (
+                <span className="chip chip-muted">+{lesson.tags.length - 4} more</span>
+              ) : null}
             </div>
           </div>
-
-          <ProgressSaveCue className="lesson-progress-save-cue" />
 
           {lesson.prerequisites && lesson.prerequisites.length > 0 && (
             <p className="lesson-prereq">
@@ -129,6 +132,8 @@ export default async function LessonPage({ params }: Props) {
               <span />
             )}
           </nav>
+
+          <ProgressSaveCue className="lesson-progress-save-cue" />
 
           {next ? (
             <aside className="lesson-up-next" aria-label="Up next">

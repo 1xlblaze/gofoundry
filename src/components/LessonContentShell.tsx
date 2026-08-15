@@ -39,7 +39,7 @@ export function LessonContentShell({
       const rect = shell.getBoundingClientRect();
       const scrolled = Math.max(0, -rect.top);
       const depth = scrolled / Math.max(rect.height - window.innerHeight, 1);
-      if (depth >= 0.38) setGateOpen(true);
+      if (depth >= 0.72) setGateOpen(true);
     };
 
     onScroll();
@@ -85,19 +85,19 @@ export function LessonContentShell({
       </aside>
 
       {!dismissed && gateOpen ? (
-        <aside className="lesson-save-banner panel" aria-labelledby="lesson-gate-title">
-          <p className="type-label">Optional account</p>
-          <h2 id="lesson-gate-title">Keep reading — sign in only if you want sync</h2>
-          <p>
-            All lessons stay free in public beta. Progress is already saved in this browser.
-            Sign in if you want the same place on another device.
-          </p>
+        <aside className="lesson-save-banner lesson-save-banner-compact" aria-labelledby="lesson-gate-title">
+          <div className="lesson-save-banner-copy">
+            <p className="type-label">Optional</p>
+            <p id="lesson-gate-title" className="lesson-save-banner-title">
+              Sign in to sync progress across devices — reading stays free.
+            </p>
+          </div>
           <div className="lesson-gate-actions">
-            <Link href="/login" className="secondary-btn">
+            <Link href="/login" className="secondary-btn lesson-save-banner-btn">
               Sign in
             </Link>
-            <button type="button" className="ghost-btn" onClick={dismissGate}>
-              Keep reading as guest
+            <button type="button" className="ghost-btn lesson-save-banner-btn" onClick={dismissGate}>
+              Continue as guest
             </button>
           </div>
         </aside>
