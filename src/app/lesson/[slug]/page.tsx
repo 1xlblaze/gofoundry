@@ -15,6 +15,7 @@ import { LessonRoadmap } from "@/components/LessonRoadmap";
 import { LessonEtchPad } from "@/components/LessonEtchPad";
 import { LessonTableOfContents } from "@/components/LessonTableOfContents";
 import { LessonContentShell } from "@/components/LessonContentShell";
+import { LessonVisitTracker } from "@/components/LessonVisitTracker";
 import { sectionsFromBlocks } from "@/lib/lesson-sections";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -42,6 +43,7 @@ export default async function LessonPage({ params }: Props) {
 
   return (
     <article id="lesson-article" className="shell lesson-reading">
+      <LessonVisitTracker slug={lesson.slug} />
       <ReadingProgress articleId="lesson-article" />
       <div className="lesson-breadcrumb reveal">
         <Link href="/learn">Curriculum</Link>
@@ -61,7 +63,7 @@ export default async function LessonPage({ params }: Props) {
             <p>{lesson.subtitle}</p>
             <div className="meta-row">
               {lesson.free && (
-                <span className="chip chip-brand">Free teaser · Staff-grade sample</span>
+                <span className="chip chip-brand">Open lesson · Staff-grade sample</span>
               )}
               <span className="chip">{lesson.minutes} min</span>
               <span className="chip chip-brand" style={{ textTransform: "capitalize" }}>

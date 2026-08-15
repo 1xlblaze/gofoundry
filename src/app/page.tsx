@@ -1,17 +1,15 @@
 import Link from "next/link";
 import { allLessons, freeLessons, getTrack, tracks } from "@/content";
 import { HeroSnippet } from "@/components/HeroSnippet";
-import { BenchmarkHero } from "@/components/BenchmarkHero";
+import {
+  diagnosticGateNodes,
+  heatFlowNodes,
+  learningLoopNodes,
+  MotionDiagram,
+} from "@/components/MotionDiagram";
 import { HeroVisual } from "@/components/HeroVisual";
 import { AnimatedCard, DifficultyChip, ScrollReveal, StatusChip } from "@/components/ui";
 import { pillars } from "@/content/pillars";
-
-const heat = [
-  { k: "H", name: "Hear", blurb: "Clarify constraints & Go costs" },
-  { k: "E", name: "Etch", blurb: "Architecture / algorithm diagram" },
-  { k: "A", name: "Anchor", blurb: "Pattern + complexity target" },
-  { k: "T", name: "Temper", blurb: "Idiomatic Go + proof" },
-];
 
 export default function HomePage() {
   return (
@@ -28,25 +26,27 @@ export default function HomePage() {
             GoFoundry
           </p>
           <h1 className="hero-line reveal-delay-1" data-motion>
-            Master concurrency, runtime internals, zero-alloc thinking, and cloud-native design.
+            Master concurrency, runtime internals, and cloud-native Go.
           </h1>
           <p className="lede reveal-delay-2" data-motion>
-            Use the HEAT method to reason clearly, prove it in the interactive Lab, and sharpen
-            recall with a focused practice sheet.
+            Hear the constraints, etch a diagram, anchor a pattern, then temper it in the Lab.
+            Start a lesson today — the full curriculum is free during public beta.
           </p>
           <div className="hero-actions reveal-delay-3" data-motion>
-            <Link href="/lab" className="primary-btn">
-              Enter the Lab
-            </Link>
-            <Link href="/learn" className="secondary-btn">
+            <Link href="/learn" className="primary-btn">
               Start curriculum
             </Link>
-            <Link href="/pricing" className="ghost-btn">
-              View pricing
+            <Link href="/lab" className="secondary-btn">
+              Try the Lab
             </Link>
           </div>
+          <MotionDiagram
+            kicker="The learning loop"
+            title="Read → diagram → prove → recall"
+            caption="When a page gets dense, start here. Each node is a short path, not another wall of text."
+            nodes={learningLoopNodes}
+          />
           <HeroSnippet />
-          <BenchmarkHero />
         </div>
       </section>
 
@@ -140,33 +140,27 @@ export default function HomePage() {
       </section>
 
       <section className="shell section">
-        <div className="usp-banner" data-motion>
-          <div>
-            <p className="kicker">The interview operating system</p>
-            <h2>Foundry HEAT turns deep knowledge into a staff-level signal</h2>
-            <p>
-              Hear → Etch → Anchor → Temper. Clarify the system, diagram the pressure points, choose
-              an invariant, then implement and prove it with idiomatic Go. It is the repeatable
-              structure behind architecture rounds, concurrency deep dives, and performance reviews.
-            </p>
-          </div>
-          <div className="heat-grid">
-            {heat.map((h) => (
-              <div key={h.k} className="heat-step" data-motion>
-                <strong>
-                  {h.k} · {h.name}
-                </strong>
-                <span>{h.blurb}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <MotionDiagram
+          kicker="The interview operating system"
+          title="HEAT: Hear → Etch → Anchor → Temper"
+          caption="Four moves that turn a deep-dive into a staff-level signal. Open the canvas when the problem is too big to hold in prose."
+          nodes={heatFlowNodes}
+        />
+      </section>
+
+      <section className="shell section">
+        <MotionDiagram
+          kicker="Prove it without a second playground"
+          title="The 4-gate staff bar"
+          caption="Unit tests, race detection, leak checks, and allocs/op — the same gates used in production interviews. Jump in when you are ready to run code."
+          nodes={diagnosticGateNodes}
+        />
       </section>
 
       <section className="shell section" style={{ paddingBottom: "4rem" }}>
         <div className="section-head" data-motion>
           <div>
-            <p className="kicker">All forges</p>
+            <p className="kicker">All tracks</p>
             <h2>Eight tracks. {allLessons.length} deep lessons.</h2>
             <p>Build the foundations, then go deep on Go internals, component design, and HLD.</p>
           </div>

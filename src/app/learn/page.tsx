@@ -12,6 +12,8 @@ import {
   StatusChip,
 } from "@/components/ui";
 import { loadProgress, type ProgressState } from "@/lib/progress";
+import { getContinueLesson } from "@/lib/continueLesson";
+import { MotionDiagram } from "@/components/MotionDiagram";
 
 export default function LearnPage() {
   const [progress, setProgress] = useState<ProgressState>({
@@ -68,17 +70,31 @@ export default function LearnPage() {
     return map;
   }, [progress.completed]);
 
-  const continueLesson = allLessons.find(
-    (lesson) => !progress.completed.includes(lesson.slug),
-  );
+  const continueLesson = getContinueLesson(progress);
 
   return (
     <ScrollReveal>
       <div className="shell" style={{ padding: "2.5rem 0 3.5rem" }}>
         <div className="page-hero reveal" data-motion>
           <h1>Curriculum</h1>
-          <p>Work the tracks in any order. Progress stays in this browser.</p>
+          <p>
+            Work the tracks in any order. Progress stays in this browser until you sign in.
+          </p>
         </div>
+
+        <MotionDiagram
+          kicker="Too long to scan? Start on the map"
+          title="Eight tracks, one path"
+          caption="Pick a track instead of scrolling 101 lessons. The list below is the full catalog."
+          layout="orbit"
+          nodes={tracks.map((track) => ({
+            id: track.id,
+            label: track.short,
+            sub: track.title,
+            href: `#track-${track.id}`,
+            accent: track.accent.startsWith("var(") ? undefined : track.accent,
+          }))}
+        />
 
         <div className="progress-dashboard" data-motion>
           <StatCard value={done} suffix={` / ${total}`} label="Lessons complete" />
@@ -99,7 +115,7 @@ export default function LearnPage() {
               <p className="type-label">Your journey</p>
               <p style={{ margin: 0, fontWeight: 650 }}>
                 {done === 0
-                  ? "Start with your first lesson — pick any track below."
+                  ? "Start with your first lesson — pick any track on the map."
                   : `Continue with ${continueLesson.title}`}
               </p>
             </div>

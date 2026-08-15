@@ -5,6 +5,8 @@ export type ProgressState = {
   quizScores: Record<string, number>;
   /** ISO timestamps keyed by lesson slug */
   completedAt: Record<string, string>;
+  /** Last lesson the learner opened in this browser */
+  lastLessonSlug?: string;
 };
 
 const KEY = "gofoundry-progress-v1";
@@ -21,6 +23,8 @@ export function loadProgress(): ProgressState {
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       quizScores: parsed.quizScores ?? {},
       completedAt: parsed.completedAt ?? {},
+      lastLessonSlug:
+        typeof parsed.lastLessonSlug === "string" ? parsed.lastLessonSlug : undefined,
     };
   } catch {
     return { completed: [], quizScores: {}, completedAt: {} };
@@ -63,6 +67,14 @@ export function resetLesson(slug: string) {
   state.completed = state.completed.filter((s) => s !== slug);
   delete state.quizScores[slug];
   delete state.completedAt[slug];
+  saveProgress(state);
+  return state;
+}
+
+/** Record the lesson currently being read so Continue can resume it. */
+export function touchLastLesson(slug: string) {
+  const state = loadProgress();
+  state.lastLessonSlug = slug;
   saveProgress(state);
   return state;
 }

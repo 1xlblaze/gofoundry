@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ConcurrencyVisualizer } from "@/components/ConcurrencyVisualizer";
 import { EscapeAnalyzer } from "@/components/EscapeAnalyzer";
 import { GoWorkbench } from "@/components/GoWorkbench";
+import { labPathNodes, MotionDiagram } from "@/components/MotionDiagram";
 import { ScrollReveal } from "@/components/ui";
 
 export const metadata: Metadata = {
@@ -64,10 +65,17 @@ export default function LabPage() {
             Run Go in the browser. Watch concurrency unfold.
           </p>
           <p className="lab-hero-copy">
-            Build an intuition for scheduling and synchronization, then edit and
-            execute the same patterns against the official Go Playground.
+            Three interactive rooms, then a problem. Use the map if the page feels long —
+            jump to the part you need instead of scrolling through every tool.
           </p>
         </header>
+
+        <MotionDiagram
+          kicker="Lab map"
+          title="See it, change it, follow the alloc, then prove it"
+          caption="Dense tools live below. The diagram is the table of contents."
+          nodes={labPathNodes}
+        />
 
         <section className="lab-section lab-section-reveal" aria-labelledby="visualizer-title" data-motion>
           <div className="lab-section-head">

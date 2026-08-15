@@ -3,16 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
+export const primaryLinks = [
   { href: "/learn", label: "Curriculum" },
   { href: "/lab", label: "Lab" },
-  { href: "/diagnostic", label: "Assess" },
   { href: "/problems", label: "Practice" },
+  { href: "/diagnostic", label: "Assess" },
+];
+
+export const moreLinks = [
   { href: "/pricing", label: "Pricing" },
   { href: "/blog", label: "Blog" },
-  { href: "/cheatsheets", label: "Sheets" },
+  { href: "/cheatsheets", label: "Cheatsheets" },
   { href: "/progress", label: "Progress" },
-  { href: "/search", label: "Search" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -22,6 +24,7 @@ function isActive(pathname: string, href: string) {
 
 export function NavLinks({ mobile = false }: { mobile?: boolean }) {
   const pathname = usePathname();
+  const links = mobile ? [...primaryLinks, ...moreLinks] : primaryLinks;
 
   if (mobile) {
     return (
