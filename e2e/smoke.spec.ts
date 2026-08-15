@@ -18,9 +18,10 @@ const staticPages = [
 ];
 
 test.describe("Core pages smoke", () => {
-  test("homepage exposes a learning-loop diagram", async ({ page }) => {
+  test("homepage exposes HEAT primary CTA and nav", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /Read → diagram → prove → recall/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Hear — start curriculum/i })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: /HEAT learning path/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Skip to content/i })).toHaveCount(1);
   });
 
@@ -77,6 +78,16 @@ test.describe("Track and lesson content", () => {
     await expect(page.getByLabel("Lesson roadmap")).toContainText(/2 diagrams/i);
     await expect(page.getByLabel("Lesson sections")).toBeVisible();
     await expect(page.locator("#lesson-section-1")).toBeAttached();
+  });
+});
+
+test.describe("Curriculum filters", () => {
+  test("learn page exposes lesson filters", async ({ page }) => {
+    await page.goto("/learn");
+    await expect(page.getByRole("search", { name: /Filter lessons/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /All tracks/i })).toBeVisible();
+    await page.getByPlaceholder("Search lessons…").fill("goroutine");
+    await expect(page.getByText(/Showing/i)).toBeVisible();
   });
 });
 

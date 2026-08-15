@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { allLessons, getTrack, tracks } from "@/content";
 import type { TrackId } from "@/content/types";
+import { ProgressSaveCue } from "@/components/ProgressSaveCue";
 import {
   DifficultyChip,
   EmptyState,
@@ -103,6 +104,8 @@ export default function ProgressPage() {
             or wipe the board and start the forge again.
           </p>
         </div>
+
+        <ProgressSaveCue className="learn-progress-save-cue" />
 
         <div className="progress-dashboard" data-motion>
           <StatCard value={doneCount} suffix={` / ${total}`} label="Lessons complete" />

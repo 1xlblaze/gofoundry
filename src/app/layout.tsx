@@ -63,21 +63,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 GoFoundry
               </p>
               <p style={{ margin: "0.4rem 0 0", maxWidth: "22rem" }}>
-                Read, diagram, prove, and recall — staff-grade Go.
+                Hear → Etch → Anchor → Temper — staff-grade Go.
               </p>
             </div>
             <ul className="footer-links">
               <li>
-                <Link href="/learn">Curriculum</Link>
+                <Link href="/learn">Hear</Link>
               </li>
               <li>
-                <Link href="/lab">Lab</Link>
+                <Link href="/heat">Etch</Link>
+              </li>
+              <li>
+                <Link href="/problems">Anchor</Link>
+              </li>
+              <li>
+                <Link href="/lab">Temper</Link>
               </li>
               <li>
                 <Link href="/pricing">Pricing</Link>
-              </li>
-              <li>
-                <Link href="/cheatsheets">Cheatsheets</Link>
               </li>
               <li>
                 <Link href="/login">Sign in</Link>
