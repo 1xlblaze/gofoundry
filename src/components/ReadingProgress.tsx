@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
+const SLOT_ID = "header-reading-progress";
 
 export function ReadingProgress({ articleId }: { articleId: string }) {
   const fillRef = useRef<HTMLSpanElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setSlot(document.getElementById(SLOT_ID));
+  }, []);
 
   useEffect(() => {
     const article = document.getElementById(articleId);
@@ -43,10 +51,10 @@ export function ReadingProgress({ articleId }: { articleId: string }) {
     };
   }, [articleId]);
 
-  return (
+  const bar = (
     <div
       ref={trackRef}
-      className="readbar-track"
+      className="readbar-track header-readbar"
       role="progressbar"
       aria-label="Lesson reading progress"
       aria-valuemin={0}
@@ -56,4 +64,7 @@ export function ReadingProgress({ articleId }: { articleId: string }) {
       <span ref={fillRef} className="readbar-fill" />
     </div>
   );
+
+  if (slot) return createPortal(bar, slot);
+  return bar;
 }

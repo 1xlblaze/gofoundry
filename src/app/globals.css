@@ -36,6 +36,29 @@
   --header-h: 4rem;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --bg-elevated: #111827;
+  --bg-muted: #1e293b;
+  --bg-soft: #0f172a;
+  --ink: #f1f5f9;
+  --ink-soft: #cbd5e1;
+  --muted: #94a3b8;
+  --line: #334155;
+  --line-strong: #475569;
+  --brand: #2dd4bf;
+  --brand-strong: #14b8a6;
+  --brand-deep: #5eead4;
+  --brand-soft: rgba(45, 212, 191, 0.12);
+  --brand-glow: rgba(45, 212, 191, 0.22);
+  --accent: #fb923c;
+  --accent-soft: rgba(251, 146, 60, 0.14);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.32);
 }
 
 @theme inline {
@@ -99,6 +122,13 @@ a {
   margin-inline: auto;
 }
 
+[data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 90% 55% at 8% -15%, rgba(45, 212, 191, 0.1), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 92% 5%, rgba(251, 146, 60, 0.08), transparent 50%),
+    linear-gradient(180deg, #0b1220 0%, #0f172a 40%, #020617 100%);
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -112,6 +142,23 @@ a {
     background 0.2s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .site-header {
+  border-bottom-color: rgba(51, 65, 85, 0.9);
+  background: rgba(11, 18, 32, 0.88);
+}
+
+.header-reading-slot {
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  pointer-events: none;
+}
+
+.theme-toggle-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .site-header-solid,
@@ -2020,6 +2067,14 @@ a.brand-mark {
   overflow: hidden;
   background: rgba(15, 118, 110, 0.1);
   pointer-events: none;
+}
+
+.readbar-track.header-readbar {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 3;
+  height: 2px;
+  background: color-mix(in srgb, var(--brand) 18%, transparent);
 }
 
 .readbar-fill {
@@ -7799,4 +7854,217 @@ a.motion-diagram-node:hover {
 @keyframes diagramPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.08); }
+}
+
+/* ---- Lesson content zones ---- */
+.lesson-zone-read {
+  background: color-mix(in srgb, var(--bg-elevated) 94%, var(--brand) 6%);
+}
+
+.lesson-zone-think {
+  background: color-mix(in srgb, var(--bg-elevated) 90%, #2563eb 10%);
+  border: 1px solid color-mix(in srgb, #2563eb 22%, var(--line));
+  border-radius: var(--radius);
+  padding: 1.15rem 1.2rem;
+}
+
+.lesson-zone-code .code-wrap {
+  margin: 0;
+}
+
+.lesson-zone-diagram {
+  background: color-mix(in srgb, var(--brand) 7%, var(--bg-elevated));
+}
+
+.lesson-zone-practice {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: var(--radius);
+  padding: 1.15rem 1.2rem;
+}
+
+.lesson-zone-sketch {
+  background: color-mix(in srgb, #2563eb 6%, var(--bg-elevated));
+  border-color: color-mix(in srgb, #2563eb 20%, var(--line));
+}
+
+.lesson-zone-callout {
+  border-radius: var(--radius-sm);
+}
+
+.lesson-etch-saved {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--brand-deep);
+}
+
+.diagram-longdesc {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* ---- Lesson quiz ---- */
+.lesson-quiz {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.lesson-quiz-heading {
+  margin: 0.35rem 0 0.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.lesson-quiz-lead {
+  margin: 0;
+  max-width: 40rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.lesson-quiz-progress {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lesson-quiz-list {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.lesson-quiz-fieldset {
+  margin: 0;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg-elevated) 96%, var(--brand) 4%);
+}
+
+.lesson-quiz-legend {
+  padding: 0 0.25rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.lesson-quiz-index {
+  margin-right: 0.45rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.lesson-quiz-options {
+  margin-top: 0.85rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lesson-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lesson-quiz-option:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--line));
+}
+
+.lesson-quiz-option-selected {
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+  background: color-mix(in srgb, var(--brand) 10%, var(--bg-elevated));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+
+.lesson-quiz-option-correct {
+  border-color: color-mix(in srgb, var(--ok) 55%, var(--line));
+  background: color-mix(in srgb, var(--ok) 12%, var(--bg-elevated));
+}
+
+.lesson-quiz-option-wrong {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--line));
+  background: color-mix(in srgb, var(--danger) 10%, var(--bg-elevated));
+}
+
+.lesson-quiz-radio {
+  margin-top: 0.2rem;
+  accent-color: var(--brand);
+  flex-shrink: 0;
+}
+
+.lesson-quiz-option-text {
+  flex: 1;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.lesson-quiz-mark {
+  flex-shrink: 0;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.lesson-quiz-mark-ok {
+  color: var(--ok);
+}
+
+.lesson-quiz-mark-bad {
+  color: var(--danger);
+}
+
+.lesson-quiz-explanation {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--brand) 8%, var(--bg-muted));
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.lesson-quiz-score {
+  margin: 1.25rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.lesson-quiz-submit {
+  margin-top: 1.25rem;
+}
+
+[data-theme="dark"] .progress-save-cue {
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.12), var(--bg-elevated));
+}
+
+[data-theme="dark"] .animated-card,
+[data-theme="dark"] .panel {
+  background: color-mix(in srgb, var(--bg-elevated) 94%, white 6%);
+}
+
+[data-theme="dark"] .site-header-solid,
+[data-theme="dark"] body:has(#lesson-article) .site-header {
+  background: rgba(11, 18, 32, 0.96);
 }

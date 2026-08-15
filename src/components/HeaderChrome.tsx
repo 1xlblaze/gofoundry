@@ -2,7 +2,9 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { NavLinks, moreLinks } from "@/components/NavLinks";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadProgress } from "@/lib/progress";
 
 export function HeaderChrome({
@@ -18,6 +20,8 @@ export function HeaderChrome({
   const [moreOpen, setMoreOpen] = useState(false);
   const [progressPercent, setProgressPercent] = useState(0);
   const [solid, setSolid] = useState(false);
+  const pathname = usePathname();
+  const onLessonPage = pathname?.startsWith("/lesson/");
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 8);
@@ -69,6 +73,7 @@ export function HeaderChrome({
           <Link href="/search" className="icon-btn header-search" aria-label="Search lessons">
             <SearchIcon />
           </Link>
+          <ThemeToggle />
           <div className="header-more">
             <button
               type="button"
@@ -105,19 +110,22 @@ export function HeaderChrome({
           </button>
         </div>
       </div>
-      <div
-        className="motion2-header-progress"
-        role="progressbar"
-        aria-label="Overall course progress"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={progressPercent}
-      >
-        <span
-          className="motion2-header-progress-fill"
-          style={{ width: `${progressPercent}%` }}
-        />
-      </div>
+      <div id="header-reading-progress" className="header-reading-slot" />
+      {!onLessonPage ? (
+        <div
+          className="motion2-header-progress"
+          role="progressbar"
+          aria-label="Overall course progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progressPercent}
+        >
+          <span
+            className="motion2-header-progress-fill"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      ) : null}
 
       {open ? (
         <div className="mobile-nav" onClick={() => setOpen(false)}>

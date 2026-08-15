@@ -27,6 +27,7 @@ function Frame({
   children: ReactNode;
   viewBox?: string;
 }) {
+  const description = [title, caption].filter(Boolean).join(" — ");
   return (
     <figure className="diagram-frame">
       {(title || caption) && (
@@ -36,10 +37,19 @@ function Frame({
         </figcaption>
       )}
       <div className="diagram-canvas">
-        <svg viewBox={viewBox} className="h-auto w-full" role="img">
+        <svg
+          viewBox={viewBox}
+          className="h-auto w-full"
+          role="img"
+          aria-label={description || "Architecture diagram"}
+        >
+          {description ? <title>{description}</title> : null}
           {children}
         </svg>
       </div>
+      {description ? (
+        <p className="diagram-longdesc">{description}</p>
+      ) : null}
       <p className="diagram-hint">draw.io–style model · redraw from memory before coding</p>
     </figure>
   );

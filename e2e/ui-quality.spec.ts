@@ -124,7 +124,18 @@ test.describe("UI quality — lesson content", () => {
     await toggle.click();
     await expect(page.locator("#lesson-toc-panel.is-open")).toBeVisible();
     await expect(page.getByLabel("Lesson roadmap")).toBeVisible();
+    await expect(page.locator(".motion2-header-progress")).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
+  });
+
+  test("theme toggle switches data-theme", async ({ page }) => {
+    await page.goto("/lesson/lru-cache-lld");
+    const toggle = page.getByRole("button", { name: /Switch to/i });
+    await expect(toggle).toBeVisible();
+    const before = await page.locator("html").getAttribute("data-theme");
+    await toggle.click();
+    const after = await page.locator("html").getAttribute("data-theme");
+    expect(before).not.toEqual(after);
   });
 });
 
