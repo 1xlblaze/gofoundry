@@ -76,6 +76,31 @@ test.describe("Visual layout — curriculum", () => {
   });
 });
 
+test.describe("Visual layout — HEAT canvas", () => {
+  test("etch canvas is interactive before constraints are locked", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/heat");
+    await page.waitForTimeout(2000);
+    await expect(page.locator(".heat-stage-locked")).toHaveCount(1);
+    await expect(page.locator(".excalidraw")).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator("#heat-diagram")).not.toHaveClass(/heat-stage-locked/);
+  });
+
+  test("mobile layout does not overflow after unlock", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/heat");
+    await page.waitForTimeout(2000);
+    await page.locator('input[placeholder="e.g. 100k QPS"]').fill("10k");
+    await page.locator("select").nth(0).selectOption("single-buffer");
+    await page.locator("select").nth(1).selectOption("mutex");
+    await page.getByRole("button", { name: /Lock constraints/i }).click();
+    await page.waitForTimeout(1500);
+    await assertNoHorizontalOverflow(page);
+    const monaco = await page.locator(".monaco-editor").count();
+    expect(monaco).toBe(0);
+  });
+});
+
 test.describe("Visual layout — tracks", () => {
   for (const track of tracks) {
     test(`/track/${track.id} desktop`, async ({ page }) => {
