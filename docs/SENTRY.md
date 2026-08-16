@@ -20,6 +20,9 @@ The wizard logs you in, installs packages, and may overwrite config files. If yo
 
 ### 3. Manual env vars (matches this repo)
 
+**Your Sentry org:** `mayank-saxena` · **Project:** `gofoundry`  
+Dashboard: https://mayank-saxena.sentry.io/projects/gofoundry/
+
 Add to Vercel → Project → Environment Variables (Production + Preview):
 
 | Variable | Required | Example |
@@ -40,6 +43,14 @@ SENTRY_AUTH_TOKEN=your-token
 ```
 
 Redeploy after adding variables.
+
+**Automated (local or Cloud Agent with tokens):**
+
+```bash
+SENTRY_AUTH_TOKEN=... VERCEL_TOKEN=... npm run setup:sentry-vercel
+```
+
+This script creates the project if missing, sets all four Vercel env vars, and triggers a production deploy.
 
 ## What gets monitored
 
