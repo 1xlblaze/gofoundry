@@ -136,6 +136,47 @@ test.describe("UI quality — lesson content", () => {
     expect(before).not.toEqual(after);
   });
 
+  test("dark mode keeps lesson surfaces readable", async ({ page }) => {
+    await page.goto("/lesson/scheduler-gpm");
+    const toggle = page.getByRole("button", { name: /Switch to dark/i });
+    if (await toggle.isVisible()) {
+      await toggle.click();
+    }
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    const luminance = (rgb: string) => {
+      const match = rgb.match(/[\d.]+/g);
+      if (!match || match.length < 3) return 0;
+      const [r, g, b] = match.slice(0, 3).map(Number);
+      return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    };
+
+    const contrastGap = async (selector: string) => {
+      const styles = await page.locator(selector).first().evaluate((el) => {
+        const computed = getComputedStyle(el);
+        return { bg: computed.backgroundColor, color: computed.color };
+      });
+      return Math.abs(luminance(styles.bg) - luminance(styles.color));
+    };
+
+    await expect(page.locator(".steps li").first()).toBeVisible();
+    expect(await contrastGap(".steps li")).toBeGreaterThan(0.35);
+
+    const upNext = page.locator(".lesson-up-next-card");
+    if (await upNext.count()) {
+      expect(await contrastGap(".lesson-up-next-card")).toBeGreaterThan(0.35);
+    }
+
+    const keepLocal = page.getByRole("button", { name: /Keep local only/i });
+    if (await keepLocal.isVisible()) {
+      const btnStyles = await keepLocal.evaluate((el) => {
+        const computed = getComputedStyle(el);
+        return { bg: computed.backgroundColor, color: computed.color };
+      });
+      expect(Math.abs(luminance(btnStyles.bg) - luminance(btnStyles.color))).toBeGreaterThan(0.35);
+    }
+  });
+
   test("inline workspace drawer opens from Run in Lab", async ({ page }) => {
     await page.goto("/lesson/lru-cache-lld");
     await page.getByRole("button", { name: /Run in Lab/i }).first().click();
