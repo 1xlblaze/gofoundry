@@ -5,12 +5,14 @@ import { CheckoutButton } from "@/components/CheckoutButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { auth } from "@/auth";
 import { isStripeConfigured } from "@/lib/stripe";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Pricing",
   description:
-    "GoFoundry is free during public beta — staff problems, Lab, HEAT canvas, and diagnostics.",
-};
+    "GoFoundry is free during public beta — staff problems, Lab, HEAT canvas, diagnostics, and the full curriculum.",
+  path: "/pricing",
+});
 
 const tiers = [
   {

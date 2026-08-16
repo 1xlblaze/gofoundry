@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "@/content/blog";
 import { AnimatedCard, ScrollReveal } from "@/components/ui";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Technical Go Articles",
   description:
-    "Deep technical articles on Go internals, concurrency, the runtime scheduler, and Kubernetes controller patterns.",
-};
+    "Deep technical articles on Go internals, concurrency, the runtime scheduler, maps, and Kubernetes controller patterns.",
+  path: "/blog",
+});
 
 const dateFormatter = new Intl.DateTimeFormat("en", {
   day: "numeric",

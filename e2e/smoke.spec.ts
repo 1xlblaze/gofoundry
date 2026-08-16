@@ -140,3 +140,26 @@ test.describe("Health API", () => {
     expect(body.overall).toBeTruthy();
   });
 });
+
+test.describe("SEO files", () => {
+  test("robots.txt allows crawlers and points to sitemap", async ({ request, baseURL }) => {
+    const response = await request.get(`${baseURL}/robots.txt`);
+    expect(response.ok()).toBeTruthy();
+    const text = await response.text();
+    expect(text).toMatch(/User-Agent:\s*\*/i);
+    expect(text).toMatch(/Allow:\s*\/\s*$/m);
+    expect(text).toMatch(/Disallow:\s*\/api\//);
+    expect(text).toMatch(/Sitemap:\s*https?:\/\/[^/]+\/sitemap\.xml/);
+  });
+
+  test("sitemap.xml lists core curriculum URLs", async ({ request, baseURL }) => {
+    const response = await request.get(`${baseURL}/sitemap.xml`);
+    expect(response.ok()).toBeTruthy();
+    const text = await response.text();
+    expect(text).toContain("<urlset");
+    expect(text).toMatch(/<loc>[^<]+\/learn<\/loc>/);
+    expect(text).toMatch(/<loc>[^<]+\/lesson\/[^<]+<\/loc>/);
+    expect(text).toMatch(/<loc>[^<]+\/track\/method<\/loc>/);
+    expect(text).toMatch(/<loc>[^<]+\/blog\/[^<]+<\/loc>/);
+  });
+});

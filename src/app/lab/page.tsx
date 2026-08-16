@@ -5,12 +5,14 @@ import { EscapeAnalyzer } from "@/components/EscapeAnalyzer";
 import { GoWorkbench } from "@/components/GoWorkbench";
 import { labPathNodes, MotionDiagram } from "@/components/MotionDiagram";
 import { ScrollReveal } from "@/components/ui";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Go Lab",
   description:
-    "Run Go code in the browser and step through interactive visualizations of channels, WaitGroups, and select.",
-};
+    "Run Go code in the browser and step through interactive visualizations of channels, WaitGroups, select, and escape analysis.",
+  path: "/lab",
+});
 
 const CURATED_STARTER = `package main
 

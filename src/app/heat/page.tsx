@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { HeatCanvas } from "@/components/HeatCanvas";
 import { heatFlowNodes, MotionDiagram } from "@/components/MotionDiagram";
 import { ScrollReveal } from "@/components/ui";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "HEAT Canvas",
   description:
-    "Turn Go problem constraints into a diagram, pattern, complexity target, and tested implementation.",
-};
+    "Turn Go problem constraints into a diagram, pattern, complexity target, and tested implementation with the HEAT canvas.",
+  path: "/heat",
+});
 
 export default function HeatPage() {
   return (

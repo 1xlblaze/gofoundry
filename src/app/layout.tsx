@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { AmbientBackground } from "@/components/AmbientBackground";
+import { JsonLd } from "@/components/JsonLd";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ThemeScript } from "@/components/ThemeScript";
 import { siteConfig } from "@/lib/site";
+import { indexableRobots, organizationJsonLd, siteKeywords, websiteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const display = Outfit({
@@ -27,12 +29,16 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
   title: {
     default: "GoFoundry — The Staff-Grade Go Mastery Platform",
     template: "%s · GoFoundry",
   },
   description: siteConfig.tagline,
+  keywords: [...siteKeywords],
   alternates: { canonical: siteConfig.url },
+  robots: indexableRobots,
+  category: "education",
   openGraph: {
     title: "GoFoundry — The Staff-Grade Go Mastery Platform",
     description: siteConfig.tagline,
@@ -57,6 +63,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="ambient-host flex min-h-full flex-col">
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <ThemeScript />
         <a className="skip-link" href="#main-content">
           Skip to content

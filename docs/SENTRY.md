@@ -18,7 +18,15 @@ npx @sentry/wizard@latest -i nextjs
 
 The wizard logs you in, installs packages, and may overwrite config files. If you already have the repo setup, prefer **manual env vars** below.
 
-### 3. Manual env vars (matches this repo)
+### 3. Vercel integration (recommended)
+
+1. Vercel → your project → **Integrations** → add **Sentry**
+2. Connect your Sentry org and select the `gofoundry` project
+3. Redeploy — the integration sets `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, and usually `SENTRY_AUTH_TOKEN` for source maps
+
+The repo also embeds the public DSN in `src/lib/sentry-defaults.ts`, so errors still report even if env vars are missing after a deploy.
+
+### 4. Manual env vars (alternative)
 
 **Your Sentry org:** `mayank-saxena` · **Project:** `gofoundry`  
 Dashboard: https://mayank-saxena.sentry.io/projects/gofoundry/

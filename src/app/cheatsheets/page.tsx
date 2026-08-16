@@ -4,13 +4,15 @@ import { WaitlistForm } from "@/components/WaitlistForm";
 import { CheatsheetSections } from "@/components/CheatsheetSections";
 import { ScrollReveal } from "@/components/ui";
 import { cheatSheets } from "@/content/cheatsheets";
+import { buildPageMetadata } from "@/lib/site-metadata";
 import { PrintButton } from "./PrintButton";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Go Engineering Cheat Sheets",
   description:
     "Printable Go concurrency and GMP scheduler references for code reviews, incident response, and technical interviews.",
-};
+  path: "/cheatsheets",
+});
 
 export default function CheatSheetsPage() {
   return (

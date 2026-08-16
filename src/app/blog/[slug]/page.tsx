@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import { blogPosts, getBlogPost } from "@/content/blog";
+import { buildPageMetadata } from "@/lib/site-metadata";
+import { articleJsonLd } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -28,18 +31,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {};
   }
 
-  return {
+  return buildPageMetadata({
     title: post.title,
     description: post.description,
+    path: `/blog/${slug}`,
+    type: "article",
     keywords: post.tags,
-    openGraph: {
-      type: "article",
-      title: post.title,
-      description: post.description,
-      publishedTime: post.date,
-      tags: post.tags,
-    },
-  };
+    publishedTime: post.date,
+    tags: post.tags,
+  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -54,6 +54,15 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <main className="shell blog-article-shell">
+      <JsonLd
+        data={articleJsonLd({
+          title: post.title,
+          description: post.description,
+          path: `/blog/${slug}`,
+          datePublished: post.date,
+          tags: post.tags,
+        })}
+      />
       <article className="blog-article">
         <Link href="/blog" className="blog-back-link">
           ← All articles
