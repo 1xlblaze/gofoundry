@@ -39,6 +39,9 @@ export const metadata: Metadata = {
   alternates: { canonical: siteConfig.url },
   robots: indexableRobots,
   category: "education",
+  verification: {
+    google: "QDmRVqT0KIdEDENus7RbVDyH8uD7nsntm6SQMbS70jk",
+  },
   openGraph: {
     title: "GoFoundry — The Staff-Grade Go Mastery Platform",
     description: siteConfig.tagline,
