@@ -90,3 +90,7 @@ npm run test:e2e:prod
 ```
 
 **Full production setup** (Supabase `DATABASE_URL`, free Redis, free sandbox worker): see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+**Launch checklist** (legal, SEO, domain, observability): see [docs/LAUNCH_READINESS.md](docs/LAUNCH_READINESS.md).
+
+**Sentry error monitoring**: see [docs/SENTRY.md](docs/SENTRY.md).
