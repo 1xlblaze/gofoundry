@@ -246,6 +246,7 @@ body:has(.heat-canvas-page) .site-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .icon-btn, .ghost-btn, .primary-btn, .secondary-btn {
@@ -7238,6 +7239,21 @@ body:has(#lesson-article) .ambient-background {
   width: 2.45rem;
   height: 2.45rem;
   padding: 0;
+  flex-shrink: 0;
+}
+
+.header-sign-in {
+  padding: 0.5rem 0.95rem;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+@media (max-width: 520px) {
+  .header-sign-in {
+    display: none;
+  }
 }
 
 .header-more {
@@ -7259,7 +7275,8 @@ body:has(#lesson-article) .ambient-background {
   padding: 0.45rem;
   border-radius: 1rem;
   border: 1px solid var(--line);
-  background: white;
+  background: var(--bg-elevated);
+  color: var(--ink);
   box-shadow: var(--shadow-lg);
   z-index: 50;
 }
@@ -7306,11 +7323,12 @@ body:has(#lesson-article) .ambient-background {
   justify-content: space-between;
   gap: 0.75rem 1rem;
   padding: 0.75rem 0.9rem;
-  border: 1px solid rgba(15, 118, 110, 0.28);
+  border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line));
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--bg-elevated) 96%, var(--bg));
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
 }
 
 .lesson-save-banner-copy {
@@ -7326,6 +7344,21 @@ body:has(#lesson-article) .ambient-background {
   line-height: 1.45;
 }
 
+.lesson-save-banner-lead {
+  display: block;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.lesson-save-banner-sub {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-soft);
+  font-weight: 550;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
 .lesson-save-banner-compact .lesson-gate-actions {
   margin-top: 0;
   flex-shrink: 0;
@@ -7334,6 +7367,28 @@ body:has(#lesson-article) .ambient-background {
 .lesson-save-banner-btn {
   padding: 0.42rem 0.75rem !important;
   font-size: 0.78rem !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .lesson-save-banner-compact {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 5.35rem;
+    z-index: 34;
+    margin-top: 0;
+  }
+
+  .lesson-save-banner-compact .lesson-gate-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .lesson-save-banner-compact .lesson-save-banner-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
 }
 
 .lesson-save-banner h2 {

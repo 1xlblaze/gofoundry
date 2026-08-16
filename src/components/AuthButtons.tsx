@@ -34,7 +34,7 @@ export function AuthButtons({
   if (mode === "nav") {
     if (!authConfigured) {
       return (
-        <a href="/login" className="primary-btn" style={{ padding: "0.5rem 0.95rem", fontSize: "0.82rem" }}>
+        <a href="/login" className="primary-btn header-sign-in">
           Sign in
         </a>
       );
@@ -69,7 +69,7 @@ export function AuthButtons({
       );
     }
     return (
-      <a href="/login" className="primary-btn" style={{ padding: "0.5rem 0.95rem", fontSize: "0.82rem" }}>
+      <a href="/login" className="primary-btn header-sign-in">
         Sign in
       </a>
     );
