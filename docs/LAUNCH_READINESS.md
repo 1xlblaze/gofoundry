@@ -21,7 +21,7 @@ npm run test:e2e:prod
 | OpenGraph / Twitter cards | ✅ | ✅ |
 | Custom domain | ⚠️ use vercel.app or buy domain | **Required** |
 | Stripe billing | ❌ intentionally off | Required if paid |
-| Sentry / analytics | ❌ not wired | Recommended |
+| Sentry / analytics | ❌ optional via `NEXT_PUBLIC_SENTRY_DSN` | See [SENTRY.md](./SENTRY.md) |
 
 ## Custom domain
 
@@ -44,7 +44,7 @@ Minimum for signed-in sync:
 
 ## Observability (recommended before paid launch)
 
-- **Sentry** — `@sentry/nextjs` for client/server errors in Lab and auth flows.
+- **Sentry** — optional; see [docs/SENTRY.md](docs/SENTRY.md)
 - **PostHog or Plausible** — lesson completion, sign-in, Lab runs (privacy-friendly).
 - Keep `/api/health` on uptime monitoring.
 
