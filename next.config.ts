@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import { sentryDefaults } from "./src/lib/sentry-defaults";
 
 const repo = "gofoundry";
 const isGhPages = process.env.GITHUB_PAGES === "true";
@@ -20,12 +21,13 @@ const nextConfig: NextConfig = {
       }),
 };
 
-const sentryEnabled = Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN) && !isGhPages;
+const sentryEnabled =
+  Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN ?? sentryDefaults.dsn) && !isGhPages;
 
 export default sentryEnabled
   ? withSentryConfig(nextConfig, {
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
+      org: process.env.SENTRY_ORG ?? sentryDefaults.org,
+      project: process.env.SENTRY_PROJECT ?? sentryDefaults.project,
       authToken: process.env.SENTRY_AUTH_TOKEN,
       silent: !process.env.CI,
       tunnelRoute: process.env.SENTRY_TUNNEL_ROUTE ?? "/monitoring",
