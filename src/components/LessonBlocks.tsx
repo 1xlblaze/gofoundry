@@ -75,20 +75,34 @@ export function LessonBlocks({
                 )}
               </div>
             );
-          case "steps":
+          case "steps": {
+            const isGoals = block.title?.toLowerCase() === "learning goals";
             return (
-              <div key={i} id={sectionId} className="panel prose-block lesson-section scroll-mt-28">
-                {block.title && <h3 style={{ marginTop: 0 }}>{block.title}</h3>}
-                <ol className="steps">
+              <div
+                key={i}
+                id={sectionId}
+                className={`lesson-section scroll-mt-28${
+                  isGoals
+                    ? " lesson-goals-block lesson-zone lesson-zone-goals"
+                    : " panel prose-block"
+                }`}
+              >
+                {block.title ? (
+                  <h3 className={isGoals ? "lesson-goals-title" : undefined} style={isGoals ? undefined : { marginTop: 0 }}>
+                    {block.title}
+                  </h3>
+                ) : null}
+                <ol className={`steps${isGoals ? " lesson-goals-list" : ""}`}>
                   {block.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ol>
               </div>
             );
+          }
           case "tradeoff":
             return (
-              <section key={i} id={sectionId} className="tradeoff-grid lesson-section scroll-mt-28">
+              <section key={i} id={sectionId} className="tradeoff-grid lesson-section lesson-zone-tradeoff scroll-mt-28">
                 <h3 className="type-title" style={{ margin: 0, gridColumn: "1 / -1" }}>
                   {block.title}
                 </h3>
@@ -141,7 +155,7 @@ export function LessonBlocks({
             );
           case "think":
             return (
-              <section key={i} id={sectionId} className="think-panel lesson-section lesson-zone lesson-zone-think scroll-mt-28">
+              <section key={i} id={sectionId} className="think-panel lesson-section scroll-mt-28">
                 <h3>{block.title ?? "How to think"}</h3>
                 <div style={{ display: "grid", gap: "1rem" }}>
                   <div>

@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { CompleteButton } from "@/components/CompleteButton";
 import type { Lesson, TrackMeta } from "@/content/types";
+import {
+  formatLessonCheckpoints,
+  formatLessonCodeBlocks,
+  formatLessonDiagrams,
+  formatLessonSections,
+  type PrerequisiteLink,
+} from "@/lib/lesson-display";
 
 type LessonStats = {
   sections: number;
@@ -20,10 +27,26 @@ export function LessonChrome({
   lesson: Lesson;
   track: TrackMeta;
   stats: LessonStats;
-  prerequisites?: Array<{ slug: string; title: string }>;
+  prerequisites?: PrerequisiteLink[];
 }) {
+  const statChips = [
+    lesson.free ? { label: "Open sample", className: "lesson-context-chip-brand" } : null,
+    { label: `${lesson.minutes} min`, className: "" },
+    { label: lesson.difficulty, className: "lesson-context-chip-level" },
+    { label: formatLessonSections(stats.sections), className: "" },
+    formatLessonDiagrams(stats.diagrams)
+      ? { label: formatLessonDiagrams(stats.diagrams)!, className: "" }
+      : null,
+    formatLessonCheckpoints(stats.checkpoints)
+      ? { label: formatLessonCheckpoints(stats.checkpoints)!, className: "" }
+      : null,
+    formatLessonCodeBlocks(stats.codeBlocks)
+      ? { label: formatLessonCodeBlocks(stats.codeBlocks)!, className: "" }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; className: string }>;
+
   return (
-    <header className="lesson-chrome panel reveal-delay-1">
+    <header className="lesson-chrome panel">
       <div className="lesson-chrome-top">
         <div className="lesson-chrome-track">
           <span
@@ -41,47 +64,44 @@ export function LessonChrome({
       <h1 className="lesson-chrome-title">{lesson.title}</h1>
       <p className="lesson-chrome-subtitle">{lesson.subtitle}</p>
 
-      <div className="lesson-context-rail" aria-label="Lesson details">
-        {lesson.free ? (
-          <span className="lesson-context-chip lesson-context-chip-brand">Open sample</span>
-        ) : null}
-        <span className="lesson-context-chip">{lesson.minutes} min</span>
-        <span className="lesson-context-chip lesson-context-chip-level">
-          {lesson.difficulty}
-        </span>
-        <span className="lesson-context-chip">{stats.sections} sections</span>
-        {stats.diagrams > 0 ? (
-          <span className="lesson-context-chip">{stats.diagrams} diagrams</span>
-        ) : null}
-        {stats.checkpoints > 0 ? (
-          <span className="lesson-context-chip">{stats.checkpoints} checkpoints</span>
-        ) : null}
-        {stats.codeBlocks > 0 ? (
-          <span className="lesson-context-chip">{stats.codeBlocks} code</span>
-        ) : null}
-      </div>
-
-      {lesson.tags.length > 0 ? (
-        <div className="lesson-topics" aria-label="Topics covered in this lesson">
-          {lesson.tags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/learn?topic=${encodeURIComponent(tag)}`}
-              className="lesson-topic-chip"
+      <div className="lesson-chrome-meta">
+        <div className="lesson-context-rail" aria-label="Lesson stats">
+          {statChips.map((chip) => (
+            <span
+              key={chip.label}
+              className={`lesson-context-chip${chip.className ? ` ${chip.className}` : ""}`}
             >
-              {tag}
-            </Link>
+              {chip.label}
+            </span>
           ))}
         </div>
-      ) : null}
+
+        {lesson.tags.length > 0 ? (
+          <div className="lesson-topics" aria-label="Topics covered in this lesson">
+            {lesson.tags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/learn?topic=${encodeURIComponent(tag)}`}
+                className="lesson-topic-chip"
+              >
+                {tag}
+              </Link>
+            ))}
+          </div>
+        ) : null}
+      </div>
 
       {prerequisites && prerequisites.length > 0 ? (
         <p className="lesson-chrome-prereq">
           <span className="lesson-chrome-prereq-label">Prerequisites</span>
           {prerequisites.map((item, i) => (
-            <span key={item.slug}>
+            <span key={item.key}>
               {i > 0 ? ", " : ""}
-              <Link href={`/lesson/${item.slug}`}>{item.title}</Link>
+              {item.href ? (
+                <Link href={item.href}>{item.title}</Link>
+              ) : (
+                <span className="lesson-chrome-prereq-text">{item.title}</span>
+              )}
             </span>
           ))}
         </p>
