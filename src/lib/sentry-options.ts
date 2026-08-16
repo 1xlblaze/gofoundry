@@ -1,7 +1,12 @@
 import type { BrowserOptions, EdgeOptions, NodeOptions } from "@sentry/nextjs";
+import { sentryDefaults } from "@/lib/sentry-defaults";
+
+export function getSentryDsn() {
+  return process.env.NEXT_PUBLIC_SENTRY_DSN ?? sentryDefaults.dsn;
+}
 
 export function isSentryEnabled() {
-  return Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN);
+  return Boolean(getSentryDsn());
 }
 
 export function getSentryEnvironment() {
@@ -10,7 +15,7 @@ export function getSentryEnvironment() {
 
 function baseOptions(): Pick<BrowserOptions, "dsn" | "environment" | "tracesSampleRate"> {
   return {
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    dsn: getSentryDsn(),
     environment: getSentryEnvironment(),
     tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
   };
