@@ -4,6 +4,24 @@ Production stack: **Vercel** (Next.js) + **Supabase** (PostgreSQL + waitlist) + 
 
 Everything except live Stripe billing is free-tier friendly.
 
+## Canonical production URL
+
+| URL | Status |
+|-----|--------|
+| **https://gofoundry-seven.vercel.app** | ✅ Live GoFoundry (this repo) |
+| https://gofoundry.vercel.app | ❌ Different legacy static app — not GoFoundry lessons |
+
+Use **gofoundry-seven** for smoke tests, demos, and public links until a custom domain is attached to the correct Vercel project.
+
+Quick verification:
+
+```bash
+curl -s https://gofoundry-seven.vercel.app/api/health | jq .
+npm run test:e2e:prod
+```
+
+Expect `overall: "fully_connected"` and **123** passing Playwright tests against production.
+
 ## 1. Supabase database (`DATABASE_URL`)
 
 Your project: `kqolyvmwcsqilnakuewt` (ap-south-1).
