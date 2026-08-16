@@ -1,14 +1,34 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { searchLessons, getTrack } from "@/content";
 
 const SUGGESTIONS = ["scheduler", "rate limiter", "escape analysis", "context", "channel"];
 
 export default function SearchPage() {
-  const [q, setQ] = useState("");
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") ?? "";
+  const [q, setQ] = useState(initialQuery);
   const results = useMemo(() => searchLessons(q), [q]);
+
+  useEffect(() => {
+    setQ(initialQuery);
+  }, [initialQuery]);
+
+  useEffect(() => {
+    const trimmed = q.trim();
+    const params = new URLSearchParams(window.location.search);
+    if (trimmed) {
+      params.set("q", trimmed);
+    } else {
+      params.delete("q");
+    }
+    const query = params.toString();
+    const nextUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+    window.history.replaceState(null, "", nextUrl);
+  }, [q]);
 
   return (
     <div className="shell" style={{ maxWidth: 760, padding: "2.5rem 0 3.5rem" }}>

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Sandbox architecture",
   description:
     "GoFoundry's gVisor-backed diagnostic execution cluster: escape analysis, -race, goleak, and benchmark gates.",
-};
+  path: "/sandbox",
+});
 
 const pipeline = [
   { step: "go vet", detail: "Static analysis before compile" },

@@ -18,8 +18,10 @@ import { LessonTableOfContents } from "@/components/LessonTableOfContents";
 import { LessonContentShell } from "@/components/LessonContentShell";
 import { LessonWorkspaceProvider } from "@/components/LessonWorkspace";
 import { LessonVisitTracker } from "@/components/LessonVisitTracker";
+import { JsonLd } from "@/components/JsonLd";
 import { sectionsFromBlocks } from "@/lib/lesson-sections";
 import { buildPageMetadata } from "@/lib/site-metadata";
+import { learningResourceJsonLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,6 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: lesson.subtitle,
     path: `/lesson/${slug}`,
     type: "article",
+    keywords: [...lesson.tags, lesson.track],
   });
 }
 
@@ -62,6 +65,14 @@ export default async function LessonPage({ params }: Props) {
 
   return (
     <LessonWorkspaceProvider lessonSlug={lesson.slug} trackId={track.id}>
+      <JsonLd
+        data={learningResourceJsonLd({
+          title: lesson.title,
+          description: lesson.subtitle,
+          path: `/lesson/${lesson.slug}`,
+          trackTitle: track.title,
+        })}
+      />
       <article id="lesson-article" className="shell lesson-reading">
       <LessonVisitTracker slug={lesson.slug} />
       <ReadingProgress articleId="lesson-article" />
