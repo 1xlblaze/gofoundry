@@ -260,6 +260,10 @@ test.describe("UI quality — lesson content", () => {
 
     await expect(page.locator(".teaser-chip").first()).toBeVisible();
     expect(await contrastGap(".teaser-chip")).toBeGreaterThan(0.35);
+
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(page.locator(".home-track-badge").first()).toBeVisible();
+    expect(await contrastGap(".home-track-badge")).toBeGreaterThan(0.35);
   });
 });
 

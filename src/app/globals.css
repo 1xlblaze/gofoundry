@@ -390,7 +390,7 @@ body:has(.heat-canvas-page) .site-header {
 .stat {
   padding: 0.95rem 0.85rem;
   border-radius: var(--radius-sm);
-  background: linear-gradient(180deg, #ffffff, var(--bg-soft));
+  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-soft));
   border: 1px solid var(--line);
   transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease;
 }
@@ -1047,7 +1047,7 @@ body:has(.heat-canvas-page) .site-header {
   gap: 0.15rem;
   padding: 0.85rem 1rem;
   border-radius: 0.85rem;
-  background: white;
+  background: var(--bg-elevated);
   border: 1px solid var(--line);
   transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
@@ -1085,7 +1085,7 @@ body:has(.heat-canvas-page) .site-header {
   border: 1px solid rgba(15, 118, 110, 0.25);
   background:
     linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(234, 88, 12, 0.08)),
-    white;
+    var(--bg-elevated);
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
@@ -1381,7 +1381,7 @@ body:has(.heat-canvas-page) .site-header {
 .capacity-item {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: linear-gradient(180deg, #ffffff, var(--bg-soft));
+  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-soft));
   padding: 0.9rem 1rem;
   transition: transform 0.2s ease;
 }
@@ -1410,7 +1410,7 @@ body:has(.heat-canvas-page) .site-header {
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: white;
+  background: var(--bg-elevated);
   box-shadow: var(--shadow);
 }
 
@@ -1507,7 +1507,7 @@ body:has(.heat-canvas-page) .site-header {
   padding: 1rem 1.1rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: white;
+  background: var(--bg-elevated);
   display: grid;
   gap: 0.55rem;
 }
@@ -1722,7 +1722,7 @@ body:has(.heat-canvas-page) .site-header {
   padding: 0.9rem 1rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: white;
+  background: var(--bg-elevated);
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 .step-card:hover {
@@ -1762,7 +1762,7 @@ body:has(.heat-canvas-page) .site-header {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
-  background: white;
+  background: var(--bg-elevated);
 }
 .capacity-table table { width: 100%; border-collapse: collapse; }
 .capacity-table th,
@@ -2420,7 +2420,7 @@ a.brand-mark {
   place-content: center;
   border: 1.5px solid var(--line-strong);
   border-radius: 0.36rem;
-  background: white;
+  background: var(--bg-elevated);
   cursor: pointer;
   transition:
     border-color 0.18s ease,
@@ -2914,13 +2914,13 @@ a.brand-mark {
 
 .viz-picker-btn:hover {
   color: var(--brand-deep);
-  background: white;
+  background: var(--bg-elevated);
 }
 
 .viz-picker-btn.active {
   border-color: rgba(15, 118, 110, 0.22);
   color: var(--brand-deep);
-  background: white;
+  background: var(--bg-elevated);
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
@@ -3251,7 +3251,7 @@ a.brand-mark {
   padding: 0.9rem 1rem;
   border: 1px solid rgba(15, 118, 110, 0.18);
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(204, 251, 241, 0.42), white);
+  background: linear-gradient(135deg, rgba(204, 251, 241, 0.42), var(--bg-elevated));
 }
 
 .viz-explanation-index {
@@ -4087,7 +4087,7 @@ a.brand-mark {
   border-color: rgba(15, 118, 110, 0.32);
   background:
     linear-gradient(135deg, rgba(204, 251, 241, 0.55), rgba(255, 237, 213, 0.45)),
-    white;
+    var(--bg-elevated);
 }
 
 .price-lifetime .kicker {
@@ -4151,7 +4151,7 @@ a.brand-mark {
 
 .bench-mode-toggle button.active {
   color: var(--brand-deep);
-  background: white;
+  background: var(--bg-elevated);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
 }
 
@@ -4183,7 +4183,7 @@ a.brand-mark {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink-soft);
-  background: white;
+  background: var(--bg-elevated);
   cursor: pointer;
   font: inherit;
   font-size: 0.72rem;
@@ -4305,7 +4305,7 @@ a.brand-mark {
 .escape-picker button:hover,
 .escape-picker button.active {
   color: var(--brand-deep);
-  background: white;
+  background: var(--bg-elevated);
 }
 
 .escape-picker button.active {
@@ -4612,7 +4612,7 @@ a.brand-mark {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   color: var(--ink);
-  background: white;
+  background: var(--bg-elevated);
   outline: 0;
   font: inherit;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
@@ -5192,7 +5192,7 @@ a.brand-mark {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   color: var(--ink-soft);
-  background: white;
+  background: var(--bg-elevated);
   cursor: pointer;
   font: inherit;
   font-size: 0.94rem;
@@ -5234,7 +5234,7 @@ a.brand-mark {
 .diag-option-selected {
   border-color: var(--brand);
   color: var(--brand-deep);
-  background: linear-gradient(90deg, rgba(204, 251, 241, 0.7), white);
+  background: linear-gradient(90deg, rgba(204, 251, 241, 0.7), var(--bg-elevated));
   box-shadow: 0 5px 18px rgba(15, 118, 110, 0.09);
 }
 
@@ -5452,7 +5452,7 @@ a.brand-mark {
   border-color: rgba(234, 88, 12, 0.27);
   background:
     radial-gradient(circle at 90% 0%, rgba(234, 88, 12, 0.1), transparent 38%),
-    white;
+    var(--bg-elevated);
 }
 
 .diag-waitlist h2 {
@@ -5567,7 +5567,7 @@ a.brand-mark {
   min-height: 2.8rem;
   border-color: var(--brand);
   color: var(--brand-deep);
-  background: white;
+  background: var(--bg-elevated);
 }
 
 .magnet-print-instructions {
@@ -5738,19 +5738,19 @@ a.brand-mark {
 
 .benchmark-hero-verdict.pass {
   color: var(--ok);
-  background: color-mix(in srgb, var(--ok) 12%, white);
+  background: color-mix(in srgb, var(--ok) 12%, var(--bg-elevated));
 }
 
 .benchmark-hero-verdict.fail {
   color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 10%, white);
+  background: color-mix(in srgb, var(--danger) 10%, var(--bg-elevated));
 }
 
 .benchmark-hero-error {
   padding: 0.65rem 0.75rem;
   border-radius: var(--radius-sm);
   color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 8%, white);
+  background: color-mix(in srgb, var(--danger) 8%, var(--bg-elevated));
   font-size: 0.85rem;
 }
 
@@ -5805,12 +5805,12 @@ a.brand-mark {
 
 .diagnostic-gate-pass {
   border-color: color-mix(in srgb, var(--ok) 40%, var(--line));
-  background: color-mix(in srgb, var(--ok) 8%, white);
+  background: color-mix(in srgb, var(--ok) 8%, var(--bg-elevated));
 }
 
 .diagnostic-gate-fail {
   border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
-  background: color-mix(in srgb, var(--danger) 8%, white);
+  background: color-mix(in srgb, var(--danger) 8%, var(--bg-elevated));
 }
 
 .diagnostic-markers {
@@ -5845,12 +5845,12 @@ a.brand-mark {
 
 .diagnostic-marker-warning {
   color: var(--warn);
-  background: color-mix(in srgb, var(--warn) 15%, white);
+  background: color-mix(in srgb, var(--warn) 15%, var(--bg-elevated));
 }
 
 .diagnostic-marker-info {
   color: var(--info);
-  background: color-mix(in srgb, var(--info) 12%, white);
+  background: color-mix(in srgb, var(--info) 12%, var(--bg-elevated));
 }
 
 .diagnostic-error {
@@ -6167,7 +6167,7 @@ a.brand-mark {
   display: grid;
   gap: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--brand) 25%, var(--line));
-  background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 6%, white), white);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 6%, var(--bg-elevated)), var(--bg-elevated));
 }
 
 .diagram-callout-head {
@@ -6187,7 +6187,7 @@ a.brand-mark {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--brand);
-  background: color-mix(in srgb, var(--brand) 12%, white);
+  background: color-mix(in srgb, var(--brand) 12%, var(--bg-elevated));
 }
 
 .diagram-callout figcaption {
@@ -6377,22 +6377,22 @@ body:has(#lesson-article) .ambient-background {
 
 .lesson-toc-visual.is-active,
 .lesson-toc-link.lesson-toc-visual:hover {
-  background: color-mix(in srgb, var(--brand) 12%, white);
+  background: color-mix(in srgb, var(--brand) 12%, var(--bg-elevated));
 }
 
 .lesson-toc-think.is-active,
 .lesson-toc-link.lesson-toc-think:hover {
-  background: color-mix(in srgb, #d97706 12%, white);
+  background: color-mix(in srgb, #d97706 12%, var(--bg-elevated));
 }
 
 .lesson-toc-action.is-active,
 .lesson-toc-link.lesson-toc-action:hover {
-  background: color-mix(in srgb, #2563eb 10%, white);
+  background: color-mix(in srgb, #2563eb 10%, var(--bg-elevated));
 }
 
 .lesson-toc-link:hover,
 .lesson-toc-link.is-active {
-  background: color-mix(in srgb, var(--brand) 10%, white);
+  background: color-mix(in srgb, var(--brand) 10%, var(--bg-elevated));
   color: var(--brand-deep);
 }
 
@@ -6611,7 +6611,7 @@ body:has(#lesson-article) .ambient-background {
 }
 
 .chip-complete {
-  background: color-mix(in srgb, var(--brand) 12%, white);
+  background: color-mix(in srgb, var(--brand) 12%, var(--bg-elevated));
   color: var(--brand-deep);
 }
 
@@ -6776,7 +6776,7 @@ body:has(#lesson-article) .ambient-background {
   padding: 0.35rem 0.65rem;
   border-radius: 0.65rem;
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, #ffffff, var(--bg-soft));
+  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-soft));
   font-family: var(--font-mono);
 }
 
@@ -6866,7 +6866,7 @@ body:has(#lesson-article) .ambient-background {
 }
 
 .ds-collapsible-trigger:hover {
-  background: color-mix(in srgb, var(--brand) 6%, white);
+  background: color-mix(in srgb, var(--brand) 6%, var(--bg-elevated));
 }
 
 .ds-collapsible-copy {
@@ -6957,7 +6957,7 @@ body:has(#lesson-article) .ambient-background {
 
 .learn-track-nav-link:hover,
 .learn-track-nav-link.is-active {
-  background: color-mix(in srgb, var(--brand) 10%, white);
+  background: color-mix(in srgb, var(--brand) 10%, var(--bg-elevated));
 }
 
 .learn-track-nav-short {
@@ -7039,7 +7039,7 @@ body:has(#lesson-article) .ambient-background {
 }
 
 .progress-table tbody tr:hover {
-  background: color-mix(in srgb, var(--brand) 5%, white);
+  background: color-mix(in srgb, var(--brand) 5%, var(--bg-elevated));
 }
 
 .progress-streak-banner {
@@ -7071,7 +7071,7 @@ body:has(#lesson-article) .ambient-background {
 
 .diagnostic-option.is-selected {
   border-color: var(--brand);
-  background: color-mix(in srgb, var(--brand) 8%, white);
+  background: color-mix(in srgb, var(--brand) 8%, var(--bg-elevated));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand) 20%, transparent);
 }
 
@@ -7106,7 +7106,7 @@ body:has(#lesson-article) .ambient-background {
 }
 
 .blog-card:hover .blog-tag {
-  background: color-mix(in srgb, var(--brand) 12%, white);
+  background: color-mix(in srgb, var(--brand) 12%, var(--bg-elevated));
   color: var(--brand-deep);
 }
 
@@ -7152,7 +7152,7 @@ body:has(#lesson-article) .ambient-background {
 }
 
 .sheet-problem-row:hover {
-  background: color-mix(in srgb, var(--brand) 4%, white);
+  background: color-mix(in srgb, var(--brand) 4%, var(--bg-elevated));
 }
 
 @media (max-width: 1023px) {
@@ -7188,7 +7188,7 @@ body:has(#lesson-article) .ambient-background {
     padding: 0.5rem 0.7rem;
     border: 1px solid var(--line);
     border-radius: 0.75rem;
-    background: white;
+    background: var(--bg-elevated);
     text-align: center;
   }
 
@@ -7532,7 +7532,7 @@ body:has(#lesson-article) .ambient-background {
   padding: 0.7rem 0.8rem;
   border-radius: 0.9rem;
   border: 1px solid color-mix(in srgb, var(--node-accent, var(--brand)) 35%, var(--line));
-  background: white;
+  background: var(--bg-elevated);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
   transition: transform 0.2s var(--ease-out), border-color 0.2s ease;
 }
@@ -7569,7 +7569,7 @@ a.motion-diagram-node:hover {
 
 .search-suggest {
   border: 1px solid var(--line);
-  background: white;
+  background: var(--bg-elevated);
   border-radius: 999px;
   padding: 0.35rem 0.75rem;
   font: inherit;
@@ -7657,9 +7657,9 @@ a.motion-diagram-node:hover {
   padding: 1.5rem 1.35rem 1.65rem;
   border-color: color-mix(in srgb, var(--brand) 18%, var(--line));
   background:
-    radial-gradient(ellipse 90% 70% at 0% 0%, rgba(15, 118, 110, 0.09), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 100% 100%, rgba(234, 88, 12, 0.07), transparent 52%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.92));
+    radial-gradient(ellipse 90% 70% at 0% 0%, color-mix(in srgb, var(--brand) 9%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 100% 100%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 52%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 98%, var(--bg)), color-mix(in srgb, var(--bg-soft) 94%, var(--bg)));
 }
 
 .home-tracks-head {
@@ -7752,13 +7752,14 @@ a.motion-diagram-node:hover {
   align-items: center;
   padding: 0.32rem 0.62rem;
   border-radius: 0.55rem;
-  border: 1px solid color-mix(in srgb, var(--card-accent, var(--brand)) 28%, var(--line));
-  background: color-mix(in srgb, var(--card-accent, var(--brand)) 10%, white);
-  color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line));
+  background: color-mix(in srgb, var(--brand-soft) 58%, var(--bg-elevated));
+  color: color-mix(in srgb, var(--ink) 82%, var(--brand-deep));
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-accent, var(--brand)) 22%, transparent);
 }
 
 .home-track-index {
@@ -8244,6 +8245,59 @@ a.motion-diagram-node:hover {
   border-color: var(--line);
 }
 
+[data-theme="dark"] .home-tracks-panel {
+  background:
+    radial-gradient(ellipse 90% 70% at 0% 0%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 100% 100%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 52%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 96%, var(--bg)), var(--bg-muted));
+}
+
+[data-theme="dark"] .home-track-badge {
+  background: color-mix(in srgb, var(--brand) 14%, var(--bg-muted));
+  color: var(--ink-soft);
+  border-color: var(--card-accent, var(--brand));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-accent, var(--brand)) 28%, transparent);
+}
+
+[data-theme="dark"] .home-track-meta {
+  color: var(--brand);
+}
+
+[data-theme="dark"] .lesson-context-chip-brand {
+  color: #99f6e4;
+  background: color-mix(in srgb, var(--brand) 20%, var(--bg-muted));
+  border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
+}
+
+[data-theme="dark"] .lesson-context-chip-level {
+  color: #99f6e4;
+  border-color: color-mix(in srgb, var(--brand) 36%, var(--line));
+}
+
+[data-theme="dark"] .lesson-topic-chip {
+  color: #99f6e4;
+  border-color: color-mix(in srgb, var(--brand) 36%, var(--line));
+}
+
+[data-theme="dark"] .lesson-topic-chip:hover {
+  background: color-mix(in srgb, var(--brand) 18%, var(--bg-muted));
+}
+
+[data-theme="dark"] .diagram-callout-badge {
+  color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 18%, var(--bg-muted));
+}
+
+[data-theme="dark"] .learn-track-nav-link:hover,
+[data-theme="dark"] .learn-track-nav-link.is-active {
+  background: color-mix(in srgb, var(--brand) 18%, var(--bg-muted));
+}
+
+[data-theme="dark"] .motion-diagram-node {
+  background: color-mix(in srgb, var(--bg-elevated) 94%, var(--bg-muted));
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
 /* Diagram palette */
 :root {
   --diagram-bg: #ecf5f3;
@@ -8466,7 +8520,7 @@ body.lesson-etch-split-active .lesson-layout {
 }
 
 .diagram-stepper-dot.is-done {
-  background: color-mix(in srgb, var(--brand) 45%, white);
+  background: color-mix(in srgb, var(--brand) 45%, var(--bg-elevated));
 }
 
 .diagram-stepper-text {
@@ -8555,7 +8609,7 @@ body.lesson-etch-split-active .lesson-layout {
 
 .lesson-context-chip-brand {
   border-color: color-mix(in srgb, var(--brand) 30%, var(--line));
-  background: color-mix(in srgb, var(--brand) 10%, white);
+  background: color-mix(in srgb, var(--brand) 10%, var(--bg-elevated));
   color: var(--brand-deep);
 }
 
@@ -8593,7 +8647,7 @@ body.lesson-etch-split-active .lesson-layout {
 }
 
 .lesson-topic-chip:hover {
-  background: color-mix(in srgb, var(--brand) 10%, white);
+  background: color-mix(in srgb, var(--brand) 10%, var(--bg-elevated));
   border-color: var(--brand);
 }
 
@@ -8799,18 +8853,18 @@ body:has(#lesson-article) {
 
 .lesson-section-dot.is-active {
   border-color: var(--brand);
-  background: color-mix(in srgb, var(--brand) 14%, white);
+  background: color-mix(in srgb, var(--brand) 14%, var(--bg-elevated));
   color: var(--brand-deep);
 }
 
 .lesson-section-dot-think.is-active {
   border-color: #d97706;
-  background: color-mix(in srgb, #d97706 12%, white);
+  background: color-mix(in srgb, #d97706 12%, var(--bg-elevated));
 }
 
 .lesson-section-dot-action.is-active {
   border-color: #2563eb;
-  background: color-mix(in srgb, #2563eb 10%, white);
+  background: color-mix(in srgb, #2563eb 10%, var(--bg-elevated));
 }
 
 .lesson-section-dot-visual.is-active {
@@ -8888,7 +8942,7 @@ body:has(#lesson-article) {
 
 .lesson-tone-filter.is-active {
   border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
-  background: color-mix(in srgb, var(--brand) 12%, white);
+  background: color-mix(in srgb, var(--brand) 12%, var(--bg-elevated));
   color: var(--brand-deep);
 }
 
