@@ -11,7 +11,8 @@
     "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://gofoundry-seven.vercel.app playwright test",
     "sync:worker": "tsx scripts/sync-worker-problems.mjs",
     "seed:problems": "tsx scripts/seed-problems.mjs",
-    "deploy:setup": "node scripts/deploy-setup.mjs"
+    "deploy:setup": "node scripts/deploy-setup.mjs",
+    "setup:sentry-vercel": "node scripts/setup-sentry-vercel.mjs"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.0",
