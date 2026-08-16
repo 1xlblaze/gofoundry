@@ -1931,9 +1931,9 @@ a.brand-mark {
 .hero-trust-strip li {
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid rgba(15, 118, 110, 0.2);
-  background: rgba(255, 255, 255, 0.75);
-  color: var(--brand-deep);
+  border: 1px solid color-mix(in srgb, var(--brand) 24%, var(--line));
+  background: color-mix(in srgb, var(--brand-soft) 55%, var(--bg-elevated));
+  color: color-mix(in srgb, var(--brand-deep) 82%, var(--ink));
   font-size: 0.72rem;
   font-weight: 750;
   letter-spacing: 0.03em;
@@ -6729,7 +6729,7 @@ body:has(#lesson-article) .ambient-background {
 
 .ds-status-done {
   color: var(--brand-deep);
-  background: color-mix(in srgb, var(--brand) 12%, white);
+  background: color-mix(in srgb, var(--brand) 12%, var(--bg-elevated));
   border-color: color-mix(in srgb, var(--brand) 30%, var(--line));
 }
 
@@ -6747,8 +6747,8 @@ body:has(#lesson-article) .ambient-background {
 
 .ds-status-free {
   color: var(--brand-deep);
-  background: var(--brand-soft);
-  border-color: #99f6e4;
+  background: color-mix(in srgb, var(--brand-soft) 70%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--brand) 32%, var(--line));
 }
 
 .ds-status-progress {
@@ -7616,14 +7616,14 @@ a.motion-diagram-node:hover {
   padding: 0.45rem 0.75rem;
   border: 1px solid var(--line);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.72);
+  background: color-mix(in srgb, var(--bg-elevated) 90%, var(--bg-soft));
   font-size: 0.78rem;
   line-height: 1.25;
   transition: border-color 0.18s ease, background 0.18s ease;
 }
 
 .hero-heat-step strong {
-  color: var(--brand-deep);
+  color: color-mix(in srgb, var(--brand-deep) 88%, var(--ink));
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -7637,7 +7637,7 @@ a.motion-diagram-node:hover {
 
 .hero-heat-step:hover {
   border-color: color-mix(in srgb, var(--brand) 35%, var(--line));
-  background: white;
+  background: color-mix(in srgb, var(--brand-soft) 42%, var(--bg-elevated));
 }
 
 .home-explore-section {
@@ -8157,6 +8157,91 @@ a.motion-diagram-node:hover {
 [data-theme="dark"] .site-header-solid,
 [data-theme="dark"] body:has(#lesson-article) .site-header {
   background: rgba(11, 18, 32, 0.96);
+}
+
+[data-theme="dark"] .hero-trust-strip li {
+  background: color-mix(in srgb, var(--brand) 16%, var(--bg-muted));
+  color: var(--ink-soft);
+  border-color: color-mix(in srgb, var(--brand) 36%, var(--line));
+}
+
+[data-theme="dark"] .hero-heat-step {
+  background: color-mix(in srgb, var(--bg-muted) 88%, var(--bg-elevated));
+}
+
+[data-theme="dark"] .hero-heat-step strong {
+  color: var(--brand);
+}
+
+[data-theme="dark"] .hero-heat-step span {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .hero-heat-step:hover {
+  background: color-mix(in srgb, var(--brand) 18%, var(--bg-muted));
+}
+
+[data-theme="dark"] .ds-diff-beginner,
+[data-theme="dark"] .ds-diff-easy {
+  color: #6ee7b7;
+  background: color-mix(in srgb, #059669 22%, var(--bg-muted));
+  border-color: color-mix(in srgb, #059669 45%, var(--line));
+}
+
+[data-theme="dark"] .ds-diff-intermediate,
+[data-theme="dark"] .ds-diff-medium {
+  color: #fcd34d;
+  background: color-mix(in srgb, #d97706 20%, var(--bg-muted));
+  border-color: color-mix(in srgb, #d97706 40%, var(--line));
+}
+
+[data-theme="dark"] .ds-diff-advanced,
+[data-theme="dark"] .ds-diff-hard {
+  color: #fca5a5;
+  background: color-mix(in srgb, #dc2626 18%, var(--bg-muted));
+  border-color: color-mix(in srgb, #dc2626 38%, var(--line));
+}
+
+[data-theme="dark"] .ds-status-done {
+  color: #99f6e4;
+  background: color-mix(in srgb, var(--brand) 18%, var(--bg-muted));
+  border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
+}
+
+[data-theme="dark"] .ds-status-starred {
+  color: #fcd34d;
+  background: color-mix(in srgb, #d97706 18%, var(--bg-muted));
+  border-color: color-mix(in srgb, #d97706 38%, var(--line));
+}
+
+[data-theme="dark"] .ds-status-free {
+  color: #99f6e4;
+  background: color-mix(in srgb, var(--brand) 20%, var(--bg-muted));
+  border-color: color-mix(in srgb, var(--brand) 42%, var(--line));
+}
+
+[data-theme="dark"] .ds-status-progress {
+  color: #93c5fd;
+  background: color-mix(in srgb, #2563eb 18%, var(--bg-muted));
+  border-color: color-mix(in srgb, #2563eb 38%, var(--line));
+}
+
+[data-theme="dark"] .ds-status-quiz {
+  color: #c4b5fd;
+  background: color-mix(in srgb, #7c3aed 18%, var(--bg-muted));
+  border-color: color-mix(in srgb, #7c3aed 38%, var(--line));
+}
+
+[data-theme="dark"] .chip-brand {
+  color: #99f6e4;
+  background: color-mix(in srgb, var(--brand) 18%, var(--bg-muted));
+  border-color: color-mix(in srgb, var(--brand) 38%, var(--line));
+}
+
+[data-theme="dark"] .teaser-chip {
+  color: var(--ink-soft);
+  background: color-mix(in srgb, var(--bg-muted) 90%, var(--bg-elevated));
+  border-color: var(--line);
 }
 
 /* Diagram palette */

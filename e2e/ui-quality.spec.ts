@@ -227,6 +227,40 @@ test.describe("UI quality — lesson content", () => {
     await stepper.getByRole("button", { name: "Next step" }).click();
     await expect(stepper.locator(".diagram-stepper-text")).toContainText(/map/i);
   });
+
+  test("dark mode keeps homepage hero tags readable", async ({ page }) => {
+    await page.goto("/");
+    const toggle = page.getByRole("button", { name: /Switch to dark/i });
+    if (await toggle.isVisible()) {
+      await toggle.click();
+    }
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    const luminance = (rgb: string) => {
+      const match = rgb.match(/[\d.]+/g);
+      if (!match || match.length < 3) return 0;
+      const [r, g, b] = match.slice(0, 3).map(Number);
+      return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    };
+
+    const contrastGap = async (selector: string) => {
+      const styles = await page.locator(selector).first().evaluate((el) => {
+        const computed = getComputedStyle(el);
+        return { bg: computed.backgroundColor, color: computed.color };
+      });
+      return Math.abs(luminance(styles.bg) - luminance(styles.color));
+    };
+
+    await expect(page.locator(".hero-trust-strip li").first()).toBeVisible();
+    expect(await contrastGap(".hero-trust-strip li")).toBeGreaterThan(0.35);
+
+    await expect(page.locator(".hero-heat-step").first()).toBeVisible();
+    expect(await contrastGap(".hero-heat-step strong")).toBeGreaterThan(0.35);
+    expect(await contrastGap(".hero-heat-step span")).toBeGreaterThan(0.25);
+
+    await expect(page.locator(".teaser-chip").first()).toBeVisible();
+    expect(await contrastGap(".teaser-chip")).toBeGreaterThan(0.35);
+  });
 });
 
 test.describe("UI quality — auth session health", () => {
