@@ -7,3 +7,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Cloud Agent development
+
+- Install dependencies: `npm ci`
+- Dev server: `npm run dev` (port 3000, started automatically via `terminals`)
+- Lint: `npm run lint`
+- Production build: `npm run build`
+- Optional secrets (configure in the environment panel): `AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `KEYCLOAK_*`, `NEXT_PUBLIC_SUPABASE_*`
+- Core flows work without auth or Supabase: lessons, curriculum, Go Lab (playground proxy), local progress
+- Google OAuth redirect URI for local dev: `http://localhost:3000/api/auth/callback/google`
