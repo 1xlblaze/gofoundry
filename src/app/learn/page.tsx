@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { allLessons, tracks, lessonsForTrack } from "@/content";
 import type { Difficulty, TrackId } from "@/content/types";
 import { LearnTrackNav } from "@/components/LearnTrackNav";
@@ -16,6 +17,8 @@ import { loadProgress, type ProgressState } from "@/lib/progress";
 import { getContinueLesson } from "@/lib/continueLesson";
 
 export default function LearnPage() {
+  const searchParams = useSearchParams();
+  const topicParam = searchParams.get("topic")?.trim() ?? "";
   const [progress, setProgress] = useState<ProgressState>({
     completed: [],
     quizScores: {},
@@ -26,6 +29,10 @@ export default function LearnPage() {
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | "all">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "done" | "todo">("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (topicParam) setSearchQuery(topicParam);
+  }, [topicParam]);
 
   useEffect(() => {
     const refresh = () => setProgress(loadProgress());
@@ -98,7 +105,8 @@ export default function LearnPage() {
         if (
           query &&
           !lesson.title.toLowerCase().includes(query) &&
-          !lesson.subtitle.toLowerCase().includes(query)
+          !lesson.subtitle.toLowerCase().includes(query) &&
+          !lesson.tags.some((tag) => tag.toLowerCase().includes(query))
         ) {
           return false;
         }
@@ -109,17 +117,21 @@ export default function LearnPage() {
   }, [visibleTracks, difficultyFilter, statusFilter, searchQuery, progress.completed]);
 
   function lessonMatches(
-    lesson: { slug: string; title: string; subtitle: string; difficulty: Difficulty },
+    lesson: { slug: string; title: string; subtitle: string; difficulty: Difficulty; tags?: string[] },
   ) {
     if (difficultyFilter !== "all" && lesson.difficulty !== difficultyFilter) return false;
     const complete = progress.completed.includes(lesson.slug);
     if (statusFilter === "done" && !complete) return false;
     if (statusFilter === "todo" && complete) return false;
     const query = searchQuery.trim().toLowerCase();
+    if (topicParam && !lesson.tags?.some((tag) => tag.toLowerCase() === topicParam.toLowerCase())) {
+      if (!lesson.title.toLowerCase().includes(topicParam.toLowerCase())) return false;
+    }
     if (
       query &&
       !lesson.title.toLowerCase().includes(query) &&
-      !lesson.subtitle.toLowerCase().includes(query)
+      !lesson.subtitle.toLowerCase().includes(query) &&
+      !lesson.tags?.some((tag) => tag.toLowerCase().includes(query))
     ) {
       return false;
     }
