@@ -19,6 +19,12 @@ const resources: {
   pillars: readonly DiagnosticPillar[];
 }[] = [
   {
+    href: "/track/foundations",
+    title: "Go Foundations track",
+    description: "Plain-language on-ramp if Go syntax or basics need a refresh.",
+    pillars: ["Production Go"],
+  },
+  {
     href: "/track/internals",
     title: "Runtime internals track",
     description: "Build evidence-based intuition for scheduling, allocation, and GC.",
@@ -233,10 +239,24 @@ export default function DiagnosticPage() {
               </h2>
             </div>
             <p>
-              Start with resources marked for your weakest pillar, then reinforce
-              the model by running code.
+              {result.percent < 50
+                ? "Scores under 50% often mean Foundations or core Concepts first — staff tracks assume comfort with Go basics."
+                : "Start with resources marked for your weakest pillar, then reinforce the model by running code."}
             </p>
           </div>
+          {result.percent < 50 ? (
+            <div className="panel diag-foundations-callout" data-motion>
+              <p className="type-label">Placement suggestion</p>
+              <h3>Start with Go Foundations</h3>
+              <p>
+                Your score suggests refreshing syntax, values, and control flow before diving into
+                scheduler internals or staff problem workspaces.
+              </p>
+              <Link href="/track/foundations" className="primary-btn">
+                Open Foundations track →
+              </Link>
+            </div>
+          ) : null}
           <div className="diag-resource-grid">
             {resources.map((resource) => {
               const isRecommended = resource.pillars.includes(weakestPillar.pillar);
@@ -315,11 +335,12 @@ export default function DiagnosticPage() {
     <ScrollReveal>
     <div className="shell diag-page">
       <header className="page-hero diag-hero" data-motion>
-        <span className="kicker">Staff Go Readiness · ~15 min</span>
+        <span className="kicker">Placement quiz · ~15 min</span>
         <h1>Find the gaps before the interview does.</h1>
         <p>
-          Fifteen practical questions across Go internals, concurrency,
-          production engineering, and system design. No account required.
+          Fifteen practical questions across Go internals, concurrency, production engineering,
+          and system design. We recommend Foundations, HEAT, or internals based on your score.
+          No account required.
         </p>
         {previousScore !== null ? (
           <p className="diag-last-score">

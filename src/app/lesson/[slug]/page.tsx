@@ -20,8 +20,11 @@ import { LessonWorkspaceProvider } from "@/components/LessonWorkspace";
 import { LessonVisitTracker } from "@/components/LessonVisitTracker";
 import { JsonLd } from "@/components/JsonLd";
 import { sectionsFromBlocks } from "@/lib/lesson-sections";
+import { resolvePrerequisiteLinks } from "@/lib/lesson-display";
 import { buildPageMetadata } from "@/lib/site-metadata";
 import { learningResourceJsonLd } from "@/lib/seo";
+
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -57,11 +60,9 @@ export default async function LessonPage({ params }: Props) {
     checkpoints: sections.filter((s) => s.tone === "think").length,
     codeBlocks: sections.filter((s) => s.tone === "action").length,
   };
-  const prerequisiteLinks =
-    lesson.prerequisites?.map((slug) => ({
-      slug,
-      title: getLesson(slug)?.title ?? slug,
-    })) ?? [];
+  const prerequisiteLinks = resolvePrerequisiteLinks(lesson.prerequisites, (ref) =>
+    getLesson(ref),
+  );
 
   return (
     <LessonWorkspaceProvider lessonSlug={lesson.slug} trackId={track.id}>

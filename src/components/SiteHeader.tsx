@@ -1,12 +1,9 @@
 import Link from "next/link";
-import { auth } from "@/auth";
-import { AuthButtons } from "@/components/AuthButtons";
+import { HeaderAuth } from "@/components/HeaderAuth";
 import { HeaderChrome } from "@/components/HeaderChrome";
 import { allLessons } from "@/content";
 
-export async function SiteHeader() {
-  const session = await auth();
-
+export function SiteHeader() {
   return (
     <HeaderChrome
       totalLessons={allLessons.length}
@@ -16,7 +13,7 @@ export async function SiteHeader() {
           GoFoundry
         </Link>
       }
-      auth={<AuthButtons mode="nav" userName={session?.user?.name} />}
+      auth={<HeaderAuth />}
     />
   );
 }

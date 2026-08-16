@@ -11,7 +11,8 @@ import {
   presetForTrack,
   type EtchScene,
 } from "@/lib/etch-diagram";
-import type { PlatformProblem } from "@/lib/platform/types";
+import type { PlatformProblem, DiagnosticMode } from "@/lib/platform/types";
+import { PRO_DIAGNOSTIC_MODES } from "@/lib/entitlements";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -28,6 +29,7 @@ const EtchCanvas = dynamic(
 
 type ProblemWorkspaceProps = {
   problem: PlatformProblem;
+  isPro?: boolean;
 };
 
 type HearState = {
@@ -36,7 +38,10 @@ type HearState = {
   concurrencyModel: string;
 };
 
-export function ProblemWorkspace({ problem }: ProblemWorkspaceProps) {
+export function ProblemWorkspace({ problem, isPro = false }: ProblemWorkspaceProps) {
+  const diagnosticModes: DiagnosticMode[] = isPro
+    ? ["correctness", "race", "leak", "bench", "escape"]
+    : ["correctness", "race"];
   const storageKey = `gofoundry-etch-${problem.id}`;
   const preset = presetForTrack(problem.trackId);
 
@@ -247,6 +252,7 @@ export function ProblemWorkspace({ problem }: ProblemWorkspaceProps) {
           <DiagnosticPanel
             problemId={problem.id}
             code={code}
+            modes={diagnosticModes}
             etchDiagram={etchSceneToPayload(etchScene)}
             hearNotes={hear}
             anchorInvariants={{
@@ -255,6 +261,13 @@ export function ProblemWorkspace({ problem }: ProblemWorkspaceProps) {
               concurrencyModel: hear.concurrencyModel,
             }}
           />
+          {!isPro && (
+            <p className="temper-pro-note">
+              Free tier: correctness + race checks.{" "}
+              <Link href="/pricing">Pro</Link> unlocks escape analysis, leak detection, and
+              benchmarks ({PRO_DIAGNOSTIC_MODES.join(", ")}).
+            </p>
+          )}
         </section>
       )}
 

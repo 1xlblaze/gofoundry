@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import type { LessonSection } from "@/lib/lesson-sections";
+import { formatLessonSections } from "@/lib/lesson-display";
 
 type ToneFilter = "all" | LessonSection["tone"];
 
@@ -126,7 +127,9 @@ function LessonSectionMobile({ sections }: { sections: LessonSection[] }) {
             <header className="lesson-section-sheet-head">
               <div>
                 <p className="type-label">Jump to section</p>
-                <h2 className="lesson-section-sheet-title">{sections.length} sections</h2>
+                <h2 className="lesson-section-sheet-title">
+                  {formatLessonSections(sections.length)}
+                </h2>
               </div>
               <button
                 type="button"

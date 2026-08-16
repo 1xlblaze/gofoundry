@@ -2,12 +2,12 @@ import { expect, test } from "@playwright/test";
 import { allLessons, tracks } from "../src/content";
 
 const staticPages = [
-  { path: "/", heading: /Master concurrency|GoFoundry/i },
+  { path: "/", heading: /From Go foundations|GoFoundry/i },
   { path: "/learn", title: /Curriculum/i, heading: /Curriculum|Learn/i },
   { path: "/lab", title: /Go Lab/i, heading: /Go Lab/i },
   { path: "/heat", title: /HEAT Canvas/i, heading: /HEAT Canvas/i },
   { path: "/problems", title: /Practice problems/i, heading: /Practice Sheet/i },
-  { path: "/pricing", title: /Pricing|beta/i, heading: /free|beta/i },
+  { path: "/pricing", title: /Pricing/i, heading: /Curriculum free|staff problems/i },
   { path: "/sandbox", title: /Sandbox/i, heading: /Sandbox|diagnostic/i },
   { path: "/search", title: /Search lessons/i, heading: /Search/i },
   { path: "/progress", title: /Your progress/i, heading: /Progress/i },
@@ -22,7 +22,7 @@ const staticPages = [
 test.describe("Core pages smoke", () => {
   test("homepage exposes HEAT primary CTA and nav", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: /Hear — start curriculum/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Choose your path/i })).toBeVisible();
     await expect(page.getByRole("navigation", { name: /HEAT learning path/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Skip to content/i })).toHaveCount(1);
   });
@@ -116,9 +116,9 @@ test.describe("Interactive workspaces", () => {
     await expect(page.getByRole("link", { name: /Etch Architecture sketch/i })).toBeVisible();
   });
 
-  test("LLD problem workspace navigates HEAT stages", async ({ page }) => {
-    await page.goto("/problems/lld-01-lru-cache");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(/LRU/i);
+  test("DSA problem workspace navigates HEAT stages", async ({ page }) => {
+    await page.goto("/problems/dsa-01-slice-headers");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/slice/i);
     await page.getByRole("button", { name: /Lock constraints & continue to Etch/i }).click();
     await expect(page.getByRole("heading", { level: 2, name: /Topology designer/i })).toBeVisible();
     await expect(page.locator(".etch-canvas-root, .etch-canvas-loading").first()).toBeVisible({

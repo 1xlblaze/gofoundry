@@ -1,4 +1,5 @@
 import type { Lesson, TrackId, TrackMeta } from "./types";
+import { foundationsLessons } from "./foundations";
 import { methodLessons } from "./method";
 import { dsaLessons } from "./dsa";
 import { conceptsLessons } from "./concepts";
@@ -9,6 +10,14 @@ import { stdlibLessons } from "./stdlib";
 import { webLessons } from "./web";
 
 export const tracks: TrackMeta[] = [
+  {
+    id: "foundations",
+    title: "Go Foundations",
+    short: "Foundations",
+    description:
+      "Plain-language on-ramp: types, control flow, structs, slices — then bridge into Concepts.",
+    accent: "var(--accent-foundations)",
+  },
   {
     id: "method",
     title: "Foundry HEAT Method",
@@ -76,6 +85,7 @@ export const tracks: TrackMeta[] = [
 ];
 
 export const allLessons: Lesson[] = [
+  ...foundationsLessons,
   ...methodLessons,
   ...dsaLessons,
   ...conceptsLessons,

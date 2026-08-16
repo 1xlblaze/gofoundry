@@ -47,7 +47,7 @@ test.describe("UI quality — navigation & hero", () => {
   test("homepage primary CTA and interactive lab are visible on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await expect(page.getByRole("link", { name: /Hear — start curriculum/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Choose your path/i })).toBeVisible();
     await expect(page.locator(".hero-lab-editor")).toBeVisible();
     await expect(page.locator(".hero-lab-editor")).toContainText("package main");
     const labWidth = await page.locator(".hero-lab-card").evaluate((el) => el.clientWidth);
@@ -56,9 +56,9 @@ test.describe("UI quality — navigation & hero", () => {
 
   test("homepage track map shows styled curriculum cards", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /Eight tracks/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Nine tracks/i })).toBeVisible();
     const cards = page.locator(".home-track-card");
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(9);
     await expect(cards.first()).toContainText(/lessons/i);
     await expect(page.locator(".home-tracks-grid")).toBeVisible();
   });
@@ -95,7 +95,7 @@ test.describe("UI quality — curriculum & pricing", () => {
     await expect(page.getByRole("search", { name: /Filter lessons/i })).toBeVisible();
     await page.getByPlaceholder("Search lessons…").fill("goroutine");
     await expect(page.getByText(/Showing/i)).toBeVisible();
-    await page.getByRole("button", { name: "Completed" }).click();
+    await page.getByRole("button", { name: "DSA" }).click();
     await expect(page.getByText(/Showing/i)).toBeVisible();
   });
 

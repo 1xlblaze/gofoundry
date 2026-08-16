@@ -1,4 +1,5 @@
 import type { PlatformProblem } from "@/lib/platform/types";
+import { isProPlatformProblem } from "@/lib/entitlements";
 import { dsaPlatformProblems } from "./dsa-definitions";
 import { lldPlatformProblems } from "./lld-definitions";
 
@@ -22,9 +23,9 @@ export function listDsaProblems(): PlatformProblem[] {
   return listPlatformProblems("dsa");
 }
 
-/** All in-app problems are free during the public beta. */
-export function isProProblem(_id: string): boolean {
-  return false;
+/** Staff problems beyond the free starter pair require Pro. */
+export function isProProblem(id: string): boolean {
+  return isProPlatformProblem(id);
 }
 
 export function exportProblemsManifest() {
