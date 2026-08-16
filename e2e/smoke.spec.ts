@@ -94,14 +94,11 @@ test.describe("Curriculum filters", () => {
 });
 
 test.describe("Homepage hero lab", () => {
-  test("mobile shows code editor without collapsing", async ({ page }) => {
+  test("mobile shows path picker and hides hero lab", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /Can you spot the goroutine leak/i })).toBeVisible();
-    await expect(page.locator(".hero-lab-editor")).toBeVisible();
-    await expect(page.locator(".hero-lab-editor")).toContainText("package main");
-    await expect(page.getByRole("button", { name: /Run Go/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Open interactive lab/i })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /Can you spot the goroutine leak/i })).toBeHidden();
+    await expect(page.getByRole("link", { name: /Start Foundations/i })).toBeVisible();
   });
 });
 

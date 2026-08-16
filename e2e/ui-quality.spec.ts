@@ -44,14 +44,12 @@ test.describe("UI quality — navigation & hero", () => {
     await expect(nav.getByRole("link", { name: "Temper" })).toBeVisible();
   });
 
-  test("homepage primary CTA and interactive lab are visible on mobile", async ({ page }) => {
+  test("homepage primary CTA and path picker on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await expect(page.getByRole("link", { name: /Choose your path/i })).toBeVisible();
-    await expect(page.locator(".hero-lab-editor")).toBeVisible();
-    await expect(page.locator(".hero-lab-editor")).toContainText("package main");
-    const labWidth = await page.locator(".hero-lab-card").evaluate((el) => el.clientWidth);
-    expect(labWidth).toBeGreaterThan(300);
+    await expect(page.getByRole("heading", { name: /Where should you start/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Start Foundations/i })).toBeVisible();
   });
 
   test("homepage track map shows styled curriculum cards", async ({ page }) => {
@@ -254,12 +252,11 @@ test.describe("UI quality — lesson content", () => {
     await expect(page.locator(".hero-trust-strip li").first()).toBeVisible();
     expect(await contrastGap(".hero-trust-strip li")).toBeGreaterThan(0.35);
 
-    await expect(page.locator(".hero-heat-step").first()).toBeVisible();
-    expect(await contrastGap(".hero-heat-step strong")).toBeGreaterThan(0.35);
-    expect(await contrastGap(".hero-heat-step span")).toBeGreaterThan(0.25);
+    await expect(page.locator(".path-picker-badge").first()).toBeVisible();
+    expect(await contrastGap(".path-picker-label")).toBeGreaterThan(0.35);
 
-    await expect(page.locator(".teaser-chip").first()).toBeVisible();
-    expect(await contrastGap(".teaser-chip")).toBeGreaterThan(0.35);
+    await expect(page.locator(".teaser-chip-track").first()).toBeVisible();
+    expect(await contrastGap(".teaser-chip-track")).toBeGreaterThan(0.35);
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await expect(page.locator(".home-track-badge").first()).toBeVisible();
