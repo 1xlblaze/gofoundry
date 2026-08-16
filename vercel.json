@@ -1,0 +1,34 @@
+{
+  "github": {
+    "silent": true
+  },
+  "headers": [
+    {
+      "source": "/lesson/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/track/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(learn|pricing|blog|cheatsheets|diagnostic|problems)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=3600, stale-while-revalidate=86400"
+        }
+      ]
+    }
+  ]
+}

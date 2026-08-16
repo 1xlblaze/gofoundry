@@ -168,7 +168,33 @@ Set `SANDBOX_WORKER_URL=http://localhost:8081` in `.env.local`.
 
 ---
 
-## 6. What is free for all users (public beta)
+## 8. Routing, deep links, and crawlers
+
+GoFoundry on **Vercel** serves all public routes without auth gates:
+
+| Route | Rendering | Notes |
+|-------|-----------|--------|
+| `/lesson/[slug]` | SSG + 1h ISR | `generateStaticParams` for every lesson |
+| `/track/[track]` | SSG + 1h ISR | All nine tracks prebuilt |
+| `/pricing`, `/diagnostic`, `/blog` | Static | Meta tags in HTML for crawlers |
+| `/learn` | Server HTML + URL filters | Full curriculum in initial HTML at `/learn` |
+
+**Do not use** the legacy `gofoundry.vercel.app` hostname or the disabled GitHub Pages workflow — they do not run this Next.js app.
+
+### Vercel settings checklist
+
+1. **Deployment Protection** — disable for Production (or allow public access) so crawlers and direct links are not blocked with auth walls.
+2. **`NEXT_PUBLIC_SITE_URL`** — set to your canonical domain for correct canonical/OG URLs.
+3. After deploy, verify:
+   ```bash
+   curl -sI https://gofoundry-seven.vercel.app/lesson/scheduler-gpm | grep -E 'HTTP|cache-control'
+   curl -s https://gofoundry-seven.vercel.app/learn | grep -c '/lesson/'
+   ```
+   Expect `200` and many lesson links in the HTML (not an empty client shell).
+
+---
+
+## 9. What is free for all users (public beta)
 
 - All 20 DSA + 5 LLD in-app problems
 - Go Lab (Playground + visualizers)

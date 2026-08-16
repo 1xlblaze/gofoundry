@@ -95,7 +95,7 @@ test.describe("UI quality — curriculum & pricing", () => {
     await expect(page.getByRole("search", { name: /Filter lessons/i })).toBeVisible();
     await page.getByPlaceholder("Search lessons…").fill("goroutine");
     await expect(page.getByText(/Showing/i)).toBeVisible();
-    await page.getByRole("button", { name: "Completed" }).click();
+    await page.getByRole("button", { name: "DSA" }).click();
     await expect(page.getByText(/Showing/i)).toBeVisible();
   });
 

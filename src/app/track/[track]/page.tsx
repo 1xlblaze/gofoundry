@@ -6,6 +6,8 @@ import type { TrackId } from "@/content/types";
 import type { Metadata } from "next";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
+export const revalidate = 3600;
+
 type Props = { params: Promise<{ track: string }> };
 
 export function generateStaticParams() {

@@ -24,6 +24,8 @@ import { resolvePrerequisiteLinks } from "@/lib/lesson-display";
 import { buildPageMetadata } from "@/lib/site-metadata";
 import { learningResourceJsonLd } from "@/lib/seo";
 
+export const revalidate = 3600;
+
 type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {

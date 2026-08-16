@@ -1,8 +1,14 @@
-name: Deploy to GitHub Pages
+# GitHub Pages deploy is DISABLED — canonical production is Vercel (gofoundry-seven.vercel.app).
+#
+# The static export build (GITHUB_PAGES=true) cannot serve API routes, auth, or
+# dynamic diagnostics. Running it produced a broken gh-pages branch that broke
+# deep links for crawlers. Re-enable only if you need a static mirror with basePath.
+#
+# To deploy manually: workflow_dispatch with GITHUB_PAGES=true after fixing export.
+
+name: Deploy to GitHub Pages (disabled)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,21 +20,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-        env:
-          GITHUB_PAGES: "true"
-      - name: Publish to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-          force_orphan: true
-          enable_jekyll: false
+      - run: echo "Use Vercel for production deploys. See docs/DEPLOYMENT.md."

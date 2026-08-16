@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui";
-import { CheckoutButton } from "@/components/CheckoutButton";
-import { ManageSubscriptionButton } from "@/components/ManageSubscriptionButton";
+import { PricingActiveTier } from "@/components/PricingActiveTier";
+import { PricingTierActions } from "@/components/PricingTierActions";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { auth } from "@/auth";
 import { ENTITLEMENT_COPY } from "@/lib/entitlements";
 import { isStripeConfigured } from "@/lib/stripe";
 import { buildPageMetadata } from "@/lib/site-metadata";
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Pricing",
@@ -18,7 +19,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 const tiers = [
   {
-    id: "free",
+    id: "free" as const,
     name: "Free",
     price: "$0",
     cadence: "forever",
@@ -32,7 +33,7 @@ const tiers = [
     ],
   },
   {
-    id: "pro",
+    id: "pro" as const,
     name: "Pro",
     price: "$18/mo",
     cadence: "or $180/year",
@@ -46,7 +47,7 @@ const tiers = [
     ],
   },
   {
-    id: "team",
+    id: "team" as const,
     name: "Team",
     price: "$299",
     cadence: "per seat/year · waitlist",
@@ -60,29 +61,20 @@ const waitlistTierOptions = [
   { id: "lifetime", label: "Lifetime pass (early-bird)" },
 ];
 
-export default async function PricingPage() {
-  const session = await auth();
-  const userTier = session?.user?.tier ?? "free";
+export default function PricingPage() {
   const billingLive = isStripeConfigured();
-  const isPaid = userTier === "pro" || userTier === "cohort";
 
   return (
     <ScrollReveal>
       <div className="price-page">
         <section className="shell page-hero price-hero">
-          <p className="kicker" data-motion>
-            Pricing
-          </p>
+          <p className="kicker" data-motion>Pricing</p>
           <h1 data-motion>Curriculum free. Pro unlocks staff problems.</h1>
           <p data-motion>
             Read every lesson, use the Lab, and solve two starter staff problems on the free tier.
             Pro adds the full problem bank and advanced Temper gates (escape, leak, bench).
           </p>
-          {userTier !== "free" && (
-            <p className="price-active-tier" data-motion>
-              Your plan: <strong>{userTier}</strong>
-            </p>
-          )}
+          <PricingActiveTier />
         </section>
 
         <section className="shell price-tier-grid" aria-label="Pricing tiers">
@@ -107,35 +99,7 @@ export default async function PricingPage() {
                 ))}
               </ul>
               <div className="price-tier-action">
-                {tier.id === "free" ? (
-                  <Link href="/track/foundations" className="primary-btn price-full-button">
-                    Start Foundations
-                  </Link>
-                ) : tier.id === "pro" ? (
-                  isPaid && session ? (
-                    <ManageSubscriptionButton className="primary-btn price-full-button" />
-                  ) : billingLive && session ? (
-                    <div className="price-checkout-group">
-                      <CheckoutButton plan="pro-monthly" label="Subscribe monthly" />
-                      <CheckoutButton
-                        plan="pro-yearly"
-                        label="Subscribe yearly"
-                        className="secondary-btn price-full-button"
-                      />
-                    </div>
-                  ) : (
-                    <Link
-                      href={billingLive ? "/login" : "/problems/dsa-01-slice-headers"}
-                      className="primary-btn price-full-button"
-                    >
-                      {billingLive ? "Sign in to subscribe" : "Try a free staff problem →"}
-                    </Link>
-                  )
-                ) : (
-                  <Link href="#pricing-waitlist" className="secondary-btn price-full-button">
-                    Join waitlist below
-                  </Link>
-                )}
+                <PricingTierActions tierId={tier.id} billingLive={billingLive} />
               </div>
             </article>
           ))}

@@ -1,27 +1,8 @@
-import { authConfigured, signIn, signOut } from "@/auth";
+import { authConfigured } from "@/auth";
+import { NavAuthButtons } from "@/components/NavAuthButtons";
+import { googleSignIn, keycloakSignIn } from "@/lib/auth-actions";
 
-async function googleSignIn() {
-  "use server";
-  await signIn("google", { redirectTo: "/learn" });
-}
-
-async function keycloakSignIn() {
-  "use server";
-  await signIn("keycloak", { redirectTo: "/learn" });
-}
-
-async function doSignOut() {
-  "use server";
-  await signOut({ redirectTo: "/" });
-}
-
-export function AuthButtons({
-  mode,
-  userName,
-}: {
-  mode: "login" | "nav";
-  userName?: string | null;
-}) {
+export function AuthButtons({ mode, userName }: { mode: "login" | "nav"; userName?: string | null }) {
   const hasGoogle = Boolean(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
   );
@@ -39,40 +20,7 @@ export function AuthButtons({
         </a>
       );
     }
-    if (userName) {
-      return (
-        <div className="header-actions">
-          <span className="user-chip">
-            <span
-              style={{
-                width: "1.55rem",
-                height: "1.55rem",
-                borderRadius: 999,
-                background: "linear-gradient(135deg,#14b8a6,#0f766e)",
-                display: "grid",
-                placeItems: "center",
-                color: "white",
-                fontSize: "0.65rem",
-                fontWeight: 800,
-              }}
-            >
-              {userName.slice(0, 1).toUpperCase()}
-            </span>
-            <span className="hidden sm:inline">{userName.split(" ")[0]}</span>
-          </span>
-          <form action={doSignOut}>
-            <button type="submit" className="ghost-btn" style={{ padding: "0.4rem 0.8rem", fontSize: "0.78rem" }}>
-              Sign out
-            </button>
-          </form>
-        </div>
-      );
-    }
-    return (
-      <a href="/login" className="primary-btn header-sign-in">
-        Sign in
-      </a>
-    );
+    return <NavAuthButtons userName={userName} />;
   }
 
   return (
