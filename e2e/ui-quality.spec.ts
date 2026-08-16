@@ -177,6 +177,42 @@ test.describe("UI quality — lesson content", () => {
     }
   });
 
+  test("lesson sign-in gate is readable in dark mode on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/lesson/garbage-collector");
+    await page.evaluate(() => {
+      sessionStorage.removeItem("gofoundry-lesson-gate-dismissed");
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    const toggle = page.getByRole("button", { name: /Switch to dark/i });
+    if (await toggle.isVisible()) {
+      await toggle.click();
+    }
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    const banner = page.locator(".lesson-save-banner-compact");
+    await expect(banner).toBeVisible({ timeout: 5000 });
+
+    const luminance = (rgb: string) => {
+      const match = rgb.match(/[\d.]+/g);
+      if (!match || match.length < 3) return 0;
+      const [r, g, b] = match.slice(0, 3).map(Number);
+      return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    };
+
+    const leadStyles = await banner.locator(".lesson-save-banner-lead").evaluate((el) => {
+      const computed = getComputedStyle(el);
+      const parent = el.parentElement;
+      const parentBg = parent ? getComputedStyle(parent).backgroundColor : computed.backgroundColor;
+      return { bg: parentBg, color: computed.color };
+    });
+    expect(Math.abs(luminance(leadStyles.bg) - luminance(leadStyles.color))).toBeGreaterThan(0.35);
+
+    await expect(banner.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await expect(page.locator(".header-sign-in")).toBeHidden();
+  });
+
   test("inline workspace drawer opens from Run in Lab", async ({ page }) => {
     await page.goto("/lesson/lru-cache-lld");
     await page.getByRole("button", { name: /Run in Lab/i }).first().click();

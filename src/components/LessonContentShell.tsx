@@ -91,15 +91,19 @@ export function LessonContentShell({
       </aside>
 
       {!dismissed && gateOpen ? (
-        <aside className="lesson-save-banner lesson-save-banner-compact" aria-labelledby="lesson-gate-title">
+        <aside
+          className="lesson-save-banner lesson-save-banner-compact"
+          aria-labelledby="lesson-gate-title"
+        >
           <div className="lesson-save-banner-copy">
             <p className="type-label">Optional</p>
             <p id="lesson-gate-title" className="lesson-save-banner-title">
-              Sign in to sync progress across devices — reading stays free.
+              <span className="lesson-save-banner-lead">Sync progress across devices.</span>
+              <span className="lesson-save-banner-sub">Reading stays free — sign in only if you want sync.</span>
             </p>
           </div>
           <div className="lesson-gate-actions">
-            <Link href="/login" className="secondary-btn lesson-save-banner-btn">
+            <Link href="/login" className="primary-btn lesson-save-banner-btn">
               Sign in
             </Link>
             <button type="button" className="ghost-btn lesson-save-banner-btn" onClick={dismissGate}>
