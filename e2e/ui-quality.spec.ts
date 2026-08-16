@@ -108,23 +108,21 @@ test.describe("UI quality — curriculum & pricing", () => {
 });
 
 test.describe("UI quality — lesson content", () => {
-  test("sample lesson renders roadmap and body", async ({ page }) => {
+  test("sample lesson renders chrome and body", async ({ page }) => {
     const lesson = allLessons.find((item) => item.track === "lld") ?? allLessons[0];
     await page.goto(`/lesson/${lesson.slug}`);
     await expect(page.getByRole("heading", { level: 1, name: lesson.title })).toBeVisible();
-    await expect(page.getByLabel("Lesson roadmap")).toBeVisible();
+    await expect(page.locator(".lesson-chrome")).toBeVisible();
     await expect(page.locator(".content-stack").first()).toBeVisible();
   });
 
-  test("mobile lesson uses collapsible section navigator", async ({ page }) => {
+  test("mobile lesson uses bottom section navigator", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/lesson/embed-fs-templates");
-    const toggle = page.getByRole("button", { name: /Section \d+ of/i });
-    await expect(toggle).toBeVisible();
-    await toggle.click();
-    await expect(page.locator("#lesson-toc-panel.is-open")).toBeVisible();
-    await expect(page.getByLabel("Lesson roadmap")).toBeVisible();
-    await expect(page.locator(".motion2-header-progress")).toHaveCount(0);
+    await expect(page.locator(".lesson-section-bar")).toBeVisible();
+    await page.locator(".lesson-section-bar-trigger").click();
+    await expect(page.getByRole("dialog", { name: /All lesson sections/i })).toBeVisible();
+    await expect(page.getByRole("group", { name: /Filter by section type/i })).toBeVisible();
     await assertNoHorizontalOverflow(page);
   });
 

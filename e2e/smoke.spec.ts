@@ -51,7 +51,7 @@ test.describe("Track and lesson content", () => {
     const lesson = allLessons.find((item) => item.track === "lld") ?? allLessons[0];
     await page.goto(`/lesson/${lesson.slug}`);
     await expect(page.getByRole("heading", { level: 1, name: lesson.title })).toBeVisible();
-    await expect(page.getByLabel("Lesson roadmap")).toBeVisible();
+    await expect(page.locator(".lesson-chrome")).toBeVisible();
     await expect(page.locator(".content-stack").first()).toBeVisible();
   });
 
@@ -59,7 +59,7 @@ test.describe("Track and lesson content", () => {
     const lesson = allLessons.find((item) => item.track === "hld");
     test.skip(!lesson, "No HLD lesson found");
     await page.goto(`/lesson/${lesson!.slug}`);
-    await expect(page.getByRole("button", { name: /Split-screen sketch/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Split view/i })).toBeVisible();
   });
 
   test("HLD track cards are fully visible after motion reveal", async ({ page }) => {
@@ -73,9 +73,9 @@ test.describe("Track and lesson content", () => {
     expect(Number(opacity)).toBeGreaterThan(0.95);
   });
 
-  test("LRU lesson roadmap reports diagrams and sticky TOC", async ({ page }) => {
+  test("LRU lesson shows stats and sticky TOC", async ({ page }) => {
     await page.goto("/lesson/lru-cache-lld");
-    await expect(page.getByLabel("Lesson roadmap")).toContainText(/Diagrams/i);
+    await expect(page.locator(".lesson-context-rail")).toBeVisible();
     await expect(page.getByLabel("Lesson sections")).toBeVisible();
     await expect(page.locator("#lesson-section-1")).toBeAttached();
   });

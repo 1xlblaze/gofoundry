@@ -21,10 +21,10 @@ type LessonEtchPadProps = {
 
 function formatSavedAt(timestamp: number) {
   const seconds = Math.max(0, Math.round((Date.now() - timestamp) / 1000));
-  if (seconds < 8) return "Draft saved just now";
-  if (seconds < 60) return `Draft saved ${seconds}s ago`;
+  if (seconds < 8) return "Saved just now";
+  if (seconds < 60) return `Saved ${seconds}s ago`;
   const minutes = Math.round(seconds / 60);
-  return `Draft saved ${minutes} min ago`;
+  return `Saved ${minutes}m ago`;
 }
 
 export function LessonEtchPad({ lessonSlug, trackId, title }: LessonEtchPadProps) {
@@ -65,47 +65,47 @@ export function LessonEtchPad({ lessonSlug, trackId, title }: LessonEtchPadProps
 
   const canvas =
     mode !== "closed" ? (
-      <EtchCanvas storageKey={storageKey} preset={preset} height={mode === "split" ? 480 : 360} compact />
+      <EtchCanvas
+        storageKey={storageKey}
+        preset={preset}
+        height={mode === "split" ? 480 : 320}
+        compact
+      />
     ) : null;
 
   return (
     <>
-      <section
-        className="panel lesson-etch-pad lesson-zone lesson-zone-sketch"
-        aria-labelledby={`etch-${lessonSlug}`}
-      >
-        <div className="lesson-etch-pad-head">
-          <div>
-            <p className="type-label">Etch along</p>
-            <h2 id={`etch-${lessonSlug}`}>Sketch {title} before the theory fades</h2>
-            <p>
-              Use the whiteboard to mirror the architecture — boxes for services, arrows for data
-              flow, and notes for invariants. Your sketch autosaves in this browser.
-            </p>
+      <div className="lesson-etch-strip lesson-zone lesson-zone-sketch">
+        <div className="lesson-etch-strip-copy">
+          <p className="type-label">Etch along</p>
+          <p className="lesson-etch-strip-text">
+            Sketch <strong>{title}</strong> — autosaves locally
             {savedLabel ? (
-              <p className="lesson-etch-saved" aria-live="polite">{savedLabel}</p>
+              <span className="lesson-etch-saved-inline"> · {savedLabel}</span>
             ) : null}
-          </div>
-          <div className="lesson-etch-pad-actions">
-            <button
-              type="button"
-              className="secondary-btn"
-              onClick={() => setMode((m) => (m === "inline" ? "closed" : "inline"))}
-            >
-              {mode === "inline" ? "Hide inline pad" : "Inline pad"}
-            </button>
-            <button
-              type="button"
-              className="primary-btn"
-              onClick={() => setMode((m) => (m === "split" ? "closed" : "split"))}
-            >
-              {mode === "split" ? "Close split view" : "Split-screen sketch"}
-            </button>
-          </div>
+          </p>
         </div>
-        {mode === "inline" ? canvas : null}
-      </section>
-      {mode === "split" && splitSlot && canvas ? createPortal(canvas, splitSlot) : null}
+        <div className="lesson-etch-strip-actions">
+          <button
+            type="button"
+            className={`ghost-btn lesson-etch-strip-btn${mode === "inline" ? " is-active" : ""}`}
+            onClick={() => setMode((m) => (m === "inline" ? "closed" : "inline"))}
+          >
+            Inline
+          </button>
+          <button
+            type="button"
+            className={`secondary-btn lesson-etch-strip-btn${mode === "split" ? " is-active" : ""}`}
+            onClick={() => setMode((m) => (m === "split" ? "closed" : "split"))}
+          >
+            Split view
+          </button>
+        </div>
+      </div>
+      {mode === "inline" ? <div className="lesson-etch-inline">{canvas}</div> : null}
+      {mode === "split" && splitSlot && canvas
+        ? createPortal(canvas, splitSlot)
+        : null}
     </>
   );
 }

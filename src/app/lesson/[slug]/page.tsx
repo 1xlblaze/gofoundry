@@ -12,7 +12,7 @@ import { LessonQuiz } from "@/components/LessonQuiz";
 import { CompleteButton } from "@/components/CompleteButton";
 import { ProgressSaveCue } from "@/components/ProgressSaveCue";
 import { ReadingProgress } from "@/components/ReadingProgress";
-import { LessonRoadmap } from "@/components/LessonRoadmap";
+import { LessonChrome } from "@/components/LessonChrome";
 import { LessonEtchPad } from "@/components/LessonEtchPad";
 import { LessonTableOfContents } from "@/components/LessonTableOfContents";
 import { LessonContentShell } from "@/components/LessonContentShell";
@@ -42,6 +42,17 @@ export default async function LessonPage({ params }: Props) {
   const sections = sectionsFromBlocks(lesson.blocks);
   const labHref =
     lesson.slug === "lru-cache-lld" ? "/problems/lld-01-lru-cache" : undefined;
+  const lessonStats = {
+    sections: sections.length,
+    diagrams: sections.filter((s) => s.tone === "visual").length,
+    checkpoints: sections.filter((s) => s.tone === "think").length,
+    codeBlocks: sections.filter((s) => s.tone === "action").length,
+  };
+  const prerequisiteLinks =
+    lesson.prerequisites?.map((slug) => ({
+      slug,
+      title: getLesson(slug)?.title ?? slug,
+    })) ?? [];
 
   return (
     <LessonWorkspaceProvider lessonSlug={lesson.slug} trackId={track.id}>
@@ -58,49 +69,12 @@ export default async function LessonPage({ params }: Props) {
         <LessonTableOfContents sections={sections} />
 
         <div className="lesson-main">
-          <div className="lesson-header panel reveal-delay-1">
-            <div className="lesson-header-top">
-              <p className="type-label lesson-header-track" style={{ color: track.accent }}>
-                {track.title}
-              </p>
-              <div className="lesson-header-actions">
-                <CompleteButton slug={lesson.slug} />
-              </div>
-            </div>
-            <h1>{lesson.title}</h1>
-            <p className="lesson-header-subtitle">{lesson.subtitle}</p>
-            <div className="lesson-header-meta">
-              {lesson.free && (
-                <span className="chip chip-brand">Open lesson · Staff-grade sample</span>
-              )}
-              <span className="chip">{lesson.minutes} min</span>
-              <span className="chip chip-brand lesson-header-difficulty">
-                {lesson.difficulty}
-              </span>
-              {lesson.tags.slice(0, 4).map((t) => (
-                <span key={t} className="chip lesson-header-tag">
-                  #{t}
-                </span>
-              ))}
-              {lesson.tags.length > 4 ? (
-                <span className="chip chip-muted">+{lesson.tags.length - 4} more</span>
-              ) : null}
-            </div>
-          </div>
-
-          {lesson.prerequisites && lesson.prerequisites.length > 0 && (
-            <p className="lesson-prereq">
-              Prerequisites:{" "}
-              {lesson.prerequisites.map((p, i) => (
-                <span key={p}>
-                  {i > 0 && ", "}
-                  <Link href={`/lesson/${p}`}>{getLesson(p)?.title ?? p}</Link>
-                </span>
-              ))}
-            </p>
-          )}
-
-          <LessonRoadmap blocks={lesson.blocks} />
+          <LessonChrome
+            lesson={lesson}
+            track={track}
+            stats={lessonStats}
+            prerequisites={prerequisiteLinks.length > 0 ? prerequisiteLinks : undefined}
+          />
 
           {(lesson.track === "lld" || lesson.track === "hld") && (
             <LessonEtchPad
@@ -169,7 +143,11 @@ export default async function LessonPage({ params }: Props) {
             </aside>
           ) : null}
         </div>
-        <div id="lesson-etch-split-slot" className="lesson-etch-split-slot" aria-label="Split-screen sketch pad" />
+        <div
+          id="lesson-etch-split-slot"
+          className="lesson-etch-split-slot"
+          aria-label="Split-screen sketch pad"
+        />
       </div>
     </article>
     </LessonWorkspaceProvider>
