@@ -3,6 +3,7 @@ import { lessonsForTrack, tracks } from "@/content";
 import { AnimatedCard } from "@/components/ui";
 
 const trackFocus: Record<string, string> = {
+  foundations: "On-ramp",
   method: "Interview OS",
   dsa: "Patterns + proofs",
   concepts: "Language depth",
@@ -20,7 +21,7 @@ export function HomeTrackMap() {
         <div className="home-tracks-head">
           <div>
             <p className="kicker">Full curriculum map</p>
-            <h2 id="home-tracks-title">Eight tracks — pick your depth</h2>
+            <h2 id="home-tracks-title">Nine tracks — pick your depth</h2>
             <p>
               Each track is a guided path through staff-grade material. Start anywhere, but HEAT
               teaches how to think before you code.

@@ -67,6 +67,19 @@ export default function TermsPage() {
           ARISING FROM USE OF THE SERVICE.
         </p>
 
+        <h2>Payments & refunds</h2>
+        <p>
+          Pro subscriptions are billed through Stripe. You can cancel or update payment from the
+          billing portal on the <Link href="/pricing">Pricing</Link> page when signed in.
+        </p>
+        <p>
+          <strong>Refund policy:</strong> monthly plans may receive a prorated refund within 7 days
+          of a charge if you contact us at{" "}
+          <a href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</a>. Yearly
+          plans follow the same 7-day window from initial purchase. After that window, cancel to
+          stop future renewals — we do not refund partial years except where required by law.
+        </p>
+
         <h2>Contact</h2>
         <p>
           <a href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</a>

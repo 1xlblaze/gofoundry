@@ -2,12 +2,18 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { saveHeatSubmission, saveDiagnosticJob, updateDiagnosticJob } from "@/lib/db";
 import {
+  canAccessPlatformProblem,
+  filterDiagnosticModesForTier,
+  isPaidTier,
+} from "@/lib/entitlements";
+import {
   createDiagnosticJob,
   deriveSubmissionStatus,
   executeDiagnosticJob,
 } from "@/lib/platform/diagnostics";
 import { enqueueDiagnosticJob } from "@/lib/platform/queue";
 import type { DiagnosticMode } from "@/lib/platform/types";
+import type { UserTier } from "@/lib/stripe";
 
 const VALID_MODES: DiagnosticMode[] = [
   "correctness",
@@ -37,15 +43,25 @@ export async function POST(request: Request) {
     );
   }
 
-  const modes = Array.isArray(body.modes)
+  const session = await auth();
+  const tier = (session?.user?.tier as UserTier | undefined) ?? "free";
+
+  if (!canAccessPlatformProblem(tier, problemId)) {
+    return NextResponse.json(
+      { error: "Pro subscription required for this staff problem", code: "pro_required" },
+      { status: 403 },
+    );
+  }
+
+  const requestedModes = Array.isArray(body.modes)
     ? (body.modes.filter((m) =>
         VALID_MODES.includes(m as DiagnosticMode),
       ) as DiagnosticMode[])
     : (["correctness", "race", "leak", "bench", "escape"] as DiagnosticMode[]);
 
-  const job = createDiagnosticJob({ problemId, code, modes });
+  const modes = filterDiagnosticModesForTier(tier, requestedModes);
 
-  const session = await auth();
+  const job = createDiagnosticJob({ problemId, code, modes });
   const hearNotes =
     typeof body.hearNotes === "object" && body.hearNotes !== null
       ? (body.hearNotes as Record<string, unknown>)
@@ -86,6 +102,8 @@ export async function POST(request: Request) {
   return NextResponse.json({
     jobId: job.id,
     streamUrl: `/api/diagnostics/stream?jobId=${job.id}`,
+    modes,
+    pro: isPaidTier(tier),
   });
 }
 

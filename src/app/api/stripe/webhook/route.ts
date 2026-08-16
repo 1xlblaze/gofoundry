@@ -49,6 +49,27 @@ export async function POST(request: Request) {
     }
   }
 
+  if (event.type === "customer.subscription.updated") {
+    const sub = event.data.object;
+    const customer = await stripe.customers.retrieve(sub.customer as string);
+    if (!customer.deleted && "email" in customer && customer.email) {
+      const priceId = sub.items.data[0]?.price.id ?? "";
+      const tier =
+        sub.status === "active" || sub.status === "trialing"
+          ? tierFromStripePrice(priceId)
+          : "free";
+
+      const db = await getDb();
+      if (db) {
+        await db.query(
+          `INSERT INTO users (email, tier) VALUES ($1, $2)
+           ON CONFLICT (email) DO UPDATE SET tier = $2`,
+          [customer.email, tier],
+        );
+      }
+    }
+  }
+
   if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object;
     const customer = await stripe.customers.retrieve(sub.customer as string);

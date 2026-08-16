@@ -2,44 +2,47 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui";
 import { CheckoutButton } from "@/components/CheckoutButton";
+import { ManageSubscriptionButton } from "@/components/ManageSubscriptionButton";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { auth } from "@/auth";
+import { ENTITLEMENT_COPY } from "@/lib/entitlements";
 import { isStripeConfigured } from "@/lib/stripe";
 import { buildPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Pricing",
   description:
-    "GoFoundry is free during public beta — staff problems, Lab, HEAT canvas, diagnostics, and the full curriculum.",
+    "GoFoundry Pro — full staff problem bank, advanced Temper diagnostics, and curriculum reading free for beta members.",
   path: "/pricing",
 });
 
 const tiers = [
   {
     id: "free",
-    name: "Public beta",
+    name: "Free",
     price: "$0",
-    cadence: "everything unlocked",
-    description: "Full platform access while we ship the staff-grade curriculum.",
+    cadence: "forever",
+    description: "Read the curriculum, run the Lab, and try two starter staff problems.",
     features: [
-      "101-lesson curriculum",
-      "20 staff DSA problems + 5 LLD modules",
+      "Full curriculum readable",
+      ENTITLEMENT_COPY.freeProblemsLabel,
       "Go Lab + HEAT canvas",
-      "4-gate diagnostic sandbox (vet, escape, race, bench)",
-      "Community access",
+      ENTITLEMENT_COPY.freeDiagnosticsLabel,
+      "Placement quiz + progress tracking",
     ],
   },
   {
     id: "pro",
     name: "Pro",
     price: "$18/mo",
-    cadence: "coming soon",
-    description: "Paid subscriptions launch later. Everything is free today.",
+    cadence: "or $180/year",
+    description: "Unlock the staff problem bank and full Temper diagnostic pipeline.",
     features: [
-      "Same full platform as beta",
-      "Priority diagnostic queue",
+      ENTITLEMENT_COPY.proProblemsLabel,
+      ENTITLEMENT_COPY.proDiagnosticsLabel,
       "Saved submission history",
-      "Advanced analytics",
+      ENTITLEMENT_COPY.lessonReading,
+      "Priority diagnostic queue",
     ],
   },
   {
@@ -61,19 +64,19 @@ export default async function PricingPage() {
   const session = await auth();
   const userTier = session?.user?.tier ?? "free";
   const billingLive = isStripeConfigured();
+  const isPaid = userTier === "pro" || userTier === "cohort";
 
   return (
     <ScrollReveal>
       <div className="price-page">
         <section className="shell page-hero price-hero">
           <p className="kicker" data-motion>
-            Public beta
+            Pricing
           </p>
-          <h1 data-motion>Everything is free right now.</h1>
+          <h1 data-motion>Curriculum free. Pro unlocks staff problems.</h1>
           <p data-motion>
-            Staff problems, Go Lab, HEAT canvas, and the 4-gate diagnostic pipeline are
-            open to everyone. Pro subscriptions are not live yet — explore the full
-            platform at no cost.
+            Read every lesson, use the Lab, and solve two starter staff problems on the free tier.
+            Pro adds the full problem bank and advanced Temper gates (escape, leak, bench).
           </p>
           {userTier !== "free" && (
             <p className="price-active-tier" data-motion>
@@ -86,10 +89,10 @@ export default async function PricingPage() {
           {tiers.map((tier) => (
             <article
               key={tier.id}
-              className={`panel price-tier-card${tier.id === "free" ? " price-tier-featured" : ""}`}
+              className={`panel price-tier-card${tier.id === "pro" ? " price-tier-featured" : ""}`}
               data-motion
             >
-              {tier.id === "free" ? <span className="price-popular">Live now</span> : null}
+              {tier.id === "pro" ? <span className="price-popular">Staff prep</span> : null}
               <div>
                 <h2>{tier.name}</h2>
                 <p className="price-tier-description">{tier.description}</p>
@@ -105,11 +108,13 @@ export default async function PricingPage() {
               </ul>
               <div className="price-tier-action">
                 {tier.id === "free" ? (
-                  <Link href="/problems" className="primary-btn price-full-button">
-                    Open staff problems
+                  <Link href="/track/foundations" className="primary-btn price-full-button">
+                    Start Foundations
                   </Link>
                 ) : tier.id === "pro" ? (
-                  billingLive && session ? (
+                  isPaid && session ? (
+                    <ManageSubscriptionButton className="primary-btn price-full-button" />
+                  ) : billingLive && session ? (
                     <div className="price-checkout-group">
                       <CheckoutButton plan="pro-monthly" label="Subscribe monthly" />
                       <CheckoutButton
@@ -119,8 +124,11 @@ export default async function PricingPage() {
                       />
                     </div>
                   ) : (
-                    <Link href="/lab" className="secondary-btn price-full-button">
-                      {billingLive ? "Sign in to subscribe" : "Use the free Lab →"}
+                    <Link
+                      href={billingLive ? "/login" : "/problems/dsa-01-slice-headers"}
+                      className="primary-btn price-full-button"
+                    >
+                      {billingLive ? "Sign in to subscribe" : "Try a free staff problem →"}
                     </Link>
                   )
                 ) : (
@@ -133,11 +141,21 @@ export default async function PricingPage() {
           ))}
         </section>
 
+        <section className="shell price-roadmap panel" data-motion>
+          <p className="kicker">Beta grandfathering</p>
+          <h2>Early members keep lesson access</h2>
+          <p>
+            If you created a GoFoundry account before paid launch, curriculum reading stays free
+            on your account — including when Pro billing goes live. Pro is for the staff problem
+            bank and advanced diagnostics, not for locking lessons you already had access to.
+          </p>
+        </section>
+
         <section className="shell price-roadmap" data-motion>
           <p>
-            Public beta includes the curriculum, Lab, HEAT canvas, and the 4-gate diagnostic
-            pipeline at no cost. Paid plans are listed so you can see what is coming — nothing
-            extra is required to start learning today.
+            Refunds: cancel anytime from the billing portal. Monthly plans refund the unused
+            portion within 7 days of charge when you contact support. See{" "}
+            <Link href="/terms">Terms of Service</Link> for details.
           </p>
         </section>
 
@@ -147,7 +165,7 @@ export default async function PricingPage() {
             <h2>Team & lifetime waitlist</h2>
             <p>
               One form for organization seats or a limited lifetime pass. Tell us where to send
-              launch details — early members get first access when paid plans go live.
+              launch details — early members get first access when Team plans go live.
             </p>
           </div>
           <WaitlistForm

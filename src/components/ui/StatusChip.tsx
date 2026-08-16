@@ -3,6 +3,7 @@ type Status =
   | "todo"
   | "starred"
   | "free"
+  | "pro"
   | "in-progress"
   | "quiz"
   | "staff";
@@ -12,6 +13,7 @@ const STATUS_CLASS: Record<Status, string> = {
   todo: "ds-status-todo",
   starred: "ds-status-starred",
   free: "ds-status-free",
+  pro: "ds-status-pro",
   "in-progress": "ds-status-progress",
   quiz: "ds-status-quiz",
   staff: "ds-status-staff",
@@ -22,6 +24,7 @@ const STATUS_LABEL: Record<Status, string> = {
   todo: "Todo",
   starred: "Starred",
   free: "Free",
+  pro: "Pro",
   "in-progress": "In progress",
   quiz: "Quiz",
   staff: "Staff-grade",

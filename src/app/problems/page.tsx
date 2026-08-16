@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { getLesson } from "@/content";
-import { listPlatformProblems } from "@/content/platform-problems/index";
+import {
+  listPlatformProblems,
+  isProProblem,
+} from "@/content/platform-problems/index";
 import {
   patternTopics,
   totalProblemCount,
@@ -118,17 +121,19 @@ export default function ProblemsPage() {
           <h2>20 DSA + 5 LLD modules with runtime invariants</h2>
           <p>
             Solve inside GoFoundry with dual algorithmic + zero-allocation evaluation.
-            All staff problems and the Lab are free during the public beta.
+            Two starter problems are free; the full bank requires Pro.
           </p>
           <div className="platform-problem-cards">
-            {platformProblems.map((problem) => (
+            {platformProblems.map((problem) => {
+              const pro = isProProblem(problem.id);
+              return (
               <AnimatedCard
                 key={problem.id}
                 href={`/problems/${problem.id}`}
                 className="platform-problem-card"
               >
                 <StatusChip status="staff" label={problem.trackId.toUpperCase()} />
-                <StatusChip status="free" />
+                <StatusChip status={pro ? "pro" : "free"} label={pro ? "Pro" : "Free"} />
                 <h3>{problem.title}</h3>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", marginTop: "0.65rem" }}>
                   <MetricChip
@@ -141,7 +146,8 @@ export default function ProblemsPage() {
                   />
                 </div>
               </AnimatedCard>
-            ))}
+              );
+            })}
           </div>
         </section>
 

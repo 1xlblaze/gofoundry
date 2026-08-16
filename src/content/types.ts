@@ -1,4 +1,5 @@
 export type TrackId =
+  | "foundations"
   | "dsa"
   | "concepts"
   | "internals"

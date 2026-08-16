@@ -18,6 +18,7 @@
   --accent: #ea580c;
   --accent-soft: #ffedd5;
   --accent-method: #0f766e;
+  --accent-foundations: #059669;
   --accent-dsa: #2563eb;
   --accent-concepts: #7c3aed;
   --accent-stdlib: #475569;
@@ -6751,6 +6752,12 @@ body:has(#lesson-article) .ambient-background {
   border-color: color-mix(in srgb, var(--brand) 32%, var(--line));
 }
 
+.ds-status-pro {
+  color: #9a3412;
+  background: color-mix(in srgb, var(--accent-soft) 75%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
 .ds-status-progress {
   color: #1d4ed8;
   background: #eff6ff;
@@ -8221,6 +8228,12 @@ a.motion-diagram-node:hover {
   border-color: color-mix(in srgb, var(--brand) 42%, var(--line));
 }
 
+[data-theme="dark"] .ds-status-pro {
+  color: #fed7aa;
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-muted));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+
 [data-theme="dark"] .ds-status-progress {
   color: #93c5fd;
   background: color-mix(in srgb, #2563eb 18%, var(--bg-muted));
@@ -9028,4 +9041,114 @@ body.lesson-section-sheet-open .lesson-section-bar {
   font-size: 0.84rem;
   color: var(--muted);
   line-height: 1.45;
+}
+
+/* ---- Path picker & billing gates ---- */
+.path-picker-section {
+  padding: 2.5rem 0 1rem;
+}
+
+.path-picker-head {
+  max-width: 40rem;
+  margin-bottom: 1.5rem;
+}
+
+.path-picker-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.path-picker-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 100%;
+}
+
+.path-picker-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.path-picker-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.path-picker-cta {
+  margin-top: auto;
+  font-weight: 650;
+  font-size: 0.88rem;
+  color: var(--brand-deep);
+}
+
+.path-picker-audience {
+  margin: 1.25rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.path-picker-foundations {
+  border-color: color-mix(in srgb, var(--accent-foundations) 35%, var(--line));
+}
+
+.pro-gate-card {
+  max-width: 42rem;
+  margin: 2rem auto;
+  padding: 1.75rem;
+}
+
+.pro-gate-list {
+  margin: 1rem 0;
+  padding-left: 1.2rem;
+  color: var(--ink-soft);
+}
+
+.pro-gate-note {
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.pro-gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.temper-pro-note {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.first-complete-prompt {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.first-complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .path-picker-grid {
+    grid-template-columns: 1fr;
+  }
 }
