@@ -19,6 +19,7 @@ import { LessonContentShell } from "@/components/LessonContentShell";
 import { LessonWorkspaceProvider } from "@/components/LessonWorkspace";
 import { LessonVisitTracker } from "@/components/LessonVisitTracker";
 import { sectionsFromBlocks } from "@/lib/lesson-sections";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -30,7 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const lesson = getLesson(slug);
   if (!lesson) return {};
-  return { title: lesson.title, description: lesson.subtitle };
+  return buildPageMetadata({
+    title: lesson.title,
+    description: lesson.subtitle,
+    path: `/lesson/${slug}`,
+    type: "article",
+  });
 }
 
 export default async function LessonPage({ params }: Props) {

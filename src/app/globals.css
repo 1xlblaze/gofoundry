@@ -8838,3 +8838,55 @@ body.lesson-section-sheet-open .lesson-section-bar {
   opacity: 0;
   pointer-events: none;
 }
+
+/* ---- Legal & launch footer ---- */
+.legal-page {
+  padding: 2.5rem 0 3.5rem;
+}
+
+.legal-doc {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.85rem;
+}
+
+.legal-doc h1 {
+  margin: 0.35rem 0 0.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  letter-spacing: -0.03em;
+}
+
+.legal-doc h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.legal-doc p,
+.legal-doc li {
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.legal-doc ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.legal-updated {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.legal-footer-links {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}
+
+.footer-beta-note {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.45;
+}

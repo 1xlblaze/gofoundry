@@ -4,6 +4,7 @@ import { AnimatedCard, ScrollReveal } from "@/components/ui";
 import { TrackLessonGrid } from "@/components/TrackLessonGrid";
 import type { TrackId } from "@/content/types";
 import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/site-metadata";
 
 type Props = { params: Promise<{ track: string }> };
 
@@ -15,7 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { track: id } = await params;
   const track = tracks.find((t) => t.id === id);
   if (!track) return {};
-  return { title: track.title, description: track.description };
+  return buildPageMetadata({
+    title: track.title,
+    description: track.description,
+    path: `/track/${id}`,
+  });
 }
 
 export default async function TrackPage({ params }: Props) {
