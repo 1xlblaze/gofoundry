@@ -15,6 +15,8 @@ const staticPages = [
   { path: "/blog", title: /Articles/i, heading: /under the hood/i },
   { path: "/diagnostic", title: /Self-assessment/i, heading: /Find the gaps|readiness/i },
   { path: "/login", title: /Sign in/i, heading: /Sign in|Google/i },
+  { path: "/privacy", title: /Privacy/i, heading: /Privacy Policy/i },
+  { path: "/terms", title: /Terms/i, heading: /Terms of Service/i },
 ];
 
 test.describe("Core pages smoke", () => {

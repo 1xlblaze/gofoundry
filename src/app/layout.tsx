@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AmbientBackground } from "@/components/AmbientBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ThemeScript } from "@/components/ThemeScript";
+import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const display = Outfit({
@@ -25,12 +26,26 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: "GoFoundry — The Staff-Grade Go Mastery Platform",
     template: "%s · GoFoundry",
   },
-  description:
-    "Master Go concurrency, runtime internals, zero-allocation performance, and cloud-native design with the HEAT method, interactive Lab, and focused practice.",
+  description: siteConfig.tagline,
+  alternates: { canonical: siteConfig.url },
+  openGraph: {
+    title: "GoFoundry — The Staff-Grade Go Mastery Platform",
+    description: siteConfig.tagline,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GoFoundry — The Staff-Grade Go Mastery Platform",
+    description: siteConfig.tagline,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -69,6 +84,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <p style={{ margin: "0.4rem 0 0", maxWidth: "22rem" }}>
                 Hear → Etch → Anchor → Temper — staff-grade Go.
               </p>
+              <p className="footer-beta-note" style={{ margin: "0.5rem 0 0", maxWidth: "24rem" }}>
+                {siteConfig.betaNote}
+              </p>
             </div>
             <ul className="footer-links">
               <li>
@@ -88,6 +106,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </li>
               <li>
                 <Link href="/login">Sign in</Link>
+              </li>
+              <li>
+                <Link href="/privacy">Privacy</Link>
+              </li>
+              <li>
+                <Link href="/terms">Terms</Link>
+              </li>
+              <li>
+                <a href={siteConfig.githubIssues} rel="noopener noreferrer" target="_blank">
+                  Feedback
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${siteConfig.contactEmail}`}>Contact</a>
               </li>
             </ul>
           </div>
