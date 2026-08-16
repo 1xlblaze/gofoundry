@@ -80,4 +80,13 @@ Configure `STRIPE_SECRET_KEY`, webhook secret, and price IDs in `.env.local`. Ch
 
 Vercel (Node runtime — not static export). Connect the GitHub repo and set the env vars above.
 
+**Canonical production URL:** https://gofoundry-seven.vercel.app — this is the live Next.js app. Do **not** use `gofoundry.vercel.app` for QA or launch; that hostname points to a separate legacy static project, not this repository.
+
+Before announcing launch, verify production:
+
+```bash
+curl -s https://gofoundry-seven.vercel.app/api/health
+npm run test:e2e:prod
+```
+
 **Full production setup** (Supabase `DATABASE_URL`, free Redis, free sandbox worker): see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
